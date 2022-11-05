@@ -16,13 +16,13 @@ pub struct Tokens {
     pub refresh_token: String,
 }
 
-pub async fn createUser(name: String, password: String) -> MyResult<Tokens> {
+pub async fn create_user(name: String, password: String) -> MyResult<Tokens> {
     let mut body = serde_json::Map::new();
     body.insert("name".into(), name.into());
     body.insert("password".into(), password.into());
 
     let res = client()
-        .post(&CONFIG.auth_origin)
+        .post(format!("{}/user", CONFIG.auth_origin))
         .json(&body)
         .send()
         .await

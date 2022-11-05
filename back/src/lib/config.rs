@@ -10,8 +10,8 @@ pub struct Config {
     pub host: String,
     pub port: String,
     pub database_url: String,
-    pub frontend_origins: Vec<String>,
     pub auth_origin: String,
+    pub frontend_origins: Vec<String>,
 }
 
 impl Config {
@@ -26,8 +26,8 @@ impl Config {
         let config = config::Config::builder()
             .set_default("host", "127.0.0.1")?
             .set_default("port", "5001")?
-            .set_default("frontend_origins", frontend_origins)?
             .set_default("auth_origin", "http://127.0.0.1:9099")?
+            .set_default("frontend_origins", frontend_origins)?
             .add_source(environment)
             .build()?;
         config.try_deserialize()

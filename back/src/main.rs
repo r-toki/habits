@@ -7,11 +7,11 @@ use actix_web::{get, middleware::Logger, App, HttpServer, Responder};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    if cfg!(debug_assertion) {
+    if cfg!(debug_assertions) {
         dotenv::dotenv().ok();
     }
 
-    env_logger::init_from_env(env_logger::Env::default().default_filter_or("into"));
+    env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
 
     HttpServer::new(move || {
         App::new()
@@ -27,5 +27,5 @@ async fn main() -> std::io::Result<()> {
 
 #[get("/")]
 async fn index() -> impl Responder {
-    format!("HELLO WORLD!")
+    format!("HELLO FROM MY HABIT BACK!")
 }

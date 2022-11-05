@@ -1,5 +1,5 @@
 use crate::lib::{
-    auth::{createUser, Tokens},
+    auth::{create_user, Tokens},
     my_error::MyResult,
 };
 
@@ -21,7 +21,7 @@ struct Create {
 
 #[post("/user")]
 async fn create(form: Json<Create>) -> MyResult<Json<Tokens>> {
-    createUser(form.name.clone(), form.password.clone())
+    create_user(form.name.clone(), form.password.clone())
         .await
         .map(|tokens| Json(tokens))
 }

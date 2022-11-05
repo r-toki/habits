@@ -3,6 +3,7 @@ import { FormEventHandler } from 'react';
 
 import { AuthLayout } from '@/components/AuthLayout';
 import { useTextInput } from '@/hooks/useTextInput';
+import { createUser } from '@/lib/backend/api';
 
 export const SignUp = () => {
   const nameInput = useTextInput();
@@ -11,6 +12,8 @@ export const SignUp = () => {
 
   const onSubmit: FormEventHandler = (e) => {
     e.preventDefault();
+
+    createUser({ name: nameInput.value, password: passwordInput.value }).then(console.log);
   };
 
   return (
