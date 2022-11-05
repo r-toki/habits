@@ -1,9 +1,5 @@
-import { AppLayout } from '@/components/AppLayout';
+import { Navigate } from 'react-router-dom';
 
 export const Landing = () => {
-  return (
-    <AppLayout>
-      <div>Landing</div>
-    </AppLayout>
-  );
+  return <Navigate to="/sign-up" />;
 };
