@@ -11,7 +11,10 @@
     "deploy": "firebase deploy"
   },
   "dependencies": {
-    "normalize.css": "^8.0.1",
+    "@chakra-ui/react": "^2.3.7",
+    "@emotion/react": "^11",
+    "@emotion/styled": "^11",
+    "framer-motion": "^6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.4.2"
