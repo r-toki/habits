@@ -24,7 +24,7 @@ impl Config {
         let environment = config::Environment::default().try_parsing(true);
         let config = config::Config::builder()
             .set_default("host", "127.0.0.1")?
-            .set_default("port", "9099")?
+            .set_default("port", "5001")?
             .set_default("frontend_origins", frontend_origins)?
             .add_source(environment)
             .build()?;
