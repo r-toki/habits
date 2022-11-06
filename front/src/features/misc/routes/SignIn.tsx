@@ -4,17 +4,16 @@ import { FormEventHandler } from 'react';
 import { AppLink } from '@/components/AppLink';
 import { AuthLayout } from '@/components/AuthLayout';
 import { useTextInput } from '@/hooks/useTextInput';
-import { createUser } from '@/lib/backend/api';
+import { createUserSession } from '@/lib/auth';
 
-export const SignUp = () => {
+export const SignIn = () => {
   const nameInput = useTextInput();
   const passwordInput = useTextInput();
-  const passwordConfirmInput = useTextInput();
 
   const onSubmit: FormEventHandler = (e) => {
     e.preventDefault();
 
-    createUser({
+    createUserSession({
       name: nameInput.value,
       password: passwordInput.value,
     }).then(console.log);
@@ -38,16 +37,11 @@ export const SignUp = () => {
             <Input type="password" required {...passwordInput.bind} />
           </FormControl>
 
-          <FormControl>
-            <FormLabel>Password Confirm</FormLabel>
-            <Input type="password" required {...passwordConfirmInput.bind} />
-          </FormControl>
-
-          <Button type="submit">Sign Up</Button>
+          <Button type="submit">Sign In</Button>
         </Stack>
       </form>
 
-      <AppLink to="/sign-in">to sign in</AppLink>
+      <AppLink to="/sign-up">to sign up</AppLink>
     </AuthLayout>
   );
 };

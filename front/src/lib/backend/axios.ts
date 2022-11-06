@@ -23,7 +23,6 @@ axios.interceptors.request.use((config) => {
 axios.interceptors.response.use(undefined, async (err: AxiosError) => {
   const refreshToken = tokenStorage.get('refresh_token');
   if (!err.config || err.response?.status !== 401 || !refreshToken) return Promise.reject(err);
-
   try {
     await updateUserSession();
     return axios(err.config);

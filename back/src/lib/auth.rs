@@ -9,6 +9,11 @@ fn client() -> reqwest::Client {
     reqwest::Client::new()
 }
 
+#[derive(Debug, Deserialize)]
+pub struct Auth {
+    pub uid: String,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Tokens {
@@ -34,4 +39,20 @@ pub async fn create_user(name: String, password: String) -> MyResult<Tokens> {
         .map_err(|_| MyError::new_bad_request())?;
 
     Ok(tokens)
+}
+
+pub async fn get_user(access_token: String) -> MyResult<Auth> {
+    let res = client()
+        .get(format!("{}/user", CONFIG.auth_origin))
+        .header("Authorization", format!("Bearer {}", access_token))
+        .send()
+        .await
+        .map_err(|_| MyError::new_bad_request())?;
+
+    let auth = res
+        .json::<Auth>()
+        .await
+        .map_err(|_| MyError::new_bad_request())?;
+
+    Ok(auth)
 }
