@@ -35,12 +35,12 @@ export const SignUp = () => {
 
           <FormControl>
             <FormLabel>Password</FormLabel>
-            <Input type="password" required {...passwordInput.bind} />
+            <Input type="password" required autoComplete="off" {...passwordInput.bind} />
           </FormControl>
 
           <FormControl>
             <FormLabel>Password Confirm</FormLabel>
-            <Input type="password" required {...passwordConfirmInput.bind} />
+            <Input type="password" required autoComplete="off" {...passwordConfirmInput.bind} />
           </FormControl>
 
           <Button type="submit">Sign Up</Button>

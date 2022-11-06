@@ -1,7 +1,12 @@
 import { Tokens } from '../auth';
 import { tokenStorage } from '../token-storage';
 import { axios } from './axios';
-import { CreateUserInput } from './type';
+import { CreateUserInput, User } from './type';
+
+export const getUser = async () => {
+  const { data } = await axios.get<User>('user');
+  return data;
+};
 
 export const createUser = async ({ name, password }: CreateUserInput) => {
   const { data } = await axios.post<Tokens>('user', { name, password });
