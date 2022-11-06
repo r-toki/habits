@@ -5,19 +5,23 @@ import { AppLink } from '@/components/AppLink';
 import { AuthLayout } from '@/components/AuthLayout';
 import { useTextInput } from '@/hooks/useTextInput';
 import { createUser } from '@/lib/backend/api';
+import { useAuth } from '@/providers/auth';
 
 export const SignUp = () => {
+  const { fetchUser } = useAuth();
+
   const nameInput = useTextInput();
   const passwordInput = useTextInput();
   const passwordConfirmInput = useTextInput();
 
-  const onSubmit: FormEventHandler = (e) => {
+  const onSubmit: FormEventHandler = async (e) => {
     e.preventDefault();
 
-    createUser({
+    await createUser({
       name: nameInput.value,
       password: passwordInput.value,
-    }).then(console.log);
+    });
+    await fetchUser();
   };
 
   return (

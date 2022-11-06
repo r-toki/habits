@@ -8,6 +8,7 @@ type State = {
   initialized: boolean;
   user: User | undefined;
   fetchUser: () => Promise<void>;
+  resetUser: () => void;
 };
 
 const useAuthProvider = (): State => {
@@ -18,6 +19,8 @@ const useAuthProvider = (): State => {
     const user = await getUser();
     setUser(user);
   };
+
+  const resetUser = () => setUser(undefined);
 
   useEffect(() => {
     (async () => {
@@ -35,6 +38,7 @@ const useAuthProvider = (): State => {
     initialized,
     user,
     fetchUser,
+    resetUser,
   };
 };
 

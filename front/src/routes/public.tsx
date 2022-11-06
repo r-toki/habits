@@ -1,5 +1,4 @@
-import { SignUp } from '@/features/misc';
-import { SignIn } from '@/features/misc';
+import { SignIn, SignUp } from '@/features/misc';
 
 export const publicRoutes = [
   { path: '/sign-up', element: <SignUp /> },
