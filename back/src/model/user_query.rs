@@ -9,7 +9,7 @@ pub struct UserDto {
     pub name: String,
 }
 
-pub async fn find(pool: &MySqlPool, id: String) -> MyResult<UserDto> {
+pub async fn find_by_id(pool: &MySqlPool, id: String) -> MyResult<Option<UserDto>> {
     query_as!(
         UserDto,
         r#"
@@ -18,7 +18,7 @@ where id = ?
         "#,
         id
     )
-    .fetch_one(pool)
+    .fetch_optional(pool)
     .await
     .map_err(Into::into)
 }

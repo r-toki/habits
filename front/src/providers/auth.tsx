@@ -23,6 +23,8 @@ const useAuthProvider = (): State => {
     (async () => {
       try {
         await fetchUser();
+      } catch {
+        console.log('[my habit] Unauthorized');
       } finally {
         setInitialized(true);
       }

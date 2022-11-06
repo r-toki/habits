@@ -1,4 +1,5 @@
 use crate::controller::lib::jwt_extractor::AccessTokenDecoded;
+use crate::lib::my_error::MyError;
 use crate::lib::{
     auth::{create_user, get_user, Tokens},
     my_error::MyResult,
@@ -25,9 +26,11 @@ async fn index(
     pool: Data<MySqlPool>,
     access_token_decoded: AccessTokenDecoded,
 ) -> MyResult<Json<UserDto>> {
-    user_query::find(&**pool, access_token_decoded.into().uid)
-        .await
-        .map(Json)
+    let user = user_query::find_by_id(&**pool, access_token_decoded.into().uid).await?;
+    match user {
+        Some(user) => Ok(Json(user)),
+        None => Err(MyError::new_unauthorized()),
+    }
 }
 
 #[derive(Debug, Deserialize)]

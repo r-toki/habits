@@ -18,3 +18,20 @@ axios.interceptors.request.use((config) => {
   }
   return config;
 });
+
+export const axiosForUpdateUserSession = Axios.create({
+  baseURL: import.meta.env.VITE_APP_AUTH_URL,
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  },
+});
+
+axiosForUpdateUserSession.interceptors.request.use((config) => {
+  if (!config.headers) return config;
+  const refreshToken = tokenStorage.get('refresh_token');
+  if (refreshToken) {
+    config.headers['Authorization'] = `Bearer ${refreshToken}`;
+  }
+  return config;
+});
