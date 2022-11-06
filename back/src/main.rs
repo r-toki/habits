@@ -1,9 +1,11 @@
 mod controller;
 mod lib;
+mod model;
 
 use crate::lib::{config::CONFIG, cors::cors};
 
-use actix_web::{get, middleware::Logger, App, HttpServer, Responder};
+use actix_web::{get, middleware::Logger, web::Data, App, HttpServer, Responder};
+use sqlx::MySqlPool;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -13,8 +15,11 @@ async fn main() -> std::io::Result<()> {
 
     env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
 
+    let pool = MySqlPool::connect(&CONFIG.database_url).await.unwrap();
+
     HttpServer::new(move || {
         App::new()
+            .app_data(Data::new(pool.clone()))
             .wrap(Logger::default())
             .wrap(cors())
             .configure(controller::init)
