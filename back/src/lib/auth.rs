@@ -47,12 +47,12 @@ pub async fn get_user(access_token: String) -> MyResult<Auth> {
         .header("Authorization", format!("Bearer {}", access_token))
         .send()
         .await
-        .map_err(|_| MyError::new_bad_request())?;
+        .map_err(|_| MyError::new_unauthorized())?;
 
     let auth = res
         .json::<Auth>()
         .await
-        .map_err(|_| MyError::new_bad_request())?;
+        .map_err(|_| MyError::new_unauthorized())?;
 
     Ok(auth)
 }
