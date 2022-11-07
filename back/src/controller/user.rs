@@ -14,7 +14,7 @@ use actix_web::{
     web::{Data, Json, ServiceConfig},
 };
 use serde::Deserialize;
-use sqlx::MySqlPool;
+use sqlx::PgPool;
 
 pub fn init(cfg: &mut ServiceConfig) {
     cfg.service(index);
@@ -23,7 +23,7 @@ pub fn init(cfg: &mut ServiceConfig) {
 
 #[get("/user")]
 async fn index(
-    pool: Data<MySqlPool>,
+    pool: Data<PgPool>,
     access_token_decoded: AccessTokenDecoded,
 ) -> MyResult<Json<UserDto>> {
     let user = user_query::find_by_id(&**pool, access_token_decoded.into().uid).await?;
@@ -40,7 +40,7 @@ struct Create {
 }
 
 #[post("/user")]
-async fn create(pool: Data<MySqlPool>, form: Json<Create>) -> MyResult<Json<Tokens>> {
+async fn create(pool: Data<PgPool>, form: Json<Create>) -> MyResult<Json<Tokens>> {
     let tokens = create_user(form.name.clone(), form.password.clone()).await?;
     let auth = get_user(tokens.access_token.clone()).await?;
     let user = User::create(auth.uid, form.name.clone())?;

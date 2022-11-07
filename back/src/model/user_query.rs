@@ -1,7 +1,7 @@
 use crate::lib::my_error::MyResult;
 
 use serde::Serialize;
-use sqlx::{query_as, MySqlPool};
+use sqlx::{query_as, PgPool};
 
 #[derive(Debug, Serialize)]
 pub struct UserDto {
@@ -9,12 +9,12 @@ pub struct UserDto {
     pub name: String,
 }
 
-pub async fn find_by_id(pool: &MySqlPool, id: String) -> MyResult<Option<UserDto>> {
+pub async fn find_by_id(pool: &PgPool, id: String) -> MyResult<Option<UserDto>> {
     query_as!(
         UserDto,
         r#"
 select id, name from users
-where id = ?
+where id = $1
         "#,
         id
     )

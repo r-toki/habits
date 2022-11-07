@@ -5,7 +5,7 @@ use chrono::{DateTime, Utc};
 use derive_new::new;
 use lazy_static::lazy_static;
 use regex::Regex;
-use sqlx::{query, query_as, MySqlExecutor, MySqlPool};
+use sqlx::{query, PgPool};
 use validator::Validate;
 
 lazy_static! {
@@ -34,98 +34,23 @@ impl User {
         Ok(user)
     }
 
-    pub async fn find(pool: &MySqlPool, id: String) -> MyResult<User> {
-        query_as!(
-            User,
-            r#"
-select * from users
-where id = ?
-            "#,
-            id
-        )
-        .fetch_one(pool)
-        .await
-        .map_err(Into::into)
-    }
-
-    pub async fn find_by_name(
-        executor: impl MySqlExecutor<'_>,
-        name: String,
-    ) -> MyResult<Option<User>> {
-        query_as!(
-            User,
-            r#"
-select * from users
-where name = ?
-            "#,
-            name
-        )
-        .fetch_optional(executor)
-        .await
-        .map_err(Into::into)
-    }
-
-    pub async fn delete_by_id(pool: &MySqlPool, id: String) -> MyResult<()> {
+    pub async fn store(&self, pool: &PgPool) -> MyResult<()> {
         query!(
             r#"
-delete from users
-where id = ?
+insert into users (id, name, created_at, updated_at)
+values ($1, $2, $3, $4)
+on conflict (id)
+do update
+set name = $2, created_at = $3, updated_at = $4
             "#,
-            id
+            self.id,
+            self.name,
+            self.created_at,
+            self.updated_at
         )
         .execute(pool)
         .await
         .map(|_| ())
         .map_err(Into::into)
-    }
-
-    pub async fn store(&self, pool: &MySqlPool) -> MyResult<()> {
-        let mut tx = pool.begin().await?;
-
-        let exists = query!(
-            r#"
-select * from users
-where id = ?
-            "#,
-            self.id
-        )
-        .fetch_optional(&mut tx)
-        .await?;
-
-        match exists {
-            Some(_) => {
-                query!(
-                    r#"
-update users
-set name = ?, created_at = ?, updated_at = ?
-where id = ?
-                    "#,
-                    self.name,
-                    self.created_at,
-                    self.updated_at,
-                    self.id
-                )
-                .execute(&mut tx)
-                .await?;
-            }
-            None => {
-                query!(
-                    r#"
-insert into users (id, name, created_at, updated_at)
-values (?, ?, ?, ?)
-                    "#,
-                    self.id,
-                    self.name,
-                    self.created_at,
-                    self.updated_at
-                )
-                .execute(&mut tx)
-                .await?;
-            }
-        };
-
-        tx.commit().await?;
-
-        Ok(())
     }
 }

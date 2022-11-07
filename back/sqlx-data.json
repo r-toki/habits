@@ -1,161 +1,44 @@
 {
-  "db": "MySQL",
-  "07f1578b7560b9a813fc875babee6583ccb3a43ee5687fd450bf4e650f2babd3": {
-    "describe": {
-      "columns": [],
-      "nullable": [],
-      "parameters": {
-        "Right": 4
-      }
-    },
-    "query": "\nupdate users\nset name = ?, created_at = ?, updated_at = ?\nwhere id = ?\n                    "
-  },
-  "36e2e7593540cb916d406b3fac83dece763cfb932572d39f8dfc86c3404199d6": {
+  "db": "PostgreSQL",
+  "a2839ab54fddfba818b9133a45ef8917d9f1980d1c61e0e7f8f63b8daa8911a1": {
     "describe": {
       "columns": [
         {
           "name": "id",
           "ordinal": 0,
-          "type_info": {
-            "char_set": 224,
-            "flags": {
-              "bits": 4099
-            },
-            "max_size": 1020,
-            "type": "VarString"
-          }
+          "type_info": "Text"
         },
         {
           "name": "name",
           "ordinal": 1,
-          "type_info": {
-            "char_set": 224,
-            "flags": {
-              "bits": 4101
-            },
-            "max_size": 1020,
-            "type": "VarString"
-          }
-        },
-        {
-          "name": "created_at",
-          "ordinal": 2,
-          "type_info": {
-            "char_set": 63,
-            "flags": {
-              "bits": 4225
-            },
-            "max_size": 19,
-            "type": "Timestamp"
-          }
-        },
-        {
-          "name": "updated_at",
-          "ordinal": 3,
-          "type_info": {
-            "char_set": 63,
-            "flags": {
-              "bits": 4225
-            },
-            "max_size": 19,
-            "type": "Timestamp"
-          }
+          "type_info": "Text"
         }
       ],
       "nullable": [
         false,
-        false,
-        false,
         false
       ],
       "parameters": {
-        "Right": 1
+        "Left": [
+          "Text"
+        ]
       }
     },
-    "query": "\nselect * from users\nwhere name = ?\n            "
+    "query": "\nselect id, name from users\nwhere id = $1\n        "
   },
-  "4d5cc8e069e2df3403caf640677790419964bd08ba73a6399761aa2f5db760b5": {
-    "describe": {
-      "columns": [
-        {
-          "name": "id",
-          "ordinal": 0,
-          "type_info": {
-            "char_set": 224,
-            "flags": {
-              "bits": 4099
-            },
-            "max_size": 1020,
-            "type": "VarString"
-          }
-        },
-        {
-          "name": "name",
-          "ordinal": 1,
-          "type_info": {
-            "char_set": 224,
-            "flags": {
-              "bits": 4101
-            },
-            "max_size": 1020,
-            "type": "VarString"
-          }
-        },
-        {
-          "name": "created_at",
-          "ordinal": 2,
-          "type_info": {
-            "char_set": 63,
-            "flags": {
-              "bits": 4225
-            },
-            "max_size": 19,
-            "type": "Timestamp"
-          }
-        },
-        {
-          "name": "updated_at",
-          "ordinal": 3,
-          "type_info": {
-            "char_set": 63,
-            "flags": {
-              "bits": 4225
-            },
-            "max_size": 19,
-            "type": "Timestamp"
-          }
-        }
-      ],
-      "nullable": [
-        false,
-        false,
-        false,
-        false
-      ],
-      "parameters": {
-        "Right": 1
-      }
-    },
-    "query": "\nselect * from users\nwhere id = ?\n            "
-  },
-  "60158ebf4fb2c5f2788c3904cd355aff555a27266a7c6009e83c485374da8b67": {
+  "f924295e41dc375e1bbbf038e60f2453dd9a497299fcd81c8213b8814ff3a967": {
     "describe": {
       "columns": [],
       "nullable": [],
       "parameters": {
-        "Right": 4
+        "Left": [
+          "Text",
+          "Text",
+          "Timestamptz",
+          "Timestamptz"
+        ]
       }
     },
-    "query": "\ninsert into users (id, name, created_at, updated_at)\nvalues (?, ?, ?, ?)\n                    "
-  },
-  "e6eb3d6a41aa24b6768ea6fb3c8d3afe30568ffc032f244cb8bff3def29c0820": {
-    "describe": {
-      "columns": [],
-      "nullable": [],
-      "parameters": {
-        "Right": 1
-      }
-    },
-    "query": "\ndelete from users\nwhere id = ?\n            "
+    "query": "\ninsert into users (id, name, created_at, updated_at)\nvalues ($1, $2, $3, $4)\non conflict (id)\ndo update\nset name = $2, created_at = $3, updated_at = $4\n            "
   }
 }
