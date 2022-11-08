@@ -1,6 +1,8 @@
+import { Center, Spinner } from '@chakra-ui/react';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
-import { getUser } from '@/lib/backend/api';
+import { getIndex as checkAuth } from '@/lib/auth';
+import { getIndex as checkBackend, getUser } from '@/lib/backend';
 import { User } from '@/lib/backend/type';
 import { assertDefined } from '@/utils/assert-defined';
 
@@ -25,11 +27,13 @@ const useAuthProvider = (): State => {
   useEffect(() => {
     (async () => {
       try {
+        await Promise.all([checkAuth, checkBackend]);
         await fetchUser();
       } catch {
         console.log('[my habit] Unauthorized');
       } finally {
         setInitialized(true);
+        console.log('[my habit] Auth Provider initialized');
       }
     })();
   }, []);
@@ -46,7 +50,12 @@ const AuthContext = createContext<State | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const state = useAuthProvider();
-  if (!state.initialized) return null;
+  if (!state.initialized)
+    return (
+      <Center h="full">
+        <Spinner />
+      </Center>
+    );
   return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 };
 
