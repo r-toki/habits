@@ -27,7 +27,10 @@ const useAuthProvider = (): State => {
   useEffect(() => {
     (async () => {
       try {
-        await Promise.all([checkAuth, checkBackend]);
+        await Promise.all([
+          checkAuth().then((hi) => console.log(`[my habit] ${hi}`)),
+          checkBackend().then((hi) => console.log(`[my habit] ${hi}`)),
+        ]);
         await fetchUser();
       } catch {
         console.log('[my habit] Unauthorized');

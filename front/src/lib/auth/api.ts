@@ -2,9 +2,7 @@ import { tokenStorage } from '../token-storage';
 import { axios, axiosForUpdateUserSession } from './axios';
 import { CreateUserSessionInput, Tokens } from './type';
 
-export const getIndex = async () => {
-  await axios.get('');
-};
+export const getIndex = () => axios.get<string>('').then(({ data }) => data);
 
 export const destroyUser = async () => {
   await axios.delete('user');

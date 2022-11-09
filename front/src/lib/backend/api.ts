@@ -3,9 +3,7 @@ import { tokenStorage } from '../token-storage';
 import { axios } from './axios';
 import { CreateUserInput, User } from './type';
 
-export const getIndex = async () => {
-  await axios.get('');
-};
+export const getIndex = () => axios.get<string>('').then(({ data }) => data);
 
 export const getUser = async () => {
   const { data } = await axios.get<User>('user');

@@ -1,22 +1,16 @@
 import Axios, { AxiosError } from 'axios';
 
 import { updateUserSession } from '../auth';
+import { AxiosHeaders } from '../axios-headers';
 import { tokenStorage } from '../token-storage';
 
 export const axios = Axios.create({
   baseURL: import.meta.env.VITE_APP_BACKEND_URL,
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-  },
 });
 
+// NOTE: retry 時の config.headers が壊れるので再定義する
 axios.interceptors.request.use((config) => {
-  if (!config.headers) return config;
-  const accessToken = tokenStorage.get('access_token');
-  if (accessToken) {
-    config.headers['Authorization'] = `Bearer ${accessToken}`;
-  }
+  config.headers = AxiosHeaders(tokenStorage.get('access_token'));
   return config;
 });
 
