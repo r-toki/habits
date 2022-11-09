@@ -16,10 +16,9 @@ import { useAuth } from '@/providers/auth';
 
 export const AppLayout = ({ children }: { children: ReactNode }) => {
   const { resetUser } = useAuth();
-
   const onSignOut = async () => {
     await destroyUserSession();
-    resetUser();
+    await resetUser();
   };
 
   return (

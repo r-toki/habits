@@ -1,5 +1,6 @@
 import { Center, Spinner } from '@chakra-ui/react';
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { QueryObserverBaseResult, useQuery, useQueryClient } from '@tanstack/react-query';
+import { createContext, ReactNode, useContext, useMemo } from 'react';
 
 import { getIndex as checkAuth } from '@/lib/auth';
 import { getIndex as checkBackend, getUser } from '@/lib/backend';
@@ -9,37 +10,34 @@ import { assertDefined } from '@/utils/assert-defined';
 type State = {
   initialized: boolean;
   user: User | undefined;
-  fetchUser: () => Promise<void>;
+  fetchUser: QueryObserverBaseResult['refetch'];
   resetUser: () => void;
 };
 
 const useAuthProvider = (): State => {
-  const [initialized, setInitialized] = useState(false);
-  const [user, setUser] = useState<User>();
+  const { isInitialLoading: isCheckInitializing } = useQuery({
+    queryKey: ['check'],
+    queryFn: () => Promise.all([checkAuth(), checkBackend()]),
+  });
 
-  const fetchUser = async () => {
-    const user = await getUser();
-    setUser(user);
-  };
+  const {
+    data: user,
+    refetch: fetchUser,
+    isInitialLoading: isMeInitializing,
+  } = useQuery({
+    queryKey: ['me'],
+    queryFn: () => getUser(),
+    enabled: !isCheckInitializing,
+    retry: false,
+  });
 
-  const resetUser = () => setUser(undefined);
+  const initialized = useMemo(
+    () => !isCheckInitializing && !isMeInitializing,
+    [isCheckInitializing, isMeInitializing],
+  );
 
-  useEffect(() => {
-    (async () => {
-      try {
-        await Promise.all([
-          checkAuth().then((hi) => console.log(`[my habit] ${hi}`)),
-          checkBackend().then((hi) => console.log(`[my habit] ${hi}`)),
-        ]);
-        await fetchUser();
-      } catch {
-        console.log('[my habit] Unauthorized');
-      } finally {
-        setInitialized(true);
-        console.log('[my habit] Auth Provider initialized');
-      }
-    })();
-  }, []);
+  const client = useQueryClient();
+  const resetUser = () => client.setQueryData(['me'], null);
 
   return {
     initialized,
