@@ -5,6 +5,5 @@ export const useTextInput = (initValue = '') => {
   const onChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     set(e.target.value);
   };
-  const reset = (resetValue = '') => set(resetValue);
-  return { value, set, onChange, reset, bind: { value, onChange } };
+  return { value, set, onChange, bind: { value, onChange } };
 };
