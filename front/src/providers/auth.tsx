@@ -1,5 +1,5 @@
 import { Center, Spinner } from '@chakra-ui/react';
-import { QueryObserverBaseResult, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { createContext, ReactNode, useContext, useMemo } from 'react';
 
 import { AuthUser, getAuthUser, getIndex as checkAuth } from '@/lib/auth';
@@ -9,8 +9,6 @@ import { assertDefined } from '@/utils/assert-defined';
 type State = {
   initialized: boolean;
   authUser: AuthUser | undefined;
-  fetchAuthUser: QueryObserverBaseResult['refetch'];
-  resetAuthUser: () => void;
 };
 
 const useAuthProvider = (): State => {
@@ -19,13 +17,9 @@ const useAuthProvider = (): State => {
     queryFn: () => Promise.all([checkAuth(), checkBackend()]),
   });
 
-  const {
-    data: authUser,
-    refetch: fetchAuthUser,
-    isInitialLoading: isMeInitializing,
-  } = useQuery({
+  const { data: authUser, isInitialLoading: isMeInitializing } = useQuery({
     queryKey: ['authUser'],
-    queryFn: () => getAuthUser(),
+    queryFn: getAuthUser,
     enabled: !isCheckInitializing,
     retry: false,
   });
@@ -35,14 +29,9 @@ const useAuthProvider = (): State => {
     [isCheckInitializing, isMeInitializing],
   );
 
-  const client = useQueryClient();
-  const resetAuthUser = () => client.setQueryData(['authUser'], null);
-
   return {
     initialized,
     authUser,
-    fetchAuthUser,
-    resetAuthUser,
   };
 };
 

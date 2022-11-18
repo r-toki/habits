@@ -1,14 +1,25 @@
 import { Box, Button, FormControl, FormLabel, Input, Stack } from '@chakra-ui/react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { FormEventHandler } from 'react';
 
 import { AppLink } from '@/components/AppLink';
 import { AuthLayout } from '@/components/AuthLayout';
+import { useAppToast } from '@/hooks/useAppToast';
 import { useTextInput } from '@/hooks/useTextInput';
 import { createAuthUser } from '@/lib/auth';
-import { useAuth } from '@/providers/auth';
 
 export const SignUp = () => {
-  const { fetchAuthUser } = useAuth();
+  const toast = useAppToast();
+
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: createAuthUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['authUser'] });
+      toast({ status: 'success', title: 'Signed up.' });
+    },
+    onError: () => toast({ status: 'error', title: 'Failed.' }),
+  });
 
   const nameInput = useTextInput();
   const passwordInput = useTextInput();
@@ -17,11 +28,15 @@ export const SignUp = () => {
   const onSubmit: FormEventHandler = async (e) => {
     e.preventDefault();
 
-    await createAuthUser({
+    if (passwordInput.value !== passwordConfirmInput.value) {
+      toast({ status: 'error', title: 'Password and confirmation do not match.' });
+      return;
+    }
+
+    await mutation.mutate({
       name: nameInput.value,
       password: passwordInput.value,
     });
-    await fetchAuthUser();
   };
 
   return (
@@ -47,7 +62,9 @@ export const SignUp = () => {
             <Input type="password" required autoComplete="off" {...passwordConfirmInput.bind} />
           </FormControl>
 
-          <Button type="submit">Sign Up</Button>
+          <Button type="submit" disabled={mutation.isLoading}>
+            Sign Up
+          </Button>
         </Stack>
       </form>
 

@@ -1,14 +1,25 @@
 import { Box, Button, FormControl, FormLabel, Input, Stack } from '@chakra-ui/react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { FormEventHandler } from 'react';
 
 import { AppLink } from '@/components/AppLink';
 import { AuthLayout } from '@/components/AuthLayout';
+import { useAppToast } from '@/hooks/useAppToast';
 import { useTextInput } from '@/hooks/useTextInput';
 import { createAuthUserSession } from '@/lib/auth';
-import { useAuth } from '@/providers/auth';
 
 export const SignIn = () => {
-  const { fetchAuthUser } = useAuth();
+  const toast = useAppToast();
+
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: createAuthUserSession,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['authUser'] });
+      toast({ status: 'success', title: 'Signed in.' });
+    },
+    onError: () => toast({ status: 'error', title: 'Failed.' }),
+  });
 
   const nameInput = useTextInput();
   const passwordInput = useTextInput();
@@ -16,11 +27,10 @@ export const SignIn = () => {
   const onSubmit: FormEventHandler = async (e) => {
     e.preventDefault();
 
-    await createAuthUserSession({
+    await mutation.mutate({
       name: nameInput.value,
       password: passwordInput.value,
     });
-    await fetchAuthUser();
   };
 
   return (
@@ -41,7 +51,9 @@ export const SignIn = () => {
             <Input type="password" required autoComplete="off" {...passwordInput.bind} />
           </FormControl>
 
-          <Button type="submit">Sign In</Button>
+          <Button type="submit" disabled={mutation.isLoading}>
+            Sign In
+          </Button>
         </Stack>
       </form>
 

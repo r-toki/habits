@@ -9,16 +9,22 @@ import {
   MenuList,
   Stack,
 } from '@chakra-ui/react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ReactNode } from 'react';
 
 import { destroyAuthUserSession } from '@/lib/auth';
-import { useAuth } from '@/providers/auth';
 
 export const AppLayout = ({ children }: { children: ReactNode }) => {
-  const { resetAuthUser } = useAuth();
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: destroyAuthUserSession,
+    onSuccess: () => {
+      queryClient.setQueryData(['authUser'], null);
+    },
+  });
+
   const onSignOut = async () => {
-    await destroyAuthUserSession();
-    await resetAuthUser();
+    await mutation.mutate();
   };
 
   return (
@@ -28,7 +34,9 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
           <Menu placement="top-end">
             <MenuButton as={IconButton} aria-label="menu" icon={<HamburgerIcon />} />
             <MenuList>
-              <MenuItem onClick={onSignOut}>Sign Out</MenuItem>
+              <MenuItem onClick={onSignOut} disabled={mutation.isLoading}>
+                Sign Out
+              </MenuItem>
             </MenuList>
           </Menu>
         </Box>
