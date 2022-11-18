@@ -1,5 +1,6 @@
 export type AuthUser = {
-  uid: string;
+  id: string;
+  name: string;
 };
 
 export type Tokens = {

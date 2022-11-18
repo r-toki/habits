@@ -14,13 +14,18 @@ axios.interceptors.request.use((config) => {
   return config;
 });
 
-axios.interceptors.response.use(undefined, async (err: AxiosError) => {
-  const refreshToken = tokenStorage.get('refresh_token');
-  if (!err.config || err.response?.status !== 401 || !refreshToken) return Promise.reject(err);
-  try {
-    await updateAuthUserSession();
-    return axios(err.config);
-  } catch (err) {
-    return Promise.reject(err);
-  }
-});
+axios.interceptors.response.use(
+  undefined,
+  async (err: AxiosError & { config: { __sent: boolean } }) => {
+    const refreshToken = tokenStorage.get('refresh_token');
+    if (!err.config || err.response?.status !== 401 || !refreshToken || err.config.__sent)
+      return Promise.reject(err);
+    try {
+      err.config.__sent = true;
+      await updateAuthUserSession();
+      return axios(err.config);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  },
+);

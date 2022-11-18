@@ -12,14 +12,19 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ReactNode } from 'react';
 
+import { useAppToast } from '@/hooks/useAppToast';
 import { destroyAuthUserSession } from '@/lib/auth';
 
 export const AppLayout = ({ children }: { children: ReactNode }) => {
-  const queryClient = useQueryClient();
+  const toast = useAppToast();
+
+  const client = useQueryClient();
   const mutation = useMutation({
     mutationFn: destroyAuthUserSession,
     onSuccess: () => {
-      queryClient.setQueryData(['authUser'], null);
+      client.setQueriesData(['authUser'], null);
+      client.setQueriesData(['me'], null);
+      toast({ status: 'success', title: 'Signed out.' });
     },
   });
 

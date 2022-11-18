@@ -1,13 +1,3 @@
-import { Outlet } from 'react-router-dom';
+import { Home } from '@/features/misc';
 
-import { AppIndex } from '@/features/misc';
-
-const App = () => <Outlet />;
-
-export const protectedRoutes = [
-  {
-    path: '/app',
-    element: <App />,
-    children: [{ path: '', element: <AppIndex /> }],
-  },
-];
+export const protectedRoutes = [{ path: '/home', element: <Home /> }];

@@ -11,7 +11,8 @@ fn client() -> reqwest::Client {
 
 #[derive(Debug, Deserialize)]
 pub struct AuthUser {
-    pub uid: String,
+    pub id: String,
+    pub name: String,
 }
 
 pub async fn get_auth_user(access_token: String) -> MyResult<AuthUser> {

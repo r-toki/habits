@@ -19,11 +19,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     <BrowserRouter>
       <ChakraProvider>
         <QueryClientProvider client={client}>
-          <ReactQueryDevtools initialIsOpen={false} />
-
           <HealthCheck>
             <AuthProvider>
-              <MeProvider>{children}</MeProvider>
+              <MeProvider>
+                <>
+                  {children}
+                  <ReactQueryDevtools initialIsOpen={false} />
+                </>
+              </MeProvider>
             </AuthProvider>
           </HealthCheck>
         </QueryClientProvider>

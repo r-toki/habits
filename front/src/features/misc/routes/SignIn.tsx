@@ -11,11 +11,12 @@ import { createAuthUserSession } from '@/lib/auth';
 export const SignIn = () => {
   const toast = useAppToast();
 
-  const queryClient = useQueryClient();
+  const client = useQueryClient();
   const mutation = useMutation({
     mutationFn: createAuthUserSession,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['authUser'] });
+      client.invalidateQueries(['authUser']);
+      client.invalidateQueries(['me']);
       toast({ status: 'success', title: 'Signed in.' });
     },
     onError: () => toast({ status: 'error', title: 'Failed.' }),

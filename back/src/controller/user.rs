@@ -24,7 +24,7 @@ async fn index(
     access_token_decoded: AccessTokenDecoded,
 ) -> MyResult<Json<UserDto>> {
     let auth_user = access_token_decoded.into();
-    let user = user_query::find_by_id(&**pool, auth_user.uid).await?;
+    let user = user_query::find_by_id(&**pool, auth_user.id).await?;
     match user {
         Some(user) => Ok(Json(user)),
         None => Err(MyError::new_unauthorized()),
@@ -32,6 +32,7 @@ async fn index(
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct Create {
     display_name: String,
 }
@@ -43,7 +44,7 @@ async fn create(
     form: Json<Create>,
 ) -> MyResult<Json<()>> {
     let auth_user = access_token_decoded.into();
-    let user = User::create(auth_user.uid, form.display_name.clone())?;
+    let user = User::create(auth_user.id, form.display_name.clone())?;
     user.store(&**pool).await?;
     Ok(Json(()))
 }

@@ -6,16 +6,25 @@ import { AppLink } from '@/components/AppLink';
 import { AuthLayout } from '@/components/AuthLayout';
 import { useAppToast } from '@/hooks/useAppToast';
 import { useTextInput } from '@/hooks/useTextInput';
-import { createAuthUser } from '@/lib/auth';
+import { createAuthUser, destroyAuthUser } from '@/lib/auth';
+import { createUser } from '@/lib/backend';
 
 export const SignUp = () => {
   const toast = useAppToast();
 
-  const queryClient = useQueryClient();
+  const client = useQueryClient();
   const mutation = useMutation({
-    mutationFn: createAuthUser,
+    mutationFn: async ({ name, password }: { name: string; password: string }) => {
+      try {
+        await createAuthUser({ name, password });
+        await createUser({ displayName: name });
+      } catch (e) {
+        await destroyAuthUser();
+        throw e;
+      }
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['authUser'] });
+      client.invalidateQueries(['authUser', 'me']);
       toast({ status: 'success', title: 'Signed up.' });
     },
     onError: () => toast({ status: 'error', title: 'Failed.' }),
