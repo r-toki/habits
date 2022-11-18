@@ -17,7 +17,7 @@ pub struct Config {
 impl Config {
     fn new() -> Self {
         let host = std::env::var("HOST").unwrap_or("127.0.0.1".into());
-        let port = std::env::var("PORT").unwrap_or("9099".into());
+        let port = std::env::var("PORT").unwrap_or("5001".into());
         let database_url = std::env::var("DATABASE_URL").unwrap();
         let auth_origin = std::env::var("AUTH_ORIGIN").unwrap_or("http://127.0.0.1:9099".into());
         let frontend_origins: Vec<String> = std::env::vars()

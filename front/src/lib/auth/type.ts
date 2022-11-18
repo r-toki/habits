@@ -7,12 +7,12 @@ export type Tokens = {
   refreshToken: string;
 };
 
-export type CreateUserInput = {
+export type CreateAuthUserInput = {
   name: string;
   password: string;
 };
 
-export type CreateUserSessionInput = {
+export type CreateAuthUserSessionInput = {
   name: string;
   password: string;
 };

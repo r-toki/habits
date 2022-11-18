@@ -1,4 +1,8 @@
 export type User = {
   id: string;
-  name: string;
+  displayName: string;
+};
+
+export type CreateUserInput = {
+  displayName: string;
 };

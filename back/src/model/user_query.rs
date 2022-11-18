@@ -4,6 +4,7 @@ use serde::Serialize;
 use sqlx::{query_as, PgPool};
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UserDto {
     pub id: String,
     pub display_name: String,
