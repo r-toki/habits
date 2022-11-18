@@ -13,7 +13,7 @@ export const SignUp = () => {
   const toast = useAppToast();
 
   const client = useQueryClient();
-  const mutation = useMutation({
+  const signUp = useMutation({
     mutationFn: async ({ name, password }: { name: string; password: string }) => {
       try {
         await createAuthUser({ name, password });
@@ -43,7 +43,7 @@ export const SignUp = () => {
       return;
     }
 
-    await mutation.mutate({
+    await signUp.mutate({
       name: nameInput.value,
       password: passwordInput.value,
     });
@@ -72,7 +72,7 @@ export const SignUp = () => {
             <Input type="password" required autoComplete="off" {...passwordConfirmInput.bind} />
           </FormControl>
 
-          <Button type="submit" disabled={mutation.isLoading}>
+          <Button type="submit" disabled={signUp.isLoading}>
             Sign Up
           </Button>
         </Stack>

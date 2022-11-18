@@ -10,7 +10,7 @@ pub struct UserDto {
     pub display_name: String,
 }
 
-pub async fn find_by_id(pool: &PgPool, id: String) -> MyResult<Option<UserDto>> {
+pub async fn find_user(pool: &PgPool, id: String) -> MyResult<UserDto> {
     query_as!(
         UserDto,
         r#"
@@ -19,7 +19,7 @@ where id = $1
         "#,
         id
     )
-    .fetch_optional(pool)
+    .fetch_one(pool)
     .await
     .map_err(Into::into)
 }

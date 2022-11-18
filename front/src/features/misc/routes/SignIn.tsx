@@ -12,7 +12,7 @@ export const SignIn = () => {
   const toast = useAppToast();
 
   const client = useQueryClient();
-  const mutation = useMutation({
+  const signIn = useMutation({
     mutationFn: createAuthUserSession,
     onSuccess: () => {
       client.invalidateQueries(['authUser']);
@@ -28,7 +28,7 @@ export const SignIn = () => {
   const onSubmit: FormEventHandler = async (e) => {
     e.preventDefault();
 
-    await mutation.mutate({
+    await signIn.mutate({
       name: nameInput.value,
       password: passwordInput.value,
     });
@@ -52,7 +52,7 @@ export const SignIn = () => {
             <Input type="password" required autoComplete="off" {...passwordInput.bind} />
           </FormControl>
 
-          <Button type="submit" disabled={mutation.isLoading}>
+          <Button type="submit" disabled={signIn.isLoading}>
             Sign In
           </Button>
         </Stack>

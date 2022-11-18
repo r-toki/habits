@@ -1,5 +1,84 @@
 {
   "db": "PostgreSQL",
+  "1ae93ffb5393c1c751ee4c0639bc982a5b50218e8e4e38a782b681961f513b06": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text",
+          "Timestamptz",
+          "Timestamptz",
+          "Timestamptz",
+          "Text"
+        ]
+      }
+    },
+    "query": "\ninsert into habits (id, name, created_at, updated_at, archived_at, user_id)\nvalues ($1, $2, $3, $4, $5, $6)\non conflict (id)\ndo update\nset name = $2, created_at = $3, updated_at = $4, archived_at = $5, user_id = $6\n            "
+  },
+  "64ff960097637603c90a9fbf042b02992d7d41b4214d50a403ffaed4b247beb8": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 2,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "archived_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "user_id",
+          "ordinal": 5,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\nselect id, name, created_at, updated_at, archived_at, user_id from habits\nwhere id = $1\n            "
+  },
+  "860d24372d7f1c3c276716432d4479d5a3f2e59df58b8307af91666028ac1cca": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\ndelete from habits\nwhere id = $1\n            "
+  },
   "9bd13b8d8b47e6e03068356fd2fc3b79030a7c85ce8c2363ee9ce589c5dcb99a": {
     "describe": {
       "columns": [],
@@ -14,6 +93,50 @@
       }
     },
     "query": "\ninsert into users (id, display_name, created_at, updated_at)\nvalues ($1, $2, $3, $4)\non conflict (id)\ndo update\nset display_name = $2, created_at = $3, updated_at = $4\n            "
+  },
+  "ba10d71825b65778edba950894675792085e393c9f4e1a5943880b56ef230290": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 2,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "archived_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\nselect id, name, created_at, updated_at, archived_at from habits\nwhere user_id = $1\n        "
   },
   "f8158d696033f24bc198fd5d97de292bb1ad2ce7bb00776c4f5286405da50331": {
     "describe": {

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { createContext, ReactNode, useContext, useMemo } from 'react';
+import { createContext, ReactNode, useContext } from 'react';
 
 import { AuthUser, getAuthUser } from '@/lib/auth';
 import { assertDefined } from '@/utils/assert-defined';
@@ -15,8 +15,7 @@ const useAuthProvider = (): State => {
     queryFn: getAuthUser,
     retry: false,
   });
-  const initialized = useMemo(() => !isInitialLoading, [isInitialLoading]);
-  return { initialized, authUser };
+  return { initialized: !isInitialLoading, authUser };
 };
 
 const AuthContext = createContext<State | undefined>(undefined);

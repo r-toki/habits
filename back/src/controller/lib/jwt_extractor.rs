@@ -17,7 +17,7 @@ lazy_static! {
 pub struct AccessTokenDecoded(AuthUser);
 
 impl AccessTokenDecoded {
-    pub fn into(self) -> AuthUser {
+    pub fn into_inner(self) -> AuthUser {
         self.0
     }
 }
