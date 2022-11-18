@@ -4,11 +4,10 @@ import { AppLayout } from '@/components/AppLayout';
 import { useAuth } from '@/providers/auth';
 
 export const AppIndex = () => {
-  const { user } = useAuth();
+  const { authUser } = useAuth();
   return (
     <AppLayout>
-      <Box>id: {user!.id}</Box>
-      <Box>name: {user!.name}</Box>
+      <Box>uid: {authUser!.uid}</Box>
     </AppLayout>
   );
 };

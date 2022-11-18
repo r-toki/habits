@@ -2,16 +2,15 @@ import { Center, Spinner } from '@chakra-ui/react';
 import { QueryObserverBaseResult, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createContext, ReactNode, useContext, useMemo } from 'react';
 
-import { getIndex as checkAuth } from '@/lib/auth';
-import { getIndex as checkBackend, getUser } from '@/lib/backend';
-import { User } from '@/lib/backend/type';
+import { AuthUser, getAuthUser, getIndex as checkAuth } from '@/lib/auth';
+import { getIndex as checkBackend } from '@/lib/backend';
 import { assertDefined } from '@/utils/assert-defined';
 
 type State = {
   initialized: boolean;
-  user: User | undefined;
-  fetchUser: QueryObserverBaseResult['refetch'];
-  resetUser: () => void;
+  authUser: AuthUser | undefined;
+  fetchAuthUser: QueryObserverBaseResult['refetch'];
+  resetAuthUser: () => void;
 };
 
 const useAuthProvider = (): State => {
@@ -21,12 +20,12 @@ const useAuthProvider = (): State => {
   });
 
   const {
-    data: user,
-    refetch: fetchUser,
+    data: authUser,
+    refetch: fetchAuthUser,
     isInitialLoading: isMeInitializing,
   } = useQuery({
-    queryKey: ['me'],
-    queryFn: () => getUser(),
+    queryKey: ['authUser'],
+    queryFn: () => getAuthUser(),
     enabled: !isCheckInitializing,
     retry: false,
   });
@@ -37,13 +36,13 @@ const useAuthProvider = (): State => {
   );
 
   const client = useQueryClient();
-  const resetUser = () => client.setQueryData(['me'], null);
+  const resetAuthUser = () => client.setQueryData(['authUser'], null);
 
   return {
     initialized,
-    user,
-    fetchUser,
-    resetUser,
+    authUser,
+    fetchAuthUser,
+    resetAuthUser,
   };
 };
 

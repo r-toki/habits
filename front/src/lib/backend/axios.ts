@@ -1,6 +1,6 @@
 import Axios, { AxiosError } from 'axios';
 
-import { updateUserSession } from '../auth';
+import { updateAuthUserSession } from '../auth';
 import { AxiosHeaders } from '../axios-headers';
 import { tokenStorage } from '../token-storage';
 
@@ -18,7 +18,7 @@ axios.interceptors.response.use(undefined, async (err: AxiosError) => {
   const refreshToken = tokenStorage.get('refresh_token');
   if (!err.config || err.response?.status !== 401 || !refreshToken) return Promise.reject(err);
   try {
-    await updateUserSession();
+    await updateAuthUserSession();
     return axios(err.config);
   } catch (err) {
     return Promise.reject(err);

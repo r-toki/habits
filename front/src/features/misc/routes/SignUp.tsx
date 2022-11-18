@@ -4,11 +4,11 @@ import { FormEventHandler } from 'react';
 import { AppLink } from '@/components/AppLink';
 import { AuthLayout } from '@/components/AuthLayout';
 import { useTextInput } from '@/hooks/useTextInput';
-import { createUser } from '@/lib/backend/api';
+import { createAuthUser } from '@/lib/auth';
 import { useAuth } from '@/providers/auth';
 
 export const SignUp = () => {
-  const { fetchUser } = useAuth();
+  const { fetchAuthUser } = useAuth();
 
   const nameInput = useTextInput();
   const passwordInput = useTextInput();
@@ -17,11 +17,11 @@ export const SignUp = () => {
   const onSubmit: FormEventHandler = async (e) => {
     e.preventDefault();
 
-    await createUser({
+    await createAuthUser({
       name: nameInput.value,
       password: passwordInput.value,
     });
-    await fetchUser();
+    await fetchAuthUser();
   };
 
   return (

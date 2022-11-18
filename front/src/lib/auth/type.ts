@@ -1,3 +1,7 @@
+export type AuthUser = {
+  uid: string;
+};
+
 export type Tokens = {
   accessToken: string;
   refreshToken: string;

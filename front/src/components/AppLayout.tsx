@@ -11,14 +11,14 @@ import {
 } from '@chakra-ui/react';
 import { ReactNode } from 'react';
 
-import { destroyUserSession } from '@/lib/auth';
+import { destroyAuthUserSession } from '@/lib/auth';
 import { useAuth } from '@/providers/auth';
 
 export const AppLayout = ({ children }: { children: ReactNode }) => {
-  const { resetUser } = useAuth();
+  const { resetAuthUser } = useAuth();
   const onSignOut = async () => {
-    await destroyUserSession();
-    await resetUser();
+    await destroyAuthUserSession();
+    await resetAuthUser();
   };
 
   return (
