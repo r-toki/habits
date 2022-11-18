@@ -1,6 +1,21 @@
 {
   "db": "PostgreSQL",
-  "a2839ab54fddfba818b9133a45ef8917d9f1980d1c61e0e7f8f63b8daa8911a1": {
+  "9bd13b8d8b47e6e03068356fd2fc3b79030a7c85ce8c2363ee9ce589c5dcb99a": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text",
+          "Timestamptz",
+          "Timestamptz"
+        ]
+      }
+    },
+    "query": "\ninsert into users (id, display_name, created_at, updated_at)\nvalues ($1, $2, $3, $4)\non conflict (id)\ndo update\nset display_name = $2, created_at = $3, updated_at = $4\n            "
+  },
+  "f8158d696033f24bc198fd5d97de292bb1ad2ce7bb00776c4f5286405da50331": {
     "describe": {
       "columns": [
         {
@@ -9,7 +24,7 @@
           "type_info": "Text"
         },
         {
-          "name": "name",
+          "name": "display_name",
           "ordinal": 1,
           "type_info": "Text"
         }
@@ -24,21 +39,6 @@
         ]
       }
     },
-    "query": "\nselect id, name from users\nwhere id = $1\n        "
-  },
-  "f924295e41dc375e1bbbf038e60f2453dd9a497299fcd81c8213b8814ff3a967": {
-    "describe": {
-      "columns": [],
-      "nullable": [],
-      "parameters": {
-        "Left": [
-          "Text",
-          "Text",
-          "Timestamptz",
-          "Timestamptz"
-        ]
-      }
-    },
-    "query": "\ninsert into users (id, name, created_at, updated_at)\nvalues ($1, $2, $3, $4)\non conflict (id)\ndo update\nset name = $2, created_at = $3, updated_at = $4\n            "
+    "query": "\nselect id, display_name from users\nwhere id = $1\n        "
   }
 }

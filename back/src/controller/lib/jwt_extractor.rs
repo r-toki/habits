@@ -1,6 +1,6 @@
-use crate::lib::auth::get_user;
+use crate::lib::auth::get_auth_user;
 use crate::lib::{
-    auth::Auth,
+    auth::AuthUser,
     my_error::{MyError, MyResult},
 };
 
@@ -14,10 +14,10 @@ lazy_static! {
     static ref RE_BEARER: Regex = Regex::new(r"^Bearer\s(.*)$").unwrap();
 }
 
-pub struct AccessTokenDecoded(Auth);
+pub struct AccessTokenDecoded(AuthUser);
 
 impl AccessTokenDecoded {
-    pub fn into(self) -> Auth {
+    pub fn into(self) -> AuthUser {
         self.0
     }
 }
@@ -30,7 +30,7 @@ impl FromRequest for AccessTokenDecoded {
         let req = req.clone();
         Box::pin(async move {
             let token = extract_bearer_token(&req)?;
-            let auth = get_user(token).await?;
+            let auth = get_auth_user(token).await?;
             Ok(AccessTokenDecoded(auth))
         })
     }

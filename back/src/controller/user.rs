@@ -1,9 +1,6 @@
 use crate::controller::lib::jwt_extractor::AccessTokenDecoded;
 use crate::lib::my_error::MyError;
-use crate::lib::{
-    auth::{create_user, get_user, Tokens},
-    my_error::MyResult,
-};
+use crate::lib::my_error::MyResult;
 use crate::model::{
     user::User,
     user_query::{self, UserDto},
@@ -26,7 +23,8 @@ async fn index(
     pool: Data<PgPool>,
     access_token_decoded: AccessTokenDecoded,
 ) -> MyResult<Json<UserDto>> {
-    let user = user_query::find_by_id(&**pool, access_token_decoded.into().uid).await?;
+    let auth_user = access_token_decoded.into();
+    let user = user_query::find_by_id(&**pool, auth_user.uid).await?;
     match user {
         Some(user) => Ok(Json(user)),
         None => Err(MyError::new_unauthorized()),
@@ -35,15 +33,17 @@ async fn index(
 
 #[derive(Debug, Deserialize)]
 struct Create {
-    name: String,
-    password: String,
+    display_name: String,
 }
 
 #[post("/user")]
-async fn create(pool: Data<PgPool>, form: Json<Create>) -> MyResult<Json<Tokens>> {
-    let tokens = create_user(form.name.clone(), form.password.clone()).await?;
-    let auth = get_user(tokens.access_token.clone()).await?;
-    let user = User::create(auth.uid, form.name.clone())?;
+async fn create(
+    pool: Data<PgPool>,
+    access_token_decoded: AccessTokenDecoded,
+    form: Json<Create>,
+) -> MyResult<Json<()>> {
+    let auth_user = access_token_decoded.into();
+    let user = User::create(auth_user.uid, form.display_name.clone())?;
     user.store(&**pool).await?;
-    Ok(Json(tokens))
+    Ok(Json(()))
 }

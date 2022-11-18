@@ -9,26 +9,26 @@ use sqlx::{query, PgPool};
 use validator::Validate;
 
 lazy_static! {
-    static ref RE_NAME: Regex = Regex::new(r"[A-Za-z\d#$@!%&*?]{3,15}").unwrap();
+    static ref RE_DISPLAY_NAME: Regex = Regex::new(r"[A-Za-z\d#$@!%&*?]{3,15}").unwrap();
 }
 
 #[derive(new, Debug, Validate)]
 pub struct User {
     pub id: String,
     #[validate(regex(
-        path = "RE_NAME",
+        path = "RE_DISPLAY_NAME",
         message = "must be 3-15 characters in alphabet, numbers or symbols"
     ))]
-    pub name: String,
+    pub display_name: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
 
 impl User {
-    pub fn create(id: String, name: String) -> MyResult<Self> {
+    pub fn create(id: String, display_name: String) -> MyResult<Self> {
         let now = get_current_date_time();
 
-        let user = User::new(id, name, now, now);
+        let user = User::new(id, display_name, now, now);
         user.validate()?;
 
         Ok(user)
@@ -37,14 +37,14 @@ impl User {
     pub async fn store(&self, pool: &PgPool) -> MyResult<()> {
         query!(
             r#"
-insert into users (id, name, created_at, updated_at)
+insert into users (id, display_name, created_at, updated_at)
 values ($1, $2, $3, $4)
 on conflict (id)
 do update
-set name = $2, created_at = $3, updated_at = $4
+set display_name = $2, created_at = $3, updated_at = $4
             "#,
             self.id,
-            self.name,
+            self.display_name,
             self.created_at,
             self.updated_at
         )
