@@ -47,7 +47,7 @@ export const AppLayout = ({
 
   return (
     <Container maxW="md" py="2" h="full">
-      <Stack h="full" justifyContent="space-between">
+      <Stack h="full" spacing="6">
         <Flex justifyContent="center" alignItems="center" position="relative" h="40px">
           <Box fontWeight="bold" fontSize="xl">
             {title}
@@ -68,7 +68,7 @@ export const AppLayout = ({
           </Box>
         </Flex>
 
-        <Box flex="1">{children}</Box>
+        <Box>{children}</Box>
 
         <Box
           as="i"
