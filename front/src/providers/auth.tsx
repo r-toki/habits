@@ -1,9 +1,7 @@
-import { Center, Spinner } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { createContext, ReactNode, useContext, useMemo } from 'react';
 
-import { AuthUser, getAuthUser, getIndex as checkAuth } from '@/lib/auth';
-import { getIndex as checkBackend } from '@/lib/backend';
+import { AuthUser, getAuthUser } from '@/lib/auth';
 import { assertDefined } from '@/utils/assert-defined';
 
 type State = {
@@ -12,39 +10,20 @@ type State = {
 };
 
 const useAuthProvider = (): State => {
-  const { isInitialLoading: isCheckInitializing } = useQuery({
-    queryKey: ['check'],
-    queryFn: () => Promise.all([checkAuth(), checkBackend()]),
-  });
-
-  const { data: authUser, isInitialLoading: isMeInitializing } = useQuery({
+  const { data: authUser, isInitialLoading } = useQuery({
     queryKey: ['authUser'],
     queryFn: getAuthUser,
-    enabled: !isCheckInitializing,
     retry: false,
   });
-
-  const initialized = useMemo(
-    () => !isCheckInitializing && !isMeInitializing,
-    [isCheckInitializing, isMeInitializing],
-  );
-
-  return {
-    initialized,
-    authUser,
-  };
+  const initialized = useMemo(() => !isInitialLoading, [isInitialLoading]);
+  return { initialized, authUser };
 };
 
 const AuthContext = createContext<State | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const state = useAuthProvider();
-  if (!state.initialized)
-    return (
-      <Center h="full">
-        <Spinner />
-      </Center>
-    );
+  if (!state.initialized) return null;
   return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 };
 
