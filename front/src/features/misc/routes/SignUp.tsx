@@ -24,7 +24,8 @@ export const SignUp = () => {
       }
     },
     onSuccess: () => {
-      client.invalidateQueries(['authUser', 'me']);
+      client.invalidateQueries(['authUser']);
+      client.invalidateQueries(['me']);
       toast({ status: 'success', title: 'Signed up.' });
     },
     onError: () => toast({ status: 'error', title: 'Failed.' }),
