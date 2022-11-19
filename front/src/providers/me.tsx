@@ -1,8 +1,8 @@
+import { Center, Spinner } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { createContext, ReactNode, useContext } from 'react';
 
 import { getUser, User } from '@/lib/backend';
-import { assertDefined } from '@/utils/assert-defined';
 
 type State = {
   initialized: boolean;
@@ -22,12 +22,16 @@ const MeContext = createContext<State | undefined>(undefined);
 
 export const MeProvider = ({ children }: { children: ReactNode }) => {
   const state = useMeProvider();
-  if (!state.initialized) return null;
+  if (!state.initialized)
+    return (
+      <Center h="75vh">
+        <Spinner />
+      </Center>
+    );
   return <MeContext.Provider value={state}>{children}</MeContext.Provider>;
 };
 
 export const useMe = () => {
   const state = useContext(MeContext);
-  assertDefined(state);
-  return state;
+  return state!;
 };

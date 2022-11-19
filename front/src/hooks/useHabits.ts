@@ -9,6 +9,7 @@ import {
   HabitsQuery,
   unarchiveHabit as unarchiveHabitFn,
 } from '@/lib/backend';
+import { find } from '@/utils/find';
 
 import { useAppToast } from './useAppToast';
 
@@ -34,8 +35,16 @@ export const useHabits = () => {
   const archiveHabit = useMutation({
     mutationFn: archiveHabitFn,
     onSuccess: (_, id) => {
+      const target = find(habits.data!, id);
+      target.archivedAt = new Date().toISOString();
       client.setQueriesData<Habit[]>(['habits'], (prev) =>
-        prev?.map((h) => (h.id == id ? { ...h, archivedAt: new Date().toISOString() } : h)),
+        prev?.map((h) => (h.id == id ? target : h)),
+      );
+      client.setQueryData<Habit[]>(['habits', { archived: 'false' }], (prev) =>
+        prev?.filter((h) => h.id != id),
+      );
+      client.setQueryData<Habit[]>(['habits', { archived: 'true' }], (prev) =>
+        [...(prev ?? []), target].sort((a, b) => (a.createdAt > b.createdAt ? -1 : 0)),
       );
       toast({ status: 'success', title: 'Archived.' });
     },
@@ -45,8 +54,16 @@ export const useHabits = () => {
   const unarchiveHabit = useMutation({
     mutationFn: unarchiveHabitFn,
     onSuccess: (_, id) => {
+      const target = find(habits.data!, id);
+      target.archivedAt = null;
       client.setQueriesData<Habit[]>(['habits'], (prev) =>
-        prev?.map((h) => (h.id == id ? { ...h, archivedAt: null } : h)),
+        prev?.map((h) => (h.id == id ? target : h)),
+      );
+      client.setQueryData<Habit[]>(['habits', { archived: 'false' }], (prev) =>
+        [...(prev ?? []), target].sort((a, b) => (a.createdAt > b.createdAt ? -1 : 0)),
+      );
+      client.setQueryData<Habit[]>(['habits', { archived: 'true' }], (prev) =>
+        prev?.filter((h) => h.id != id),
       );
       toast({ status: 'success', title: 'Unarchived.' });
     },

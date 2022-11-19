@@ -11,6 +11,7 @@ import { createHabit as createHabitFn } from '@/lib/backend';
 export const HabitsNew = () => {
   const navigate = useNavigate();
   const toast = useAppToast();
+
   const client = useQueryClient();
   const createHabit = useMutation({
     mutationFn: createHabitFn,
