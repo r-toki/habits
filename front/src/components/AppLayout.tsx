@@ -46,15 +46,21 @@ export const AppLayout = ({
   const quote = useMemo(() => QUOTES[new Date().getTime() % QUOTES.length].split('\n'), []);
 
   return (
-    <Container maxW="md" py="2" h="full">
+    <Container maxW="md" h="full" py="2">
       <Stack h="full" spacing="6">
-        <Flex justifyContent="center" alignItems="center" position="relative" h="40px">
-          <Box fontWeight="bold" fontSize="xl">
+        <Flex justifyContent="end" alignItems="center" position="relative" h="40px">
+          <Box
+            position="absolute"
+            left="50%"
+            transform="translateX(-50%)"
+            fontWeight="bold"
+            fontSize="xl"
+          >
             {title}
           </Box>
 
-          <Box position="absolute" right="0">
-            <Menu placement="top-end">
+          <Box>
+            <Menu placement="bottom-end">
               <MenuButton as={IconButton} icon={<GoThreeBars />} />
               <MenuList>
                 <MenuItem onClick={() => navigate('/home')}>Home</MenuItem>

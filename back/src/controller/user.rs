@@ -1,5 +1,5 @@
 use crate::controller::lib::jwt_extractor::AccessTokenDecoded;
-use crate::lib::my_error::{MyError, MyResult};
+use crate::lib::my_error::MyResult;
 use crate::model::{
     habit::Habit,
     habit_query::{find_habits, HabitDto},
@@ -21,6 +21,8 @@ pub fn init(cfg: &mut ServiceConfig) {
     cfg.service(habits_index);
     cfg.service(create_habit);
     cfg.service(delete_habit);
+    cfg.service(create_habit_archive);
+    cfg.service(delete_habit_archive);
 }
 
 #[get("/user")]
@@ -75,9 +77,33 @@ async fn delete_habit(
     path: Path<String>,
 ) -> MyResult<Json<()>> {
     let habit = Habit::find(&**pool, path.into_inner()).await?;
-    if habit.user_id != at.into_inner().id {
-        return Err(MyError::new_forbidden());
-    }
+    habit.can_write(at.into_inner().id)?;
     habit.delete(&**pool).await?;
+    Ok(Json(()))
+}
+
+#[post("/user/habits/{habit_id}/archive")]
+async fn create_habit_archive(
+    pool: Data<PgPool>,
+    at: AccessTokenDecoded,
+    path: Path<String>,
+) -> MyResult<Json<()>> {
+    let mut habit = Habit::find(&**pool, path.into_inner()).await?;
+    habit.can_write(at.into_inner().id)?;
+    habit.archive()?;
+    habit.store(&**pool).await?;
+    Ok(Json(()))
+}
+
+#[delete("/user/habits/{habit_id}/archive")]
+async fn delete_habit_archive(
+    pool: Data<PgPool>,
+    at: AccessTokenDecoded,
+    path: Path<String>,
+) -> MyResult<Json<()>> {
+    let mut habit = Habit::find(&**pool, path.into_inner()).await?;
+    habit.can_write(at.into_inner().id)?;
+    habit.unarchive()?;
+    habit.store(&**pool).await?;
     Ok(Json(()))
 }

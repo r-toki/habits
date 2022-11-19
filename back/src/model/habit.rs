@@ -1,5 +1,5 @@
 use super::lib::{get_current_date_time, get_new_id};
-use crate::lib::my_error::MyResult;
+use crate::lib::my_error::{MyError, MyResult};
 
 use chrono::{DateTime, Utc};
 use derive_new::new;
@@ -18,6 +18,7 @@ pub struct Habit {
 }
 
 impl Habit {
+    // NOTE: Domain Logic
     pub fn create(name: String, user_id: String) -> MyResult<Habit> {
         let id = get_new_id();
         let now = get_current_date_time();
@@ -28,6 +29,35 @@ impl Habit {
         Ok(habit)
     }
 
+    pub fn archive(&mut self) -> MyResult<()> {
+        match self.archived_at {
+            Some(_) => Err(MyError::UnprocessableEntity("already archived".into())),
+            None => {
+                self.archived_at = Some(get_current_date_time());
+                Ok(())
+            }
+        }
+    }
+
+    pub fn unarchive(&mut self) -> MyResult<()> {
+        match self.archived_at {
+            Some(_) => {
+                self.archived_at = None;
+                Ok(())
+            }
+            None => Err(MyError::UnprocessableEntity("already unarchived".into())),
+        }
+    }
+
+    // NOTE: Policy Logic
+    pub fn can_write(&self, user_id: String) -> MyResult<()> {
+        if self.user_id != user_id {
+            return Err(MyError::new_forbidden());
+        }
+        Ok(())
+    }
+
+    // NOTE: Persistence Logic
     pub async fn find(pool: &PgPool, id: String) -> MyResult<Habit> {
         query_as!(
             Habit,

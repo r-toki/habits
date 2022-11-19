@@ -20,6 +20,7 @@ pub async fn find_habits(pool: &PgPool, user_id: String) -> MyResult<Vec<HabitDt
         r#"
 select id, name, created_at, updated_at, archived_at from habits
 where user_id = $1
+order by created_at
         "#,
         user_id
     )

@@ -12,3 +12,7 @@ export const getHabits = () => axios.get<Habit[]>('user/habits').then(({ data })
 export const createHabit = (input: CreateHabitInput) => axios.post('user/habits', input);
 
 export const deleteHabit = (id: string) => axios.delete(`user/habits/${id}`);
+
+export const archiveHabit = (id: string) => axios.post(`user/habits/${id}/archive`);
+
+export const unarchiveHabit = (id: string) => axios.delete(`user/habits/${id}/archive`);

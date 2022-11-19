@@ -13,7 +13,12 @@ import { GoKebabVertical } from 'react-icons/go';
 
 import { AppLayout } from '@/components/AppLayout';
 import { useAppToast } from '@/hooks/useAppToast';
-import { deleteHabit as deleteHabitFn, getHabits } from '@/lib/backend';
+import {
+  archiveHabit as archiveHabitFn,
+  deleteHabit as deleteHabitFn,
+  getHabits,
+  unarchiveHabit as unarchiveHabitFn,
+} from '@/lib/backend';
 
 export const Home = () => {
   const toast = useAppToast();
@@ -34,8 +39,28 @@ export const Home = () => {
     if (window.confirm('Delete?')) await deleteHabit.mutate(id);
   };
 
+  const archiveHabit = useMutation({
+    mutationFn: archiveHabitFn,
+    onSuccess: () => {
+      client.invalidateQueries(['habits']);
+      toast({ status: 'success', title: 'Archived.' });
+    },
+    onError: () => toast({ status: 'error', title: 'Failed.' }),
+  });
   const onArchiveHabit = async (id: string) => {
-    if (window.confirm('Archive?')) toast({ status: 'success', title: 'Archived.' });
+    if (window.confirm('Archive?')) await archiveHabit.mutate(id);
+  };
+
+  const unarchiveHabit = useMutation({
+    mutationFn: unarchiveHabitFn,
+    onSuccess: () => {
+      client.invalidateQueries(['habits']);
+      toast({ status: 'success', title: 'Unarchived.' });
+    },
+    onError: () => toast({ status: 'error', title: 'Failed.' }),
+  });
+  const onUnarchiveHabit = async (id: string) => {
+    if (window.confirm('Archive?')) await unarchiveHabit.mutate(id);
   };
 
   return (
@@ -43,12 +68,27 @@ export const Home = () => {
       <Stack>
         {habits?.map((habit) => (
           <Flex key={habit.id} justifyContent="space-between" alignItems="center" px="4">
-            <Box>{habit.name}</Box>
+            <Box color={habit.archivedAt ? 'gray.400' : 'black'}>{habit.name}</Box>
             <Box>
-              <Menu placement="top-end">
+              <Menu placement="bottom-end">
                 <MenuButton as={IconButton} icon={<GoKebabVertical />} size="xs" />
                 <MenuList>
-                  <MenuItem onClick={() => onArchiveHabit(habit.id)}>Archive</MenuItem>
+                  {habit.archivedAt ? (
+                    <MenuItem
+                      onClick={() => onUnarchiveHabit(habit.id)}
+                      disabled={unarchiveHabit.isLoading}
+                    >
+                      Unarchive
+                    </MenuItem>
+                  ) : (
+                    <MenuItem
+                      onClick={() => onArchiveHabit(habit.id)}
+                      disabled={archiveHabit.isLoading}
+                    >
+                      Archive
+                    </MenuItem>
+                  )}
+
                   <MenuItem
                     onClick={() => onDeleteHabit(habit.id)}
                     disabled={deleteHabit.isLoading}
