@@ -17,7 +17,7 @@
     },
     "query": "\ninsert into habits (id, name, created_at, updated_at, archived_at, user_id)\nvalues ($1, $2, $3, $4, $5, $6)\non conflict (id)\ndo update\nset name = $2, created_at = $3, updated_at = $4, archived_at = $5, user_id = $6\n            "
   },
-  "350c44d0419e5e8fc15d0ad41a9b77848ecb3079c21ba2de4c1de591f420a301": {
+  "3a49cd2b304bf952f70a967313354d909624197f163b17343c957b3a3f0a7de2": {
     "describe": {
       "columns": [
         {
@@ -60,7 +60,7 @@
         ]
       }
     },
-    "query": "\nselect id, name, created_at, updated_at, archived_at from habits\nwhere user_id = $1\nand $2::bool is null or case when $2 then archived_at is not null else archived_at is null end\norder by created_at\n        "
+    "query": "\nselect id, name, created_at, updated_at, archived_at from habits\nwhere user_id = $1\nand ($2::bool is null or (case when $2 then archived_at is not null else archived_at is null end))\norder by created_at\n        "
   },
   "64ff960097637603c90a9fbf042b02992d7d41b4214d50a403ffaed4b247beb8": {
     "describe": {

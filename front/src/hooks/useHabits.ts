@@ -25,7 +25,7 @@ export const useHabits = () => {
   const deleteHabit = useMutation({
     mutationFn: deleteHabitFn,
     onSuccess: (_, id) => {
-      client.setQueryData<Habit[]>(['habits'], (prev) => prev?.filter((h) => h.id != id));
+      client.setQueriesData<Habit[]>(['habits'], (prev) => prev?.filter((h) => h.id != id));
       toast({ status: 'success', title: 'Deleted.' });
     },
     onError: () => toast({ status: 'error', title: 'Failed.' }),
@@ -34,7 +34,7 @@ export const useHabits = () => {
   const archiveHabit = useMutation({
     mutationFn: archiveHabitFn,
     onSuccess: (_, id) => {
-      client.setQueryData<Habit[]>(['habits'], (prev) =>
+      client.setQueriesData<Habit[]>(['habits'], (prev) =>
         prev?.map((h) => (h.id == id ? { ...h, archivedAt: new Date().toISOString() } : h)),
       );
       toast({ status: 'success', title: 'Archived.' });
@@ -45,7 +45,7 @@ export const useHabits = () => {
   const unarchiveHabit = useMutation({
     mutationFn: unarchiveHabitFn,
     onSuccess: (_, id) => {
-      client.setQueryData<Habit[]>(['habits'], (prev) =>
+      client.setQueriesData<Habit[]>(['habits'], (prev) =>
         prev?.map((h) => (h.id == id ? { ...h, archivedAt: null } : h)),
       );
       toast({ status: 'success', title: 'Unarchived.' });

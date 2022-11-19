@@ -29,7 +29,7 @@ pub async fn find_habits(
         r#"
 select id, name, created_at, updated_at, archived_at from habits
 where user_id = $1
-and $2::bool is null or case when $2 then archived_at is not null else archived_at is null end
+and ($2::bool is null or (case when $2 then archived_at is not null else archived_at is null end))
 order by created_at
         "#,
         user_id,

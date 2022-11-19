@@ -46,8 +46,8 @@ export const AppLayout = ({
   const quote = useMemo(() => QUOTES[new Date().getTime() % QUOTES.length].split('\n'), []);
 
   return (
-    <Container maxW="md" h="full" py="2">
-      <Stack h="full" spacing="4">
+    <Container maxW="md" py="2">
+      <Stack spacing="4">
         <Flex justifyContent="end" alignItems="center" position="relative" h="40px">
           <Box
             position="absolute"
