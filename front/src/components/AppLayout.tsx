@@ -33,8 +33,8 @@ export const AppLayout = ({
   const signOut = useMutation({
     mutationFn: destroyAuthUserSession,
     onSuccess: () => {
-      client.setQueriesData(['authUser'], null);
-      client.setQueriesData(['me'], null);
+      client.setQueryData(['authUser'], null);
+      client.setQueryData(['me'], null);
       toast({ status: 'success', title: 'Signed out.' });
     },
   });

@@ -17,6 +17,7 @@ import {
   archiveHabit as archiveHabitFn,
   deleteHabit as deleteHabitFn,
   getHabits,
+  Habit,
   unarchiveHabit as unarchiveHabitFn,
 } from '@/lib/backend';
 
@@ -29,8 +30,8 @@ export const Home = () => {
 
   const deleteHabit = useMutation({
     mutationFn: deleteHabitFn,
-    onSuccess: () => {
-      client.invalidateQueries(['habits']);
+    onSuccess: (_, id) => {
+      client.setQueryData<Habit[]>(['habits'], (prev) => prev?.filter((h) => h.id != id));
       toast({ status: 'success', title: 'Deleted.' });
     },
     onError: () => toast({ status: 'error', title: 'Failed.' }),
@@ -41,8 +42,10 @@ export const Home = () => {
 
   const archiveHabit = useMutation({
     mutationFn: archiveHabitFn,
-    onSuccess: () => {
-      client.invalidateQueries(['habits']);
+    onSuccess: (_, id) => {
+      client.setQueryData<Habit[]>(['habits'], (prev) =>
+        prev?.map((h) => (h.id == id ? { ...h, archivedAt: new Date().toISOString() } : h)),
+      );
       toast({ status: 'success', title: 'Archived.' });
     },
     onError: () => toast({ status: 'error', title: 'Failed.' }),
@@ -53,8 +56,10 @@ export const Home = () => {
 
   const unarchiveHabit = useMutation({
     mutationFn: unarchiveHabitFn,
-    onSuccess: () => {
-      client.invalidateQueries(['habits']);
+    onSuccess: (_, id) => {
+      client.setQueryData<Habit[]>(['habits'], (prev) =>
+        prev?.map((h) => (h.id == id ? { ...h, archivedAt: null } : h)),
+      );
       toast({ status: 'success', title: 'Unarchived.' });
     },
     onError: () => toast({ status: 'error', title: 'Failed.' }),
