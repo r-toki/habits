@@ -44,7 +44,7 @@ const HealthCheck = ({ children }: { children: ReactNode }) => {
   switch (status) {
     case 'loading':
       return (
-        <Center h="full">
+        <Center h="100vh">
           <Spinner />
         </Center>
       );
