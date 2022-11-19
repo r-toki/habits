@@ -7,7 +7,6 @@ import {
   getHabits,
   Habit,
   HabitsQuery,
-  unarchiveHabit as unarchiveHabitFn,
 } from '@/lib/backend';
 import { find } from '@/utils/find';
 
@@ -51,24 +50,5 @@ export const useHabits = () => {
     onError: () => toast({ status: 'error', title: 'Failed.' }),
   });
 
-  const unarchiveHabit = useMutation({
-    mutationFn: unarchiveHabitFn,
-    onSuccess: (_, id) => {
-      const target = find(habits.data!, id);
-      target.archivedAt = null;
-      client.setQueriesData<Habit[]>(['habits'], (prev) =>
-        prev?.map((h) => (h.id == id ? target : h)),
-      );
-      client.setQueryData<Habit[]>(['habits', { archived: 'false' }], (prev) =>
-        [...(prev ?? []), target].sort((a, b) => (a.createdAt > b.createdAt ? -1 : 0)),
-      );
-      client.setQueryData<Habit[]>(['habits', { archived: 'true' }], (prev) =>
-        prev?.filter((h) => h.id != id),
-      );
-      toast({ status: 'success', title: 'Unarchived.' });
-    },
-    onError: () => toast({ status: 'error', title: 'Failed.' }),
-  });
-
-  return { habitsQuery, setHabitsQuery, habits, deleteHabit, archiveHabit, unarchiveHabit };
+  return { habitsQuery, setHabitsQuery, habits, deleteHabit, archiveHabit };
 };

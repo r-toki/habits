@@ -22,7 +22,6 @@ pub fn init(cfg: &mut ServiceConfig) {
     cfg.service(create_habit);
     cfg.service(delete_habit);
     cfg.service(create_habit_archive);
-    cfg.service(delete_habit_archive);
 }
 
 #[get("/user")]
@@ -95,19 +94,6 @@ async fn create_habit_archive(
     let mut habit = Habit::find(&**pool, path.into_inner()).await?;
     habit.can_write(at.into_inner().id)?;
     habit.archive()?;
-    habit.store(&**pool).await?;
-    Ok(Json(()))
-}
-
-#[delete("/user/habits/{habit_id}/archive")]
-async fn delete_habit_archive(
-    pool: Data<PgPool>,
-    at: AccessTokenDecoded,
-    path: Path<String>,
-) -> MyResult<Json<()>> {
-    let mut habit = Habit::find(&**pool, path.into_inner()).await?;
-    habit.can_write(at.into_inner().id)?;
-    habit.unarchive()?;
     habit.store(&**pool).await?;
     Ok(Json(()))
 }

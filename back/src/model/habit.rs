@@ -39,16 +39,6 @@ impl Habit {
         }
     }
 
-    pub fn unarchive(&mut self) -> MyResult<()> {
-        match self.archived_at {
-            Some(_) => {
-                self.archived_at = None;
-                Ok(())
-            }
-            None => Err(MyError::UnprocessableEntity("already unarchived".into())),
-        }
-    }
-
     // NOTE: Policy Logic
     pub fn can_write(&self, user_id: String) -> MyResult<()> {
         if self.user_id != user_id {

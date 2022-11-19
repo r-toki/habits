@@ -18,17 +18,13 @@ import { AppLayout } from '@/components/AppLayout';
 import { useHabits } from '@/hooks/useHabits';
 
 export const Home = () => {
-  const { habitsQuery, setHabitsQuery, habits, deleteHabit, archiveHabit, unarchiveHabit } =
-    useHabits();
+  const { habitsQuery, setHabitsQuery, habits, deleteHabit, archiveHabit } = useHabits();
 
   const onDeleteHabit = async (id: string) => {
     if (window.confirm('Delete?')) await deleteHabit.mutate(id);
   };
   const onArchiveHabit = async (id: string) => {
     if (window.confirm('Archive?')) await archiveHabit.mutate(id);
-  };
-  const onUnarchiveHabit = async (id: string) => {
-    if (window.confirm('Archive?')) await unarchiveHabit.mutate(id);
   };
 
   return (
@@ -46,14 +42,7 @@ export const Home = () => {
               <Menu placement="bottom-end">
                 <MenuButton as={IconButton} icon={<GoKebabVertical />} size="xs" />
                 <MenuList>
-                  {habit.archivedAt ? (
-                    <MenuItem
-                      onClick={() => onUnarchiveHabit(habit.id)}
-                      disabled={unarchiveHabit.isLoading}
-                    >
-                      Unarchive
-                    </MenuItem>
-                  ) : (
+                  {!habit.archivedAt && (
                     <MenuItem
                       onClick={() => onArchiveHabit(habit.id)}
                       disabled={archiveHabit.isLoading}

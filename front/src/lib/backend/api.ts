@@ -24,5 +24,3 @@ export const createHabit = (input: CreateHabitInput) => axios.post('user/habits'
 export const deleteHabit = (id: string) => axios.delete(`user/habits/${id}`);
 
 export const archiveHabit = (id: string) => axios.post(`user/habits/${id}/archive`);
-
-export const unarchiveHabit = (id: string) => axios.delete(`user/habits/${id}/archive`);
