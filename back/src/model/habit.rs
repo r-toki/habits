@@ -8,13 +8,13 @@ use validator::Validate;
 
 #[derive(new, Debug, Validate)]
 pub struct Habit {
-    pub id: String,
+    id: String,
     #[validate(length(min = 1))]
-    pub name: String,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
-    pub archived_at: Option<DateTime<Utc>>,
-    pub user_id: String,
+    name: String,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
+    archived_at: Option<DateTime<Utc>>,
+    user_id: String,
 }
 
 impl Habit {

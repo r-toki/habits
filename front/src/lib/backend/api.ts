@@ -7,7 +7,17 @@ export const getUser = () => axios.get<User>('user').then(({ data }) => data);
 
 export const createUser = (input: CreateUserInput) => axios.post('user', input);
 
-export const getHabits = () => axios.get<Habit[]>('user/habits').then(({ data }) => data);
+export type HabitsQuery = {
+  archived: 'true' | 'false' | 'null';
+};
+export const getHabits = (habitsQuery: HabitsQuery) =>
+  axios
+    .get<Habit[]>(
+      `user/habits${Object.entries(habitsQuery)
+        .filter((v) => v[1] != 'null')
+        .reduce((acc, curr, idx) => acc + (idx == 0 ? '?' : '&') + `${curr[0]}=${curr[1]}`, '')}`,
+    )
+    .then(({ data }) => data);
 
 export const createHabit = (input: CreateHabitInput) => axios.post('user/habits', input);
 

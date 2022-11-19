@@ -1,5 +1,6 @@
 use crate::controller::lib::jwt_extractor::AccessTokenDecoded;
 use crate::lib::my_error::MyResult;
+use crate::model::habit_query::HabitQuery;
 use crate::model::{
     habit::Habit,
     habit_query::{find_habits, HabitDto},
@@ -7,10 +8,9 @@ use crate::model::{
     user_query::{find_user, UserDto},
 };
 
-use actix_web::web::Path;
 use actix_web::{
     delete, get, post,
-    web::{Data, Json, ServiceConfig},
+    web::{Data, Json, Path, Query, ServiceConfig},
 };
 use serde::Deserialize;
 use sqlx::PgPool;
@@ -49,8 +49,12 @@ async fn create(
 }
 
 #[get("/user/habits")]
-async fn habits_index(pool: Data<PgPool>, at: AccessTokenDecoded) -> MyResult<Json<Vec<HabitDto>>> {
-    let habits = find_habits(&**pool, at.into_inner().id).await?;
+async fn habits_index(
+    pool: Data<PgPool>,
+    at: AccessTokenDecoded,
+    query: Query<HabitQuery>,
+) -> MyResult<Json<Vec<HabitDto>>> {
+    let habits = find_habits(&**pool, at.into_inner().id, query.into_inner()).await?;
     Ok(Json(habits))
 }
 

@@ -1,78 +1,46 @@
 import {
   Box,
+  Center,
   Flex,
+  HStack,
   IconButton,
+  Link,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
+  Spinner,
   Stack,
 } from '@chakra-ui/react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { GoKebabVertical } from 'react-icons/go';
 
 import { AppLayout } from '@/components/AppLayout';
-import { useAppToast } from '@/hooks/useAppToast';
-import {
-  archiveHabit as archiveHabitFn,
-  deleteHabit as deleteHabitFn,
-  getHabits,
-  Habit,
-  unarchiveHabit as unarchiveHabitFn,
-} from '@/lib/backend';
+import { useHabits } from '@/hooks/useHabits';
 
 export const Home = () => {
-  const toast = useAppToast();
+  const { habitsQuery, setHabitsQuery, habits, deleteHabit, archiveHabit, unarchiveHabit } =
+    useHabits();
 
-  const { data: habits } = useQuery({ queryKey: ['habits'], queryFn: getHabits });
-
-  const client = useQueryClient();
-
-  const deleteHabit = useMutation({
-    mutationFn: deleteHabitFn,
-    onSuccess: (_, id) => {
-      client.setQueryData<Habit[]>(['habits'], (prev) => prev?.filter((h) => h.id != id));
-      toast({ status: 'success', title: 'Deleted.' });
-    },
-    onError: () => toast({ status: 'error', title: 'Failed.' }),
-  });
   const onDeleteHabit = async (id: string) => {
     if (window.confirm('Delete?')) await deleteHabit.mutate(id);
   };
-
-  const archiveHabit = useMutation({
-    mutationFn: archiveHabitFn,
-    onSuccess: (_, id) => {
-      client.setQueryData<Habit[]>(['habits'], (prev) =>
-        prev?.map((h) => (h.id == id ? { ...h, archivedAt: new Date().toISOString() } : h)),
-      );
-      toast({ status: 'success', title: 'Archived.' });
-    },
-    onError: () => toast({ status: 'error', title: 'Failed.' }),
-  });
   const onArchiveHabit = async (id: string) => {
     if (window.confirm('Archive?')) await archiveHabit.mutate(id);
   };
-
-  const unarchiveHabit = useMutation({
-    mutationFn: unarchiveHabitFn,
-    onSuccess: (_, id) => {
-      client.setQueryData<Habit[]>(['habits'], (prev) =>
-        prev?.map((h) => (h.id == id ? { ...h, archivedAt: null } : h)),
-      );
-      toast({ status: 'success', title: 'Unarchived.' });
-    },
-    onError: () => toast({ status: 'error', title: 'Failed.' }),
-  });
   const onUnarchiveHabit = async (id: string) => {
     if (window.confirm('Archive?')) await unarchiveHabit.mutate(id);
   };
 
   return (
     <AppLayout>
-      <Stack>
-        {habits?.map((habit) => (
-          <Flex key={habit.id} justifyContent="space-between" alignItems="center" px="4">
+      <Stack px="2">
+        {habits.isInitialLoading && (
+          <Center>
+            <Spinner />
+          </Center>
+        )}
+        {habits.data?.map((habit) => (
+          <Flex key={habit.id} justifyContent="space-between" alignItems="center">
             <Box color={habit.archivedAt ? 'gray.400' : 'black'}>{habit.name}</Box>
             <Box>
               <Menu placement="bottom-end">
@@ -105,6 +73,27 @@ export const Home = () => {
             </Box>
           </Flex>
         ))}
+
+        <HStack alignSelf="end">
+          <Link
+            onClick={() => setHabitsQuery({ archived: 'false' })}
+            color={habitsQuery.archived != 'false' ? 'gray.400' : undefined}
+          >
+            unarchived
+          </Link>
+          <Link
+            onClick={() => setHabitsQuery({ archived: 'true' })}
+            color={habitsQuery.archived != 'true' ? 'gray.400' : undefined}
+          >
+            archived
+          </Link>
+          <Link
+            onClick={() => setHabitsQuery({ archived: 'null' })}
+            color={habitsQuery.archived != 'null' ? 'gray.400' : undefined}
+          >
+            all
+          </Link>
+        </HStack>
       </Stack>
     </AppLayout>
   );

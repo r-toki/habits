@@ -47,7 +47,7 @@ export const AppLayout = ({
 
   return (
     <Container maxW="md" h="full" py="2">
-      <Stack h="full" spacing="6">
+      <Stack h="full" spacing="4">
         <Flex justifyContent="end" alignItems="center" position="relative" h="40px">
           <Box
             position="absolute"

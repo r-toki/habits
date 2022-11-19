@@ -14,14 +14,14 @@ lazy_static! {
 
 #[derive(new, Debug, Validate)]
 pub struct User {
-    pub id: String,
+    id: String,
     #[validate(regex(
         path = "RE_DISPLAY_NAME",
         message = "must be 3-15 characters in alphabet, numbers or symbols"
     ))]
-    pub display_name: String,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    display_name: String,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
 }
 
 impl User {
