@@ -1,3 +1,4 @@
+pub mod daily_record;
 pub mod habit;
 pub mod habit_query;
 mod lib;

@@ -1,5 +1,23 @@
 {
   "db": "PostgreSQL",
+  "0d7d5ea872d6cb541beec5652b1ea296e494ee9034c1c609b106fe78d81dffc1": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Bool",
+          "Date",
+          "Timestamptz",
+          "Timestamptz",
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "\ninsert into habit_daily_records (id, done, recorded_on, created_at, updated_at, habit_id, daily_record_id)\nvalues ($1, $2, $3, $4, $5, $6, $7)\non conflict (id)\ndo update\nset done = $2, recorded_on = $3, created_at = $4, updated_at = $5, habit_id = $6, daily_record_id = $7\n                "
+  },
   "1ae93ffb5393c1c751ee4c0639bc982a5b50218e8e4e38a782b681961f513b06": {
     "describe": {
       "columns": [],
@@ -16,6 +34,57 @@
       }
     },
     "query": "\ninsert into habits (id, name, created_at, updated_at, archived_at, user_id)\nvalues ($1, $2, $3, $4, $5, $6)\non conflict (id)\ndo update\nset name = $2, created_at = $3, updated_at = $4, archived_at = $5, user_id = $6\n            "
+  },
+  "26754f38765a6e163ab7f3863de16d1d131924fa66efc485f656b061575123df": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "comment",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "recorded_on",
+          "ordinal": 2,
+          "type_info": "Date"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "user_id",
+          "ordinal": 5,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Date",
+          "Text"
+        ]
+      }
+    },
+    "query": "\nselect * from daily_records\nwhere recorded_on = $1\nand user_id = $2\n            "
   },
   "3a49cd2b304bf952f70a967313354d909624197f163b17343c957b3a3f0a7de2": {
     "describe": {
@@ -62,7 +131,7 @@
     },
     "query": "\nselect id, name, created_at, updated_at, archived_at from habits\nwhere user_id = $1\nand ($2::bool is null or (case when $2 then archived_at is not null else archived_at is null end))\norder by created_at\n        "
   },
-  "64ff960097637603c90a9fbf042b02992d7d41b4214d50a403ffaed4b247beb8": {
+  "47d32b7b772d9a43f1ab5d2b347c94340e909e1a26ab6cc822f77b754e1d20de": {
     "describe": {
       "columns": [
         {
@@ -110,7 +179,24 @@
         ]
       }
     },
-    "query": "\nselect id, name, created_at, updated_at, archived_at, user_id from habits\nwhere id = $1\n            "
+    "query": "\nselect * from habits\nwhere id = $1\n            "
+  },
+  "71cefcc379344c8b2b6e262cf65b6fbe3c3dba5e18b4cdef391c11c9cae583c3": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text",
+          "Date",
+          "Timestamptz",
+          "Timestamptz",
+          "Text"
+        ]
+      }
+    },
+    "query": "\ninsert into daily_records (id, comment, recorded_on, created_at, updated_at, user_id)\nvalues ($1, $2, $3, $4, $5, $6)\non conflict (id)\ndo update\nset comment = $2, recorded_on = $3, created_at = $4, updated_at = $5, user_id = $6\n            "
   },
   "860d24372d7f1c3c276716432d4479d5a3f2e59df58b8307af91666028ac1cca": {
     "describe": {
@@ -138,6 +224,112 @@
       }
     },
     "query": "\ninsert into users (id, display_name, created_at, updated_at)\nvalues ($1, $2, $3, $4)\non conflict (id)\ndo update\nset display_name = $2, created_at = $3, updated_at = $4\n            "
+  },
+  "bcaee815c9c8a25098b2b3b5873b56fae25997e2456c45c63d2720824a24c322": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "done",
+          "ordinal": 1,
+          "type_info": "Bool"
+        },
+        {
+          "name": "recorded_on",
+          "ordinal": 2,
+          "type_info": "Date"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "habit_id",
+          "ordinal": 5,
+          "type_info": "Text"
+        },
+        {
+          "name": "daily_record_id",
+          "ordinal": 6,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\nselect * from habit_daily_records\nwhere daily_record_id = $1\n                    "
+  },
+  "f77d2865d3352a630033b599ca12520fa9998f29fb9d3b375aa1a9d359e07860": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 2,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "archived_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "user_id",
+          "ordinal": 5,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\nselect * from habits\nwhere user_id = $1\n            "
   },
   "f8158d696033f24bc198fd5d97de292bb1ad2ce7bb00776c4f5286405da50331": {
     "describe": {

@@ -52,12 +52,26 @@ impl Habit {
         query_as!(
             Habit,
             r#"
-select id, name, created_at, updated_at, archived_at, user_id from habits
+select * from habits
 where id = $1
             "#,
             id
         )
         .fetch_one(pool)
+        .await
+        .map_err(Into::into)
+    }
+
+    pub async fn find_many_by(pool: &PgPool, user_id: String) -> MyResult<Vec<Habit>> {
+        query_as!(
+            Habit,
+            r#"
+select * from habits
+where user_id = $1
+            "#,
+            user_id
+        )
+        .fetch_all(pool)
         .await
         .map_err(Into::into)
     }
