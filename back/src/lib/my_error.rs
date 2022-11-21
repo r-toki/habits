@@ -56,7 +56,7 @@ impl From<ValidationErrors> for MyError {
 impl From<SqlxError> for MyError {
     fn from(error: SqlxError) -> Self {
         match error {
-            _ => MyError::new_internal_server_error(),
+            _ => MyError::InternalServerError(error.to_string().into()),
         }
     }
 }

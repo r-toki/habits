@@ -1,12 +1,6 @@
 use crate::controller::lib::jwt_extractor::AccessTokenDecoded;
 use crate::lib::my_error::MyResult;
-use crate::model::habit_query::HabitQuery;
-use crate::model::{
-    habit::Habit,
-    habit_query::{find_habits, HabitDto},
-    user::User,
-    user_query::{find_user, UserDto},
-};
+use crate::model::table::*;
 
 use actix_web::{
     delete, get, post,
@@ -42,8 +36,8 @@ async fn create(
     at: AccessTokenDecoded,
     form: Json<Create>,
 ) -> MyResult<Json<()>> {
-    let user = User::create(at.into_inner().id, form.display_name.clone())?;
-    user.store(&**pool).await?;
+    let user = TUser::create(at.into_inner().id, form.display_name.clone())?;
+    user.upsert(&**pool).await?;
     Ok(Json(()))
 }
 
@@ -68,8 +62,8 @@ async fn create_habit(
     at: AccessTokenDecoded,
     form: Json<CreateHabit>,
 ) -> MyResult<Json<()>> {
-    let habit = Habit::create(form.name.clone(), at.into_inner().id)?;
-    habit.store(&**pool).await?;
+    let habit = THabit::create(form.name.clone(), at.into_inner().id)?;
+    habit.upsert(&**pool).await?;
     Ok(Json(()))
 }
 
@@ -79,7 +73,7 @@ async fn delete_habit(
     at: AccessTokenDecoded,
     path: Path<String>,
 ) -> MyResult<Json<()>> {
-    let habit = Habit::find(&**pool, path.into_inner()).await?;
+    let habit = THabit::find(&**pool, path.into_inner()).await?;
     habit.can_write(at.into_inner().id)?;
     habit.delete(&**pool).await?;
     Ok(Json(()))
@@ -91,9 +85,9 @@ async fn create_habit_archive(
     at: AccessTokenDecoded,
     path: Path<String>,
 ) -> MyResult<Json<()>> {
-    let mut habit = Habit::find(&**pool, path.into_inner()).await?;
+    let mut habit = THabit::find(&**pool, path.into_inner()).await?;
     habit.can_write(at.into_inner().id)?;
     habit.archive()?;
-    habit.store(&**pool).await?;
+    habit.upsert(&**pool).await?;
     Ok(Json(()))
 }
