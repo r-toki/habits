@@ -19,8 +19,8 @@ table! {
 impl TUser {
     pub fn create(id: String, display_name: String) -> MyResult<TUser> {
         if !RE_DISPLAY_NAME.is_match(&display_name) {
-            return Err(MyError::UnprocessableEntity(
-                "display_name must be 3-15 characters in in alphabet, numbers or symbols".into(),
+            return Err(unprocessable_entity(
+                "display_name must be 3-15 characters in in alphabet, numbers or symbols",
             ));
         }
         let now = get_current_date_time();

@@ -17,8 +17,8 @@ table! {
 impl THabit {
     pub fn create(name: String, user_id: String) -> MyResult<THabit> {
         if name.len() == 0 {
-            return Err(MyError::UnprocessableEntity(
-                "habit name must be at leas 1 character".into(),
+            return Err(unprocessable_entity(
+                "habit name must be at leas 1 character",
             ));
         }
         let id = get_new_id();
@@ -29,9 +29,7 @@ impl THabit {
 
     pub fn archive(&mut self) -> MyResult<()> {
         match self.archived_at {
-            Some(_) => Err(MyError::UnprocessableEntity(
-                "habit is already archived".into(),
-            )),
+            Some(_) => Err(unprocessable_entity("habit is already archived")),
             None => {
                 self.archived_at = Some(get_current_date_time());
                 Ok(())
@@ -41,7 +39,7 @@ impl THabit {
 
     pub fn can_write(&self, user_id: String) -> MyResult<()> {
         if self.user_id != user_id {
-            return Err(MyError::Forbidden("can not write habit".into()));
+            return Err(forbidden("can not write habit"));
         }
         Ok(())
     }
