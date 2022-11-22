@@ -89,9 +89,11 @@ where
         }
 
         None => {
-            let datetime = recorded_on.and_hms(0, 0, 0);
             let offset = FixedOffset::east_opt(9 * 60 * 60).unwrap();
-            let recorded_at = DateTime::<FixedOffset>::from_local(datetime, offset);
+            let recorded_at_start_of_day =
+                DateTime::<FixedOffset>::from_local(recorded_on.and_hms(0, 0, 0), offset);
+            let recorded_at_end_of_day =
+                DateTime::<FixedOffset>::from_local(recorded_on.and_hms(23, 59, 59), offset);
 
             let t_habits = query_as!(
                 THabit,
@@ -103,14 +105,16 @@ from
 where
     user_id = $1
 and (
-        archived_at > $2
-    or  archived_at is null
+        archived_at is null
+    or  archived_at > $2
     )
+and created_at < $3
 order by
     created_at
                 "#,
                 user_id,
-                recorded_at
+                recorded_at_start_of_day,
+                recorded_at_end_of_day
             )
             .fetch_all(pool)
             .await?;

@@ -28,7 +28,7 @@ export const HabitList = () => {
 
   return (
     <Stack px="2">
-      {habits.isInitialLoading && (
+      {habits.isLoading && (
         <Center>
           <Spinner />
         </Center>
