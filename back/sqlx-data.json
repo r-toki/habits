@@ -1,5 +1,61 @@
 {
   "db": "PostgreSQL",
+  "0a716f604556ab83b884de7e1ea8a84fea28b0c0c9a42fba7a9ab5731e51e405": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "done",
+          "ordinal": 1,
+          "type_info": "Bool"
+        },
+        {
+          "name": "recorded_on",
+          "ordinal": 2,
+          "type_info": "Date"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "habit_id",
+          "ordinal": 5,
+          "type_info": "Text"
+        },
+        {
+          "name": "daily_record_id",
+          "ordinal": 6,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\nselect * from habit_daily_records\nwhere daily_record_id = $1\n                "
+  },
   "3a49cd2b304bf952f70a967313354d909624197f163b17343c957b3a3f0a7de2": {
     "describe": {
       "columns": [
@@ -44,5 +100,56 @@
       }
     },
     "query": "\nselect id, name, created_at, updated_at, archived_at from habits\nwhere user_id = $1\nand ($2::bool is null or (case when $2 then archived_at is not null else archived_at is null end))\norder by created_at\n        "
+  },
+  "93926c06131fd7627553aac69cd76c3bf9a32839200710ee5a81f7e05a19c9ee": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "comment",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "recorded_on",
+          "ordinal": 2,
+          "type_info": "Date"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "user_id",
+          "ordinal": 5,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Date"
+        ]
+      }
+    },
+    "query": "\nselect * from daily_records\nwhere user_id = $1\nand recorded_on = $2\n        "
   }
 }

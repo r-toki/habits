@@ -13,7 +13,7 @@ table! {
     }
 }
 
-/* --------------------------------- Command -------------------------------- */
+/* --------------------------------- Domain -------------------------------- */
 impl THabit {
     pub fn create(name: String, user_id: String) -> MyResult<THabit> {
         if name.len() == 0 {

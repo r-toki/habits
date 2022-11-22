@@ -15,7 +15,7 @@ table! {
     }
 }
 
-/* --------------------------------- Command -------------------------------- */
+/* --------------------------------- Domain -------------------------------- */
 impl TUser {
     pub fn create(id: String, display_name: String) -> MyResult<TUser> {
         if !RE_DISPLAY_NAME.is_match(&display_name) {
