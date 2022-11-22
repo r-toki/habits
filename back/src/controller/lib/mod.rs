@@ -1,1 +1,3 @@
-pub mod jwt_extractor;
+mod jwt_extractor;
+
+pub use jwt_extractor::*;

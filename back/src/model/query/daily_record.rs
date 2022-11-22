@@ -1,39 +1,12 @@
-use crate::lib::my_error::MyResult;
-use crate::model::lib::{get_current_date_time, get_new_id};
-use crate::model::table::{TDailyRecord, THabit, THabitDailyRecord};
+use crate::lib::my_error::*;
+use crate::model::lib::*;
+use crate::model::table::*;
 
 use chrono::{DateTime, FixedOffset, NaiveDate, Utc};
 use derive_new::new;
 use serde::Serialize;
-use sqlx::{query, query_as, PgPool};
+use sqlx::{query_as, PgPool};
 
-/* -------------------------------- Aggregate ------------------------------- */
-#[derive(new, Debug)]
-pub struct DailyRecord {
-    pub t_daily_record: TDailyRecord,
-    pub t_habit_daily_records: Vec<THabitDailyRecord>,
-}
-
-/* --------------------------------- Domain --------------------------------- */
-impl DailyRecord {
-    pub fn create(
-        comment: String,
-        recorded_on: NaiveDate,
-        user_id: String,
-        habit_ids: Vec<String>,
-    ) -> MyResult<DailyRecord> {
-        let t_daily_record = TDailyRecord::create(comment, recorded_on.clone(), user_id)?;
-        let t_habit_daily_records: Vec<THabitDailyRecord> = habit_ids
-            .into_iter()
-            .map(|habit_id| {
-                THabitDailyRecord::create(recorded_on.clone(), habit_id, t_daily_record.id.clone())
-            })
-            .collect();
-        Ok(DailyRecord::new(t_daily_record, t_habit_daily_records))
-    }
-}
-
-/* ---------------------------------- Query --------------------------------- */
 #[derive(new, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DailyRecordDto {

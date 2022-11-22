@@ -1,6 +1,6 @@
-use crate::controller::lib::jwt_extractor::AccessTokenDecoded;
-use crate::lib::my_error::MyResult;
-use crate::model::table::*;
+use crate::controller::lib::*;
+use crate::lib::my_error::*;
+use crate::model::{query::*, table::*};
 
 use actix_web::{
     delete, get, post,

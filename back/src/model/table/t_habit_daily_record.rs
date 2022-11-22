@@ -3,7 +3,6 @@ use crate::model::lib::*;
 
 use chrono::{DateTime, NaiveDate, Utc};
 
-/* ---------------------------------- Table --------------------------------- */
 table! {
     "habit_daily_records",
     pub struct THabitDailyRecord {
@@ -17,7 +16,6 @@ table! {
     }
 }
 
-/* --------------------------------- Domain --------------------------------- */
 impl THabitDailyRecord {
     pub fn create(
         recoded_on: NaiveDate,

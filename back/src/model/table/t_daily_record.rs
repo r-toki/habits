@@ -4,7 +4,6 @@ use crate::model::lib::*;
 
 use chrono::{DateTime, NaiveDate, Utc};
 
-/* ---------------------------------- Table --------------------------------- */
 table! {
     "daily_records",
     pub struct TDailyRecord {
@@ -17,7 +16,6 @@ table! {
     }
 }
 
-/* --------------------------------- Domain -------------------------------- */
 impl TDailyRecord {
     pub fn create(
         comment: String,
