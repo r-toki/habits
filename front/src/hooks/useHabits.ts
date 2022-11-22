@@ -5,10 +5,8 @@ import {
   archiveHabit as archiveHabitFn,
   deleteHabit as deleteHabitFn,
   getHabits,
-  Habit,
   HabitsQuery,
 } from '@/lib/backend';
-import { find } from '@/utils/find';
 
 import { useAppToast } from './useAppToast';
 
@@ -24,8 +22,8 @@ export const useHabits = () => {
 
   const deleteHabit = useMutation({
     mutationFn: deleteHabitFn,
-    onSuccess: (_, id) => {
-      client.setQueriesData<Habit[]>(['habits'], (prev) => prev?.filter((h) => h.id != id));
+    onSuccess: () => {
+      client.invalidateQueries(['habits']);
       toast({ status: 'success', title: 'Deleted.' });
     },
     onError: () => toast({ status: 'error', title: 'Failed.' }),
@@ -33,18 +31,8 @@ export const useHabits = () => {
 
   const archiveHabit = useMutation({
     mutationFn: archiveHabitFn,
-    onSuccess: (_, id) => {
-      const target = find(habits.data!, id);
-      target.archivedAt = new Date().toISOString();
-      client.setQueriesData<Habit[]>(['habits'], (prev) =>
-        prev?.map((h) => (h.id == id ? target : h)),
-      );
-      client.setQueryData<Habit[]>(['habits', { archived: 'false' }], (prev) =>
-        prev?.filter((h) => h.id != id),
-      );
-      client.setQueryData<Habit[]>(['habits', { archived: 'true' }], (prev) =>
-        [...(prev ?? []), target].sort((a, b) => (a.createdAt > b.createdAt ? -1 : 0)),
-      );
+    onSuccess: () => {
+      client.invalidateQueries(['habits']);
       toast({ status: 'success', title: 'Archived.' });
     },
     onError: () => toast({ status: 'error', title: 'Failed.' }),
