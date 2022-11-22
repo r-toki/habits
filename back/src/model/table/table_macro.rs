@@ -7,6 +7,9 @@ macro_rules! table {
             $($field_vis:vis $field_name:ident : $field_type:ty,)*
         }
     ) => {
+        use derive_new::new;
+        use sqlx::{query, PgExecutor, Result, Row};
+
         #[derive(new, Debug)]
         $struct_vis struct $struct_name {
             $id_vis id : String,
