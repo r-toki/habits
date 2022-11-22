@@ -17,8 +17,8 @@ table! {
 impl THabit {
     pub fn create(name: String, user_id: String) -> MyResult<THabit> {
         if name.len() == 0 {
-            return Err(unprocessable_entity(
-                "habit name must be at leas 1 character",
+            return Err(MyError::UnprocessableEntity(
+                "habit name must be at leas 1 character".into(),
             ));
         }
         let id = get_new_id();
@@ -29,7 +29,9 @@ impl THabit {
 
     pub fn archive(&mut self) -> MyResult<()> {
         match self.archived_at {
-            Some(_) => Err(unprocessable_entity("habit is already archived")),
+            Some(_) => Err(MyError::UnprocessableEntity(
+                "habit is already archived".into(),
+            )),
             None => {
                 self.archived_at = Some(get_current_date_time());
                 Ok(())
@@ -39,18 +41,13 @@ impl THabit {
 
     pub fn can_write(&self, user_id: String) -> MyResult<()> {
         if self.user_id != user_id {
-            return Err(forbidden("can not write habit"));
+            return Err(MyError::Forbidden("can not write habit".into()));
         }
         Ok(())
     }
 }
 
 /* ---------------------------------- Query --------------------------------- */
-#[derive(Debug, Deserialize)]
-pub struct HabitQuery {
-    archived: Option<bool>,
-}
-
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HabitDto {
@@ -61,10 +58,15 @@ pub struct HabitDto {
     archived_at: Option<DateTime<Utc>>,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct FindHabitsQuery {
+    archived: Option<bool>,
+}
+
 pub async fn find_habits(
     pool: &PgPool,
     user_id: String,
-    habit_query: HabitQuery,
+    habit_query: FindHabitsQuery,
 ) -> MyResult<Vec<HabitDto>> {
     query_as!(
         HabitDto,

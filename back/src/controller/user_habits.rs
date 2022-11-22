@@ -12,37 +12,12 @@ use sqlx::PgPool;
 pub fn init(cfg: &mut ServiceConfig) {
     cfg.service(index);
     cfg.service(create);
-    cfg.service(habits_index);
-    cfg.service(create_habit);
-    cfg.service(delete_habit);
-    cfg.service(create_habit_archive);
-}
-
-#[get("/user")]
-async fn index(pool: Data<PgPool>, at: AccessTokenDecoded) -> MyResult<Json<UserDto>> {
-    let user = find_user(&**pool, at.into_inner().id).await?;
-    Ok(Json(user))
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct Create {
-    display_name: String,
-}
-
-#[post("/user")]
-async fn create(
-    pool: Data<PgPool>,
-    at: AccessTokenDecoded,
-    form: Json<Create>,
-) -> MyResult<Json<()>> {
-    let user = TUser::create(at.into_inner().id, form.display_name.clone())?;
-    user.upsert(&**pool).await?;
-    Ok(Json(()))
+    cfg.service(delete);
+    cfg.service(create_archive);
 }
 
 #[get("/user/habits")]
-async fn habits_index(
+async fn index(
     pool: Data<PgPool>,
     at: AccessTokenDecoded,
     query: Query<FindHabitsQuery>,
@@ -57,7 +32,7 @@ struct CreateHabit {
 }
 
 #[post("/user/habits")]
-async fn create_habit(
+async fn create(
     pool: Data<PgPool>,
     at: AccessTokenDecoded,
     form: Json<CreateHabit>,
@@ -68,7 +43,7 @@ async fn create_habit(
 }
 
 #[delete("/user/habits/{habit_id}")]
-async fn delete_habit(
+async fn delete(
     pool: Data<PgPool>,
     at: AccessTokenDecoded,
     path: Path<String>,
@@ -80,7 +55,7 @@ async fn delete_habit(
 }
 
 #[post("/user/habits/{habit_id}/archive")]
-async fn create_habit_archive(
+async fn create_archive(
     pool: Data<PgPool>,
     at: AccessTokenDecoded,
     path: Path<String>,

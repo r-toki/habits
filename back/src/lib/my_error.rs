@@ -24,28 +24,6 @@ pub enum MyError {
     InternalServerError(#[new(default)] JsonValue),
 }
 
-pub fn bad_request(msg: &str) -> MyError {
-    MyError::BadRequest(msg.into())
-}
-pub fn unauthorized(msg: &str) -> MyError {
-    MyError::Unauthorized(msg.into())
-}
-pub fn forbidden(msg: &str) -> MyError {
-    MyError::Forbidden(msg.into())
-}
-pub fn not_found(msg: &str) -> MyError {
-    MyError::NotFound(msg.into())
-}
-pub fn conflict(msg: &str) -> MyError {
-    MyError::Conflict(msg.into())
-}
-pub fn unprocessable_entity(msg: &str) -> MyError {
-    MyError::UnprocessableEntity(msg.into())
-}
-pub fn internal_server_error(msg: &str) -> MyError {
-    MyError::InternalServerError(msg.into())
-}
-
 impl ResponseError for MyError {
     fn error_response(&self) -> Response {
         let to = |v: &JsonValue| json!({ "error": v });
