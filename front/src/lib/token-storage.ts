@@ -1,4 +1,4 @@
-const PREFIX = 'my_habits_';
+const PREFIX = '';
 
 type Key = 'access_token' | 'refresh_token';
 

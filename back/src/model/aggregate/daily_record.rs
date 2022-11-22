@@ -116,7 +116,7 @@ where
         }
 
         None => {
-            let datetime = recorded_on.and_hms(23, 59, 59);
+            let datetime = recorded_on.and_hms(0, 0, 0);
             let offset = FixedOffset::east_opt(9 * 60 * 60).unwrap();
             let recorded_at = DateTime::<FixedOffset>::from_local(datetime, offset);
 
@@ -129,12 +129,17 @@ from
     habits
 where
     user_id = $1
-and archived_at < $2
+and (
+        archived_at > $2
+    or  archived_at is null
+    )
+order by
+    created_at
                 "#,
                 user_id,
                 recorded_at
             )
-            .fetch_optional(pool)
+            .fetch_all(pool)
             .await?;
 
             let now = get_current_date_time();

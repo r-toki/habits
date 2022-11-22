@@ -11,6 +11,24 @@ export type Habit = {
   archivedAt: string | null;
 };
 
+export type DailyRecord = {
+  id: string;
+  comment: string;
+  recordedOn: string;
+  createdAt: string;
+  updatedAt: string;
+  habitDailyRecords: HabitDailyRecord[];
+};
+
+export type HabitDailyRecord = {
+  id: string;
+  done: boolean;
+  recordedOn: string;
+  createdAt: string;
+  updatedAt: string;
+  name: string;
+};
+
 export type CreateUserInput = {
   displayName: string;
 };
