@@ -1,61 +1,5 @@
 {
   "db": "PostgreSQL",
-  "0a716f604556ab83b884de7e1ea8a84fea28b0c0c9a42fba7a9ab5731e51e405": {
-    "describe": {
-      "columns": [
-        {
-          "name": "id",
-          "ordinal": 0,
-          "type_info": "Text"
-        },
-        {
-          "name": "done",
-          "ordinal": 1,
-          "type_info": "Bool"
-        },
-        {
-          "name": "recorded_on",
-          "ordinal": 2,
-          "type_info": "Date"
-        },
-        {
-          "name": "created_at",
-          "ordinal": 3,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "updated_at",
-          "ordinal": 4,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "habit_id",
-          "ordinal": 5,
-          "type_info": "Text"
-        },
-        {
-          "name": "daily_record_id",
-          "ordinal": 6,
-          "type_info": "Text"
-        }
-      ],
-      "nullable": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
-      "parameters": {
-        "Left": [
-          "Text"
-        ]
-      }
-    },
-    "query": "\nselect * from habit_daily_records\nwhere daily_record_id = $1\n                "
-  },
   "3a49cd2b304bf952f70a967313354d909624197f163b17343c957b3a3f0a7de2": {
     "describe": {
       "columns": [
@@ -101,7 +45,7 @@
     },
     "query": "\nselect id, name, created_at, updated_at, archived_at from habits\nwhere user_id = $1\nand ($2::bool is null or (case when $2 then archived_at is not null else archived_at is null end))\norder by created_at\n        "
   },
-  "93926c06131fd7627553aac69cd76c3bf9a32839200710ee5a81f7e05a19c9ee": {
+  "72a975a60e4ae116a5b6dc2910c061fa54d3532261bdf719c4140f198cce5338": {
     "describe": {
       "columns": [
         {
@@ -150,6 +94,107 @@
         ]
       }
     },
-    "query": "\nselect * from daily_records\nwhere user_id = $1\nand recorded_on = $2\n        "
+    "query": "\nselect\n    *\nfrom\n    daily_records\nwhere\n    user_id = $1\nand recorded_on = $2\n        "
+  },
+  "d35a0440a5b39b7b885211e298e5c54ce961f0e22ff0aa385bee386a823a0f10": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "done",
+          "ordinal": 1,
+          "type_info": "Bool"
+        },
+        {
+          "name": "recorded_on",
+          "ordinal": 2,
+          "type_info": "Date"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "name",
+          "ordinal": 5,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\nselect\n    h_d_r.id id,\n    h_d_r.done done,\n    h_d_r.recorded_on recorded_on,\n    h_d_r.created_at created_at,\n    h_d_r.updated_at updated_at,\n    h.name name\nfrom\n    habit_daily_records h_d_r\n    inner join\n        habits h\n    on  h_d_r.habit_id = h.id\nwhere\n    daily_record_id = $1\n                "
+  },
+  "d427e423fa1e638e38f1383257ffde8a6d61ff5d4de964d495004ff9a4e2b9de": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 2,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "archived_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "user_id",
+          "ordinal": 5,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Timestamptz"
+        ]
+      }
+    },
+    "query": "\nselect\n    *\nfrom\n    habits\nwhere\n    user_id = $1\nand archived_at < $2\n                "
   }
 }
