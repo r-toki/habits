@@ -2,7 +2,7 @@ use crate::lib::my_error::*;
 use crate::model::lib::*;
 use crate::model::table::*;
 
-use chrono::{DateTime, FixedOffset, NaiveDate, Utc};
+use chrono::{DateTime, NaiveDate, Utc};
 use derive_new::new;
 use serde::Serialize;
 use sqlx::{query_as, PgPool};
@@ -83,27 +83,7 @@ where daily_record_id = $1
         }
 
         None => {
-            let offset = FixedOffset::east_opt(9 * 60 * 60).unwrap();
-            let recorded_at_start_of_day =
-                DateTime::<FixedOffset>::from_local(recorded_on.and_hms(0, 0, 0), offset);
-            let recorded_at_end_of_day =
-                DateTime::<FixedOffset>::from_local(recorded_on.and_hms(23, 59, 59), offset);
-
-            let t_habits = query_as!(
-                THabit,
-                r#"
-select * from habits
-where user_id = $1
-and (archived_at is null or archived_at > $2)
-and created_at < $3
-order by created_at
-                "#,
-                user_id,
-                recorded_at_start_of_day,
-                recorded_at_end_of_day
-            )
-            .fetch_all(pool)
-            .await?;
+            let t_habits = THabit::find_many_by(pool, user_id, recorded_on).await?;
 
             let now = get_current_date_time();
 
@@ -120,7 +100,6 @@ order by created_at
                     )
                 })
                 .collect();
-
             let daily_record_dto = DailyRecordDto::new(
                 get_new_id(),
                 "".into(),

@@ -49,9 +49,14 @@ export const HabitList = () => {
                   </MenuItem>
                 )}
 
-                <MenuItem onClick={() => onDeleteHabit(habit.id)} disabled={deleteHabit.isLoading}>
-                  Delete
-                </MenuItem>
+                {habit.archivedAt && (
+                  <MenuItem
+                    onClick={() => onDeleteHabit(habit.id)}
+                    disabled={deleteHabit.isLoading}
+                  >
+                    Delete
+                  </MenuItem>
+                )}
               </MenuList>
             </Menu>
           </Box>

@@ -3,6 +3,7 @@ use crate::model::table::*;
 
 use chrono::NaiveDate;
 use derive_new::new;
+use serde::Deserialize;
 use sqlx::PgPool;
 
 #[derive(new, Debug)]
@@ -11,7 +12,15 @@ pub struct DailyRecord {
     pub t_habit_daily_records: Vec<THabitDailyRecord>,
 }
 
-#[derive(new, Debug)]
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateDailyRecord {
+    pub comment: String,
+    pub habit_daily_records: Vec<UpdateHabitDailyRecord>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UpdateHabitDailyRecord {
     pub id: String,
     pub done: bool,
@@ -35,14 +44,10 @@ impl DailyRecord {
         Ok(DailyRecord::new(t_daily_record, t_habit_daily_records))
     }
 
-    pub fn update(
-        &mut self,
-        comment: String,
-        habit_daily_records: Vec<UpdateHabitDailyRecord>,
-    ) -> MyResult<()> {
-        self.t_daily_record.update(comment)?;
+    pub fn update(&mut self, input: UpdateDailyRecord) -> MyResult<()> {
+        self.t_daily_record.update(input.comment)?;
 
-        for habit_daily_record in habit_daily_records.iter() {
+        for habit_daily_record in input.habit_daily_records.iter() {
             let target = self
                 .t_habit_daily_records
                 .iter_mut()

@@ -1,5 +1,5 @@
 import { Button, FormControl, FormLabel, Input, Stack } from '@chakra-ui/react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { FormEventHandler } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,11 +12,9 @@ export const HabitsNew = () => {
   const navigate = useNavigate();
   const toast = useAppToast();
 
-  const client = useQueryClient();
   const createHabit = useMutation({
     mutationFn: createHabitFn,
     onSuccess: () => {
-      client.invalidateQueries(['habits']);
       toast({ status: 'success', title: 'Created.' });
       navigate('/home');
     },

@@ -27,7 +27,7 @@ async fn index(
 }
 
 #[derive(Debug, Deserialize)]
-struct CreateHabit {
+struct Create {
     name: String,
 }
 
@@ -35,7 +35,7 @@ struct CreateHabit {
 async fn create(
     pool: Data<PgPool>,
     at: AccessTokenDecoded,
-    form: Json<CreateHabit>,
+    form: Json<Create>,
 ) -> MyResult<Json<()>> {
     let habit = THabit::create(form.name.clone(), at.into_inner().id)?;
     habit.upsert(&**pool).await?;

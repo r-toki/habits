@@ -2,7 +2,8 @@ use super::table;
 use crate::lib::my_error::*;
 use crate::model::lib::*;
 
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, FixedOffset, NaiveDate, Utc};
+use sqlx::query_as;
 
 table! {
     "habits",
@@ -46,5 +47,36 @@ impl THabit {
             return Err(MyError::Forbidden("can not write habit".into()));
         }
         Ok(())
+    }
+}
+
+impl THabit {
+    pub async fn find_many_by(
+        executor: impl PgExecutor<'_>,
+        user_id: String,
+        recorded_on: NaiveDate,
+    ) -> MyResult<Vec<THabit>> {
+        let offset = FixedOffset::east_opt(9 * 60 * 60).unwrap();
+        let recorded_on_start_of_day =
+            DateTime::<FixedOffset>::from_local(recorded_on.and_hms(0, 0, 0), offset);
+        let recorded_on_end_of_day =
+            DateTime::<FixedOffset>::from_local(recorded_on.and_hms(23, 59, 59), offset);
+
+        query_as!(
+            THabit,
+            r#"
+select * from habits
+where user_id = $1
+and (archived_at is null or archived_at > $2)
+and created_at < $3
+order by created_at
+            "#,
+            user_id,
+            recorded_on_start_of_day,
+            recorded_on_end_of_day
+        )
+        .fetch_all(executor)
+        .await
+        .map_err(Into::into)
     }
 }
