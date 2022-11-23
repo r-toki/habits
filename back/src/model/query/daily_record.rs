@@ -37,12 +37,8 @@ pub async fn find_daily_record(
     let t_daily_record = query_as!(
         TDailyRecord,
         r#"
-select
-    *
-from
-    daily_records
-where
-    user_id = $1
+select * from daily_records
+where user_id = $1
 and recorded_on = $2
         "#,
         user_id,
@@ -65,11 +61,9 @@ select
     h.name name
 from
     habit_daily_records h_d_r
-    inner join
-        habits h
-    on  h_d_r.habit_id = h.id
-where
-    daily_record_id = $1
+    inner join habits h
+    on h_d_r.habit_id = h.id
+where daily_record_id = $1
                 "#,
                 t_daily_record.id.clone()
             )
@@ -98,19 +92,11 @@ where
             let t_habits = query_as!(
                 THabit,
                 r#"
-select
-    *
-from
-    habits
-where
-    user_id = $1
-and (
-        archived_at is null
-    or  archived_at > $2
-    )
+select * from habits
+where user_id = $1
+and (archived_at is null or archived_at > $2)
 and created_at < $3
-order by
-    created_at
+order by created_at
                 "#,
                 user_id,
                 recorded_at_start_of_day,
