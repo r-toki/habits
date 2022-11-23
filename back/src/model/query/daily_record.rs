@@ -26,7 +26,8 @@ pub struct HabitDailyRecordDto {
     pub recorded_on: NaiveDate,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
-    pub name: String,
+    pub habit_id: String,
+    pub habit_name: String,
 }
 
 pub async fn find_daily_record(
@@ -58,7 +59,8 @@ select
     h_d_r.recorded_on recorded_on,
     h_d_r.created_at created_at,
     h_d_r.updated_at updated_at,
-    h.name name
+    h_d_r.habit_id habit_id,
+    h.name habit_name
 from
     habit_daily_records h_d_r
     inner join habits h
@@ -96,6 +98,7 @@ where daily_record_id = $1
                         recorded_on,
                         now,
                         now,
+                        t_habit.id,
                         t_habit.name,
                     )
                 })

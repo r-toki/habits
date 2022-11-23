@@ -18,32 +18,15 @@ table! {
 }
 
 impl TDailyRecord {
-    pub fn create(
-        comment: String,
-        recorded_on: NaiveDate,
-        user_id: String,
-    ) -> MyResult<TDailyRecord> {
+    pub fn create(comment: String, recorded_on: NaiveDate, user_id: String) -> TDailyRecord {
         let id = get_new_id();
         let now = get_current_date_time();
-        let daily_record = TDailyRecord::new(id, comment, recorded_on, now, now, user_id);
-        daily_record.validate()?;
-        Ok(daily_record)
+        TDailyRecord::new(id, comment, recorded_on, now, now, user_id)
     }
 
-    pub fn update(&mut self, comment: String) -> MyResult<()> {
+    pub fn update(&mut self, comment: String) {
         self.comment = comment;
         self.updated_at = get_current_date_time();
-        self.validate()?;
-        Ok(())
-    }
-
-    pub fn validate(&self) -> MyResult<()> {
-        if self.comment.len() == 0 {
-            return Err(MyError::UnprocessableEntity(
-                "comment must be at least 1 character".into(),
-            ));
-        }
-        Ok(())
     }
 }
 

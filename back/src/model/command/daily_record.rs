@@ -33,19 +33,19 @@ impl DailyRecord {
         recorded_on: NaiveDate,
         user_id: String,
         habit_ids: Vec<String>,
-    ) -> MyResult<DailyRecord> {
-        let t_daily_record = TDailyRecord::create(comment, recorded_on.clone(), user_id)?;
+    ) -> DailyRecord {
+        let t_daily_record = TDailyRecord::create(comment, recorded_on.clone(), user_id);
         let t_habit_daily_records: Vec<THabitDailyRecord> = habit_ids
             .into_iter()
             .map(|habit_id| {
                 THabitDailyRecord::create(recorded_on.clone(), habit_id, t_daily_record.id.clone())
             })
             .collect();
-        Ok(DailyRecord::new(t_daily_record, t_habit_daily_records))
+        DailyRecord::new(t_daily_record, t_habit_daily_records)
     }
 
-    pub fn update(&mut self, input: UpdateDailyRecord) -> MyResult<()> {
-        self.t_daily_record.update(input.comment)?;
+    pub fn update(&mut self, input: UpdateDailyRecord) {
+        self.t_daily_record.update(input.comment);
 
         for habit_daily_record in input.habit_daily_records.iter() {
             let target = self
@@ -58,8 +58,6 @@ impl DailyRecord {
                 None => {}
             }
         }
-
-        Ok(())
     }
 
     pub fn can_write(&self, user_id: String) -> MyResult<()> {

@@ -40,7 +40,7 @@ async fn update(
     match daily_record {
         Some(mut daily_record) => {
             daily_record.can_write(user_id.clone())?;
-            daily_record.update(form)?;
+            daily_record.update(form);
             daily_record.upsert(&**pool).await?;
             Ok(Json(()))
         }
@@ -51,8 +51,8 @@ async fn update(
                 recorded_on,
                 user_id,
                 habits.into_iter().map(|v| v.id).collect(),
-            )?;
-            daily_record.update(form)?;
+            );
+            daily_record.update(form);
             daily_record.upsert(&**pool).await?;
             Ok(Json(()))
         }

@@ -1,5 +1,12 @@
 import { axios } from './axios';
-import { CreateHabitInput, CreateUserInput, DailyRecord, Habit, User } from './type';
+import {
+  CreateHabitInput,
+  CreateUserInput,
+  DailyRecord,
+  Habit,
+  UpdateDailyRecord,
+  User,
+} from './type';
 
 export const getIndex = () => axios.get<string>('').then(({ data }) => data);
 
@@ -27,3 +34,6 @@ export const archiveHabit = (id: string) => axios.post(`user/habits/${id}/archiv
 
 export const getDailyRecord = (recordedOn: string) =>
   axios.get<DailyRecord>(`user/daily_records/${recordedOn}`).then(({ data }) => data);
+
+export const updateDailyRecord = ({ recordedOn, ...input }: UpdateDailyRecord) =>
+  axios.patch(`user/daily_records/${recordedOn}`, input);

@@ -1,10 +1,27 @@
-import { Box, Center, HStack, IconButton, Spinner, Stack, VStack } from '@chakra-ui/react';
-import { useQuery } from '@tanstack/react-query';
+import {
+  Box,
+  Button,
+  Center,
+  Checkbox,
+  HStack,
+  IconButton,
+  Spinner,
+  Stack,
+  Textarea,
+  useCheckboxGroup,
+} from '@chakra-ui/react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { addDays, format, startOfTomorrow, subDays } from 'date-fns';
-import { useMemo, useState } from 'react';
+import { FormEventHandler, useEffect, useMemo, useState } from 'react';
 import { GoChevronLeft, GoChevronRight } from 'react-icons/go';
 
-import { getDailyRecord } from '@/lib/backend';
+import { useAppToast } from '@/hooks/useAppToast';
+import { useTextInput } from '@/hooks/useTextInput';
+import {
+  DailyRecord,
+  getDailyRecord,
+  updateDailyRecord as updateDailyRecordFn,
+} from '@/lib/backend';
 
 const toDate = (dateTime: Date) => format(dateTime, 'yyyy-MM-dd');
 
@@ -39,16 +56,63 @@ export const RecordEdit = () => {
         />
       </HStack>
 
-      <VStack>
+      <Stack px="2">
         {dailyRecord.isLoading && (
           <Center>
             <Spinner />
           </Center>
         )}
-        {dailyRecord.data?.habitDailyRecords.map((habitDailyRecord) => (
-          <Box key={habitDailyRecord.id}>{habitDailyRecord.name}</Box>
-        ))}
-      </VStack>
+
+        {dailyRecord.data && <RecordEditForm dailyRecord={dailyRecord.data} />}
+      </Stack>
+    </Stack>
+  );
+};
+
+const RecordEditForm = ({ dailyRecord }: { dailyRecord: DailyRecord }) => {
+  const toast = useAppToast();
+
+  const client = useQueryClient();
+  const updateDailyRecord = useMutation({
+    mutationFn: updateDailyRecordFn,
+    onSuccess: () => {
+      client.invalidateQueries(['dailyRecord']);
+      toast({ status: 'success', title: 'Updated.' });
+    },
+    onError: () => toast({ status: 'error', title: 'Failed.' }),
+  });
+
+  const { value, setValue, getCheckboxProps } = useCheckboxGroup();
+  const commentInput = useTextInput();
+
+  useEffect(() => {
+    setValue(dailyRecord.habitDailyRecords.filter((v) => v.done).map((v) => v.habitId));
+    commentInput.set(dailyRecord.comment);
+  }, [dailyRecord]);
+
+  const onSubmit: FormEventHandler = async (e) => {
+    e.preventDefault();
+
+    await updateDailyRecord.mutate({
+      recordedOn: dailyRecord.recordedOn,
+      comment: commentInput.value,
+      habitDailyRecords: dailyRecord.habitDailyRecords.map((v) => ({
+        id: v.id,
+        done: value.includes(v.habitId),
+        habitId: v.habitId,
+      })),
+    });
+  };
+
+  return (
+    <Stack as="form" onSubmit={onSubmit}>
+      {dailyRecord.habitDailyRecords.map((v) => (
+        <Checkbox key={v.id} {...getCheckboxProps({ value: v.habitId })}>
+          {v.habitName}
+        </Checkbox>
+      ))}
+      <Textarea {...commentInput.bind} />
+      <Button type="submit">Save</Button>
     </Stack>
   );
 };
