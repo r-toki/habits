@@ -152,6 +152,58 @@
     },
     "query": "\nselect * from daily_records\nwhere user_id = $1\nand recorded_on = $2\n            "
   },
+  "91a33cf02c624b4f0a74febadc1a625f78ff3617e4f497b19f51d0886935d3d2": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 2,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "archived_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "user_id",
+          "ordinal": 5,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Timestamptz",
+          "Timestamptz"
+        ]
+      }
+    },
+    "query": "\nselect * from habits\nwhere user_id = $1\nand (archived_at is null or archived_at > $2)\nand created_at < $3\norder by created_at\n            "
+  },
   "93926c06131fd7627553aac69cd76c3bf9a32839200710ee5a81f7e05a19c9ee": {
     "describe": {
       "columns": [
@@ -203,7 +255,7 @@
     },
     "query": "\nselect * from daily_records\nwhere user_id = $1\nand recorded_on = $2\n        "
   },
-  "ba3bea8d7e33caf661b4fe88533bba22877ffafe87cf5ba56b7494e1a317f10f": {
+  "ccbec6c1e86f0a4b0ef4dcfff72a326501822ef896a2d4e4069ceb5a62bc4107": {
     "describe": {
       "columns": [
         {
@@ -232,12 +284,18 @@
           "type_info": "Timestamptz"
         },
         {
-          "name": "name",
+          "name": "habit_id",
           "ordinal": 5,
+          "type_info": "Text"
+        },
+        {
+          "name": "habit_name",
+          "ordinal": 6,
           "type_info": "Text"
         }
       ],
       "nullable": [
+        false,
         false,
         false,
         false,
@@ -251,58 +309,6 @@
         ]
       }
     },
-    "query": "\nselect\n    h_d_r.id id,\n    h_d_r.done done,\n    h_d_r.recorded_on recorded_on,\n    h_d_r.created_at created_at,\n    h_d_r.updated_at updated_at,\n    h.name name\nfrom\n    habit_daily_records h_d_r\n    inner join habits h\n    on h_d_r.habit_id = h.id\nwhere daily_record_id = $1\n                "
-  },
-  "fe84bda3fe4192ab162f69f69c1682dca4efb447224125c78ef5519f2bd18b54": {
-    "describe": {
-      "columns": [
-        {
-          "name": "id",
-          "ordinal": 0,
-          "type_info": "Text"
-        },
-        {
-          "name": "name",
-          "ordinal": 1,
-          "type_info": "Text"
-        },
-        {
-          "name": "created_at",
-          "ordinal": 2,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "updated_at",
-          "ordinal": 3,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "archived_at",
-          "ordinal": 4,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "user_id",
-          "ordinal": 5,
-          "type_info": "Text"
-        }
-      ],
-      "nullable": [
-        false,
-        false,
-        false,
-        false,
-        true,
-        false
-      ],
-      "parameters": {
-        "Left": [
-          "Text",
-          "Timestamptz",
-          "Timestamptz"
-        ]
-      }
-    },
-    "query": "\nselect * from habits\nwhere user_id = $1\nand (archived_at is null or archived_at > $2)\nand created_at < $3\norder by created_at\n                "
+    "query": "\nselect\n    h_d_r.id id,\n    h_d_r.done done,\n    h_d_r.recorded_on recorded_on,\n    h_d_r.created_at created_at,\n    h_d_r.updated_at updated_at,\n    h_d_r.habit_id habit_id,\n    h.name habit_name\nfrom\n    habit_daily_records h_d_r\n    inner join habits h\n    on h_d_r.habit_id = h.id\nwhere daily_record_id = $1\n                "
   }
 }

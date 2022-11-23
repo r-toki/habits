@@ -2,7 +2,7 @@ use super::table;
 use crate::lib::my_error::*;
 use crate::model::lib::*;
 
-use chrono::{DateTime, FixedOffset, NaiveDate, Utc};
+use chrono::{DateTime, NaiveDate, Utc};
 use sqlx::query_as;
 
 table! {
@@ -56,12 +56,6 @@ impl THabit {
         user_id: String,
         recorded_on: NaiveDate,
     ) -> MyResult<Vec<THabit>> {
-        let offset = FixedOffset::east_opt(9 * 60 * 60).unwrap();
-        let recorded_on_start_of_day =
-            DateTime::<FixedOffset>::from_local(recorded_on.and_hms(0, 0, 0), offset);
-        let recorded_on_end_of_day =
-            DateTime::<FixedOffset>::from_local(recorded_on.and_hms(23, 59, 59), offset);
-
         query_as!(
             THabit,
             r#"
@@ -72,8 +66,8 @@ and created_at < $3
 order by created_at
             "#,
             user_id,
-            recorded_on_start_of_day,
-            recorded_on_end_of_day
+            start_of_date(recorded_on),
+            end_of_date(recorded_on)
         )
         .fetch_all(executor)
         .await
