@@ -9,7 +9,6 @@ use sqlx::{query, PgPool};
 #[derive(new, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DailyRecordDto {
-    pub id: String,
     pub comment: String,
     pub recorded_on: NaiveDate,
     pub habit_daily_records: Vec<HabitDailyRecordDto>,
@@ -66,12 +65,8 @@ pub async fn find_daily_record(
                 })
                 .collect();
 
-            let daily_record = DailyRecordDto::new(
-                daily_record.id,
-                daily_record.comment,
-                recorded_on,
-                habit_daily_records,
-            );
+            let daily_record =
+                DailyRecordDto::new(daily_record.comment, recorded_on, habit_daily_records);
 
             Ok(daily_record)
         }
@@ -96,8 +91,7 @@ pub async fn find_daily_record(
                 .map(|v| HabitDailyRecordDto::new(false, v.id, v.name))
                 .collect();
 
-            let daily_record =
-                DailyRecordDto::new(get_new_id(), "".into(), recorded_on, habit_daily_records);
+            let daily_record = DailyRecordDto::new("".into(), recorded_on, habit_daily_records);
 
             Ok(daily_record)
         }

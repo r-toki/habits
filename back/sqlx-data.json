@@ -1,5 +1,25 @@
 {
   "db": "PostgreSQL",
+  "1caac1d91413f578d2808ec0c1f9b7a5152530bab855cdeb90a1899aa45074c1": {
+    "describe": {
+      "columns": [
+        {
+          "name": "count",
+          "ordinal": 0,
+          "type_info": "Int8"
+        }
+      ],
+      "nullable": [
+        null
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            select count(*) from habits\n            where user_id = $1\n            "
+  },
   "37dcfa3633f727c0f4037cf17ab03e93496958aed7a5776cba20514909f50089": {
     "describe": {
       "columns": [
@@ -32,103 +52,6 @@
       }
     },
     "query": "\n        select id, comment, recorded_on from daily_records\n        where user_id = $1\n        and recorded_on = $2\n        "
-  },
-  "3a49cd2b304bf952f70a967313354d909624197f163b17343c957b3a3f0a7de2": {
-    "describe": {
-      "columns": [
-        {
-          "name": "id",
-          "ordinal": 0,
-          "type_info": "Text"
-        },
-        {
-          "name": "name",
-          "ordinal": 1,
-          "type_info": "Text"
-        },
-        {
-          "name": "created_at",
-          "ordinal": 2,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "updated_at",
-          "ordinal": 3,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "archived_at",
-          "ordinal": 4,
-          "type_info": "Timestamptz"
-        }
-      ],
-      "nullable": [
-        false,
-        false,
-        false,
-        false,
-        true
-      ],
-      "parameters": {
-        "Left": [
-          "Text",
-          "Bool"
-        ]
-      }
-    },
-    "query": "\nselect id, name, created_at, updated_at, archived_at from habits\nwhere user_id = $1\nand ($2::bool is null or (case when $2 then archived_at is not null else archived_at is null end))\norder by created_at\n        "
-  },
-  "407a1b9ae4d315d104105a6f45ebe603bed80c293b84ea9dc8cc25acd6a653da": {
-    "describe": {
-      "columns": [
-        {
-          "name": "id",
-          "ordinal": 0,
-          "type_info": "Text"
-        },
-        {
-          "name": "name",
-          "ordinal": 1,
-          "type_info": "Text"
-        },
-        {
-          "name": "created_at",
-          "ordinal": 2,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "updated_at",
-          "ordinal": 3,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "archived_at",
-          "ordinal": 4,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "user_id",
-          "ordinal": 5,
-          "type_info": "Text"
-        }
-      ],
-      "nullable": [
-        false,
-        false,
-        false,
-        false,
-        true,
-        false
-      ],
-      "parameters": {
-        "Left": [
-          "Text",
-          "Timestamptz",
-          "Timestamptz"
-        ]
-      }
-    },
-    "query": "\n            select * from habits\n            where user_id = $1\n            and (archived_at is null or archived_at > $2)\n            and created_at < $3\n            order by created_at\n            "
   },
   "773f17279b2eb9bd1268e2d5222a78441adaa145ea7ea932f584abbf625e1298": {
     "describe": {
@@ -180,6 +103,64 @@
       }
     },
     "query": "\n            select * from daily_records\n            where user_id = $1\n            and recorded_on = $2\n            "
+  },
+  "78be735406b257d174a960694d63b2bb15e8fd4b0fec6e9bfb1f94f2d5a031d8": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 2,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "archived_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "user_id",
+          "ordinal": 5,
+          "type_info": "Text"
+        },
+        {
+          "name": "sort_number",
+          "ordinal": 6,
+          "type_info": "Int4"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Timestamptz",
+          "Timestamptz"
+        ]
+      }
+    },
+    "query": "\n            select * from habits\n            where user_id = $1\n            and (archived_at is null or archived_at > $2)\n            and created_at < $3\n            order by sort_number\n            "
   },
   "83e41cb0bd7f1cb7db074b17750d7ffe8fd2388cce26d42b19d767d3adf946ff": {
     "describe": {
@@ -264,6 +245,51 @@
       }
     },
     "query": "\n                select id, name from habits\n                where user_id = $1\n                and (archived_at is null or archived_at > $2)\n                and created_at < $3\n                order by created_at\n                "
+  },
+  "c829429a29423302106a2415bce9f707dcbc41b271af7fe7d814e5d4a07e6b8e": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 2,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "archived_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Bool"
+        ]
+      }
+    },
+    "query": "\n        select id, name, created_at, updated_at, archived_at from habits\n        where user_id = $1\n        and ($2::bool is null or (case when $2 then archived_at is not null else archived_at is null end))\n        order by sort_number\n        "
   },
   "e51186efae117537d85500c6274b50bf7f60f8f1b9e3ecc47585d25e69a23318": {
     "describe": {

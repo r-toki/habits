@@ -43,13 +43,6 @@ impl DailyRecord {
             }
         }
     }
-
-    pub fn can_write(&self, user_id: String) -> MyResult<()> {
-        if self.t_daily_record.user_id != user_id {
-            return Err(MyError::Forbidden("can not write daily record".into()));
-        }
-        Ok(())
-    }
 }
 
 impl DailyRecord {

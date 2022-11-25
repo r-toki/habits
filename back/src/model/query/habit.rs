@@ -26,12 +26,12 @@ pub async fn find_habits(
 ) -> MyResult<Vec<HabitDto>> {
     query_as!(
         HabitDto,
-        r#"
-select id, name, created_at, updated_at, archived_at from habits
-where user_id = $1
-and ($2::bool is null or (case when $2 then archived_at is not null else archived_at is null end))
-order by created_at
-        "#,
+        "
+        select id, name, created_at, updated_at, archived_at from habits
+        where user_id = $1
+        and ($2::bool is null or (case when $2 then archived_at is not null else archived_at is null end))
+        order by sort_number
+        ",
         user_id,
         habit_query.archived
     )

@@ -37,7 +37,9 @@ async fn create(
     at: AccessTokenDecoded,
     form: Json<Create>,
 ) -> MyResult<Json<()>> {
-    let habit = THabit::create(form.name.clone(), at.into_inner().id)?;
+    let user_id = at.into_inner().id;
+    let count = THabit::count_of_user(&**pool, user_id.clone()).await?;
+    let habit = THabit::create(form.name.clone(), count, user_id.clone())?;
     habit.upsert(&**pool).await?;
     Ok(Json(()))
 }

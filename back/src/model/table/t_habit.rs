@@ -10,6 +10,7 @@ table! {
     pub struct THabit {
         pub id: String,
         pub name: String,
+        pub sort_number: i32,
         pub created_at: DateTime<Utc>,
         pub updated_at: DateTime<Utc>,
         pub archived_at: Option<DateTime<Utc>>,
@@ -18,7 +19,7 @@ table! {
 }
 
 impl THabit {
-    pub fn create(name: String, user_id: String) -> MyResult<THabit> {
+    pub fn create(name: String, sort_number: i32, user_id: String) -> MyResult<THabit> {
         if name.len() == 0 {
             return Err(MyError::UnprocessableEntity(
                 "habit name must be at leas 1 character".into(),
@@ -26,7 +27,7 @@ impl THabit {
         }
         let id = get_new_id();
         let now = get_current_date_time();
-        let habit = THabit::new(id, name, now, now, None, user_id);
+        let habit = THabit::new(id, name, sort_number, now, now, None, user_id);
         Ok(habit)
     }
 
@@ -63,7 +64,7 @@ impl THabit {
             where user_id = $1
             and (archived_at is null or archived_at > $2)
             and created_at < $3
-            order by created_at
+            order by sort_number
             ",
             user_id,
             start_of_date(recorded_on),
@@ -72,5 +73,22 @@ impl THabit {
         .fetch_all(executor)
         .await
         .map_err(Into::into)
+    }
+
+    pub async fn count_of_user(executor: impl PgExecutor<'_>, user_id: String) -> MyResult<i32> {
+        let record = query!(
+            "
+            select count(*) from habits
+            where user_id = $1
+            ",
+            user_id
+        )
+        .fetch_one(executor)
+        .await?;
+
+        match record.count {
+            Some(count) => Ok(i32::try_from(count).unwrap()),
+            None => Ok(0),
+        }
     }
 }

@@ -12,7 +12,6 @@ export type Habit = {
 };
 
 export type DailyRecord = {
-  id: string;
   comment: string;
   recordedOn: string;
   habitDailyRecords: HabitDailyRecord[];
