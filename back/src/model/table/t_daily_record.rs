@@ -31,18 +31,18 @@ impl TDailyRecord {
 }
 
 impl TDailyRecord {
-    pub async fn find_by(
+    pub async fn one_of_user_by_recorded_on(
         executor: impl PgExecutor<'_>,
         user_id: String,
         recorded_on: NaiveDate,
     ) -> MyResult<Option<TDailyRecord>> {
         query_as!(
             TDailyRecord,
-            r#"
-select * from daily_records
-where user_id = $1
-and recorded_on = $2
-            "#,
+            "
+            select * from daily_records
+            where user_id = $1
+            and recorded_on = $2
+            ",
             user_id,
             recorded_on
         )

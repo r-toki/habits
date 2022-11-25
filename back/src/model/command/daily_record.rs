@@ -69,21 +69,12 @@ impl DailyRecord {
 }
 
 impl DailyRecord {
-    pub async fn find_by(
+    pub async fn one_of_user_by_recorded_on(
         pool: &PgPool,
         user_id: String,
         recorded_on: NaiveDate,
     ) -> MyResult<Option<DailyRecord>> {
-        let t_daily_record = TDailyRecord::find_by(pool, user_id, recorded_on).await?;
-        match t_daily_record {
-            Some(t_daily_record) => {
-                let t_habit_daily_records =
-                    THabitDailyRecord::find_many_by(pool, t_daily_record.id.clone()).await?;
-                let daily_record = DailyRecord::new(t_daily_record, t_habit_daily_records);
-                Ok(Some(daily_record))
-            }
-            None => Ok(None),
-        }
+        todo!();
     }
 
     pub async fn upsert(&self, pool: &PgPool) -> MyResult<()> {

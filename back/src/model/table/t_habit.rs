@@ -51,20 +51,20 @@ impl THabit {
 }
 
 impl THabit {
-    pub async fn find_many_by(
+    pub async fn many_of_user_by_record_on(
         executor: impl PgExecutor<'_>,
         user_id: String,
         recorded_on: NaiveDate,
     ) -> MyResult<Vec<THabit>> {
         query_as!(
             THabit,
-            r#"
-select * from habits
-where user_id = $1
-and (archived_at is null or archived_at > $2)
-and created_at < $3
-order by created_at
-            "#,
+            "
+            select * from habits
+            where user_id = $1
+            and (archived_at is null or archived_at > $2)
+            and created_at < $3
+            order by created_at
+            ",
             user_id,
             start_of_date(recorded_on),
             end_of_date(recorded_on)

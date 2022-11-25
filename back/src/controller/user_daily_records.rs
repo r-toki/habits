@@ -32,29 +32,31 @@ async fn update(
     recorded_on: Path<NaiveDate>,
     form: Json<UpdateDailyRecord>,
 ) -> MyResult<Json<()>> {
-    let user_id = at.into_inner().id;
-    let recorded_on = recorded_on.into_inner();
-    let form = form.into_inner();
+    todo!();
 
-    let daily_record = DailyRecord::find_by(&**pool, user_id.clone(), recorded_on).await?;
-    match daily_record {
-        Some(mut daily_record) => {
-            daily_record.can_write(user_id.clone())?;
-            daily_record.update(form);
-            daily_record.upsert(&**pool).await?;
-            Ok(Json(()))
-        }
-        None => {
-            let habits = THabit::find_many_by(&**pool, user_id.clone(), recorded_on).await?;
-            let mut daily_record = DailyRecord::create(
-                form.comment.clone(),
-                recorded_on,
-                user_id,
-                habits.into_iter().map(|v| v.id).collect(),
-            );
-            daily_record.update(form);
-            daily_record.upsert(&**pool).await?;
-            Ok(Json(()))
-        }
-    }
+    // let user_id = at.into_inner().id;
+    // let recorded_on = recorded_on.into_inner();
+    // let form = form.into_inner();
+
+    // let daily_record = DailyRecord::find_by(&**pool, user_id.clone(), recorded_on).await?;
+    // match daily_record {
+    //     Some(mut daily_record) => {
+    //         daily_record.can_write(user_id.clone())?;
+    //         daily_record.update(form);
+    //         daily_record.upsert(&**pool).await?;
+    //         Ok(Json(()))
+    //     }
+    //     None => {
+    //         let habits = THabit::find_many_by(&**pool, user_id.clone(), recorded_on).await?;
+    //         let mut daily_record = DailyRecord::create(
+    //             form.comment.clone(),
+    //             recorded_on,
+    //             user_id,
+    //             habits.into_iter().map(|v| v.id).collect(),
+    //         );
+    //         daily_record.update(form);
+    //         daily_record.upsert(&**pool).await?;
+    //         Ok(Json(()))
+    //     }
+    // }
 }

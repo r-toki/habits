@@ -36,16 +36,16 @@ impl THabitDailyRecord {
 }
 
 impl THabitDailyRecord {
-    pub async fn find_many_by(
+    pub async fn many_of_daily_record(
         executor: impl PgExecutor<'_>,
         daily_record_id: String,
     ) -> MyResult<Vec<THabitDailyRecord>> {
         query_as!(
             THabitDailyRecord,
-            r#"
-select * from habit_daily_records
-where daily_record_id = $1
-            "#,
+            "
+            select * from habit_daily_records
+            where daily_record_id = $1
+            ",
             daily_record_id
         )
         .fetch_all(executor)
