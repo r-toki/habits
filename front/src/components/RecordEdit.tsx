@@ -97,7 +97,6 @@ const RecordEditForm = ({ dailyRecord }: { dailyRecord: DailyRecord }) => {
       recordedOn: dailyRecord.recordedOn,
       comment: commentInput.value,
       habitDailyRecords: dailyRecord.habitDailyRecords.map((v) => ({
-        id: v.id,
         done: value.includes(v.habitId),
         habitId: v.habitId,
       })),
@@ -107,7 +106,7 @@ const RecordEditForm = ({ dailyRecord }: { dailyRecord: DailyRecord }) => {
   return (
     <Stack as="form" onSubmit={onSubmit}>
       {dailyRecord.habitDailyRecords.map((v) => (
-        <Checkbox key={v.id} {...getCheckboxProps({ value: v.habitId })}>
+        <Checkbox key={v.habitId} {...getCheckboxProps({ value: v.habitId })}>
           {v.habitName}
         </Checkbox>
       ))}

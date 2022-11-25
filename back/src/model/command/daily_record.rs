@@ -1,4 +1,5 @@
 use crate::lib::my_error::*;
+use crate::model::lib::*;
 use crate::model::table::*;
 
 use chrono::NaiveDate;
@@ -22,28 +23,11 @@ pub struct UpdateDailyRecord {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateHabitDailyRecord {
-    pub id: String,
     pub done: bool,
     pub habit_id: String,
 }
 
 impl DailyRecord {
-    pub fn create(
-        comment: String,
-        recorded_on: NaiveDate,
-        user_id: String,
-        habit_ids: Vec<String>,
-    ) -> DailyRecord {
-        let t_daily_record = TDailyRecord::create(comment, recorded_on.clone(), user_id);
-        let t_habit_daily_records: Vec<THabitDailyRecord> = habit_ids
-            .into_iter()
-            .map(|habit_id| {
-                THabitDailyRecord::create(recorded_on.clone(), habit_id, t_daily_record.id.clone())
-            })
-            .collect();
-        DailyRecord::new(t_daily_record, t_habit_daily_records)
-    }
-
     pub fn update(&mut self, input: UpdateDailyRecord) {
         self.t_daily_record.update(input.comment);
 
@@ -51,7 +35,7 @@ impl DailyRecord {
             let target = self
                 .t_habit_daily_records
                 .iter_mut()
-                .find(|v| v.id == habit_daily_record.id);
+                .find(|v| v.habit_id == habit_daily_record.habit_id);
 
             match target {
                 Some(target) => target.update(habit_daily_record.done),
@@ -73,8 +57,51 @@ impl DailyRecord {
         pool: &PgPool,
         user_id: String,
         recorded_on: NaiveDate,
-    ) -> MyResult<Option<DailyRecord>> {
-        todo!();
+    ) -> MyResult<DailyRecord> {
+        let t_daily_record =
+            TDailyRecord::one_of_user_by_recorded_on(pool, user_id.clone(), recorded_on).await?;
+
+        match t_daily_record {
+            Some(t_daily_record) => {
+                let mut t_habit_daily_records =
+                    THabitDailyRecord::many_of_daily_record(pool, t_daily_record.id.clone())
+                        .await?;
+                let t_habits =
+                    THabit::many_of_user_by_record_on(pool, user_id.clone(), recorded_on).await?;
+
+                let not_recorded_habit_ids = vec_diff(
+                    t_habits.iter().map(|v| v.id.clone()).collect(),
+                    t_habit_daily_records
+                        .iter()
+                        .map(|v| v.habit_id.clone())
+                        .collect(),
+                );
+                let mut not_recorded_habit_daily_records: Vec<THabitDailyRecord> =
+                    not_recorded_habit_ids
+                        .into_iter()
+                        .map(|v| {
+                            THabitDailyRecord::create(recorded_on, v, t_daily_record.id.clone())
+                        })
+                        .collect();
+
+                t_habit_daily_records.append(&mut not_recorded_habit_daily_records);
+                Ok(DailyRecord::new(t_daily_record, t_habit_daily_records))
+            }
+
+            None => {
+                let t_daily_record =
+                    TDailyRecord::create("".into(), recorded_on.clone(), user_id.clone());
+                let t_habit_daily_records: Vec<THabitDailyRecord> =
+                    THabit::many_of_user_by_record_on(pool, user_id.clone(), recorded_on)
+                        .await?
+                        .into_iter()
+                        .map(|v| {
+                            THabitDailyRecord::create(recorded_on, v.id, t_daily_record.id.clone())
+                        })
+                        .collect();
+                Ok(DailyRecord::new(t_daily_record, t_habit_daily_records))
+            }
+        }
     }
 
     pub async fn upsert(&self, pool: &PgPool) -> MyResult<()> {

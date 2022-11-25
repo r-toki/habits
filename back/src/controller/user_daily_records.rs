@@ -1,6 +1,6 @@
 use crate::controller::lib::*;
 use crate::lib::my_error::*;
-use crate::model::{command::*, query::*, table::*};
+use crate::model::{command::*, query::*};
 
 use actix_web::{
     get, patch,
@@ -32,31 +32,14 @@ async fn update(
     recorded_on: Path<NaiveDate>,
     form: Json<UpdateDailyRecord>,
 ) -> MyResult<Json<()>> {
-    todo!();
+    let user_id = at.into_inner().id;
+    let recorded_on = recorded_on.into_inner();
+    let form = form.into_inner();
 
-    // let user_id = at.into_inner().id;
-    // let recorded_on = recorded_on.into_inner();
-    // let form = form.into_inner();
+    let mut daily_record =
+        DailyRecord::one_of_user_by_recorded_on(&**pool, user_id, recorded_on).await?;
+    daily_record.update(form);
+    daily_record.upsert(&**pool).await?;
 
-    // let daily_record = DailyRecord::find_by(&**pool, user_id.clone(), recorded_on).await?;
-    // match daily_record {
-    //     Some(mut daily_record) => {
-    //         daily_record.can_write(user_id.clone())?;
-    //         daily_record.update(form);
-    //         daily_record.upsert(&**pool).await?;
-    //         Ok(Json(()))
-    //     }
-    //     None => {
-    //         let habits = THabit::find_many_by(&**pool, user_id.clone(), recorded_on).await?;
-    //         let mut daily_record = DailyRecord::create(
-    //             form.comment.clone(),
-    //             recorded_on,
-    //             user_id,
-    //             habits.into_iter().map(|v| v.id).collect(),
-    //         );
-    //         daily_record.update(form);
-    //         daily_record.upsert(&**pool).await?;
-    //         Ok(Json(()))
-    //     }
-    // }
+    Ok(Json(()))
 }

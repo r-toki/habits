@@ -15,17 +15,11 @@ export type DailyRecord = {
   id: string;
   comment: string;
   recordedOn: string;
-  createdAt: string;
-  updatedAt: string;
   habitDailyRecords: HabitDailyRecord[];
 };
 
 export type HabitDailyRecord = {
-  id: string;
   done: boolean;
-  recordedOn: string;
-  createdAt: string;
-  updatedAt: string;
   habitId: string;
   habitName: string;
 };
@@ -41,5 +35,5 @@ export type CreateHabitInput = {
 export type UpdateDailyRecord = {
   recordedOn: string;
   comment: string;
-  habitDailyRecords: { id: string; done: boolean; habitId: string }[];
+  habitDailyRecords: { done: boolean; habitId: string }[];
 };
