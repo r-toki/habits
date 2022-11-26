@@ -1,24 +1,61 @@
 {
   "db": "PostgreSQL",
-  "1caac1d91413f578d2808ec0c1f9b7a5152530bab855cdeb90a1899aa45074c1": {
+  "16ca7142a2eb5be1e7aa5ce65eb7d473d1f7745c4673be17d3cce42bfbb23d8d": {
     "describe": {
       "columns": [
         {
-          "name": "count",
+          "name": "id",
           "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 2,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "archived_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "user_id",
+          "ordinal": 5,
+          "type_info": "Text"
+        },
+        {
+          "name": "sort_number",
+          "ordinal": 6,
           "type_info": "Int8"
         }
       ],
       "nullable": [
-        null
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false
       ],
       "parameters": {
         "Left": [
+          "Text",
           "Text"
         ]
       }
     },
-    "query": "\n            select count(*) from habits\n            where user_id = $1\n            "
+    "query": "\n            select * from habits\n            where user_id = $1\n            and id = $2\n            "
   },
   "37dcfa3633f727c0f4037cf17ab03e93496958aed7a5776cba20514909f50089": {
     "describe": {
@@ -52,6 +89,40 @@
       }
     },
     "query": "\n        select id, comment, recorded_on from daily_records\n        where user_id = $1\n        and recorded_on = $2\n        "
+  },
+  "5357ab0295fb8cf3a75a7867612c5a4dd5a6c5505e3ea61a19da404065652480": {
+    "describe": {
+      "columns": [
+        {
+          "name": "archived!",
+          "ordinal": 0,
+          "type_info": "Bool"
+        },
+        {
+          "name": "id",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "name",
+          "ordinal": 2,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        null,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Timestamptz",
+          "Timestamptz"
+        ]
+      }
+    },
+    "query": "\n                select archived_at is not null \"archived!\", id, name from habits\n                where user_id = $1\n                and (archived_at is null or archived_at > $2)\n                and created_at < $3\n                order by sort_number\n                "
   },
   "773f17279b2eb9bd1268e2d5222a78441adaa145ea7ea932f584abbf625e1298": {
     "describe": {
@@ -140,7 +211,7 @@
         {
           "name": "sort_number",
           "ordinal": 6,
-          "type_info": "Int4"
+          "type_info": "Int8"
         }
       ],
       "nullable": [
@@ -161,6 +232,46 @@
       }
     },
     "query": "\n            select * from habits\n            where user_id = $1\n            and (archived_at is null or archived_at > $2)\n            and created_at < $3\n            order by sort_number\n            "
+  },
+  "81672b0683cf1fbc48bce107789332901a13c9164eb744c81a2d33a66b62a7b4": {
+    "describe": {
+      "columns": [
+        {
+          "name": "done?",
+          "ordinal": 0,
+          "type_info": "Bool"
+        },
+        {
+          "name": "archived!",
+          "ordinal": 1,
+          "type_info": "Bool"
+        },
+        {
+          "name": "habit_id",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "habit_name",
+          "ordinal": 3,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        null,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Timestamptz",
+          "Timestamptz"
+        ]
+      }
+    },
+    "query": "\n                select h_d_r.done \"done?\", h.archived_at is not null \"archived!\", h.id habit_id, h.name habit_name from habits h\n                left outer join habit_daily_records h_d_r\n                on h.id = h_d_r.habit_id\n                where h.user_id = $1\n                and (h.archived_at is null or h.archived_at > $2)\n                and h.created_at < $3\n                order by h.sort_number\n                "
   },
   "83e41cb0bd7f1cb7db074b17750d7ffe8fd2388cce26d42b19d767d3adf946ff": {
     "describe": {
@@ -218,7 +329,7 @@
     },
     "query": "\n            select * from habit_daily_records\n            where daily_record_id = $1\n            "
   },
-  "8f0c51545d1d986ec46d06d7b347df30207f45f22aa8a0a20a858b5d50ec1e83": {
+  "8798736cb9642e625b8481b2999957d931169e43ff834dd337d278892d521041": {
     "describe": {
       "columns": [
         {
@@ -230,57 +341,23 @@
           "name": "name",
           "ordinal": 1,
           "type_info": "Text"
-        }
-      ],
-      "nullable": [
-        false,
-        false
-      ],
-      "parameters": {
-        "Left": [
-          "Text",
-          "Timestamptz",
-          "Timestamptz"
-        ]
-      }
-    },
-    "query": "\n                select id, name from habits\n                where user_id = $1\n                and (archived_at is null or archived_at > $2)\n                and created_at < $3\n                order by created_at\n                "
-  },
-  "c829429a29423302106a2415bce9f707dcbc41b271af7fe7d814e5d4a07e6b8e": {
-    "describe": {
-      "columns": [
-        {
-          "name": "id",
-          "ordinal": 0,
-          "type_info": "Text"
         },
         {
-          "name": "name",
-          "ordinal": 1,
-          "type_info": "Text"
+          "name": "archived!",
+          "ordinal": 2,
+          "type_info": "Bool"
         },
         {
           "name": "created_at",
-          "ordinal": 2,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "updated_at",
           "ordinal": 3,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "archived_at",
-          "ordinal": 4,
           "type_info": "Timestamptz"
         }
       ],
       "nullable": [
         false,
         false,
-        false,
-        false,
-        true
+        null,
+        false
       ],
       "parameters": {
         "Left": [
@@ -289,40 +366,6 @@
         ]
       }
     },
-    "query": "\n        select id, name, created_at, updated_at, archived_at from habits\n        where user_id = $1\n        and ($2::bool is null or (case when $2 then archived_at is not null else archived_at is null end))\n        order by sort_number\n        "
-  },
-  "e51186efae117537d85500c6274b50bf7f60f8f1b9e3ecc47585d25e69a23318": {
-    "describe": {
-      "columns": [
-        {
-          "name": "done?",
-          "ordinal": 0,
-          "type_info": "Bool"
-        },
-        {
-          "name": "habit_id!",
-          "ordinal": 1,
-          "type_info": "Text"
-        },
-        {
-          "name": "habit_name!",
-          "ordinal": 2,
-          "type_info": "Text"
-        }
-      ],
-      "nullable": [
-        false,
-        false,
-        false
-      ],
-      "parameters": {
-        "Left": [
-          "Text",
-          "Timestamptz",
-          "Timestamptz"
-        ]
-      }
-    },
-    "query": "\n                select h_d_r.done \"done?\", h.id \"habit_id!\", h.name \"habit_name!\" from habits h\n                left outer join habit_daily_records h_d_r\n                on h.id = h_d_r.habit_id\n                where h.user_id = $1\n                and (h.archived_at is null or h.archived_at > $2)\n                and h.created_at < $3\n                order by h.created_at\n                "
+    "query": "\n        select id, name, archived_at is not null \"archived!\", created_at from habits\n        where user_id = $1\n        and ($2::bool is null or (case when $2 then archived_at is not null else archived_at is null end))\n        order by sort_number\n        "
   }
 }

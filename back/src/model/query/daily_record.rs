@@ -27,7 +27,7 @@ pub async fn find_daily_record(
     pool: &PgPool,
     user_id: String,
     recorded_on: NaiveDate,
-) -> MyResult<DailyRecordDto> {
+) -> MyResult<Option<DailyRecordDto>> {
     let daily_record = query!(
         "
         select id, comment, recorded_on from daily_records
@@ -59,6 +59,10 @@ pub async fn find_daily_record(
             .fetch_all(pool)
             .await?;
 
+            if habit_daily_records.len() == 0 {
+                return Ok(None);
+            }
+
             let habit_daily_records: Vec<HabitDailyRecordDto> = habit_daily_records
                 .into_iter()
                 .map(|v| {
@@ -71,10 +75,11 @@ pub async fn find_daily_record(
                 })
                 .collect();
 
-            let daily_record =
-                DailyRecordDto::new(daily_record.comment, recorded_on, habit_daily_records);
-
-            Ok(daily_record)
+            Ok(Some(DailyRecordDto::new(
+                daily_record.comment,
+                recorded_on,
+                habit_daily_records,
+            )))
         }
         None => {
             let habits = query!(
@@ -92,14 +97,20 @@ pub async fn find_daily_record(
             .fetch_all(pool)
             .await?;
 
+            if habits.len() == 0 {
+                return Ok(None);
+            }
+
             let habit_daily_records: Vec<HabitDailyRecordDto> = habits
                 .into_iter()
                 .map(|v| HabitDailyRecordDto::new(false, v.archived, v.id, v.name))
                 .collect();
 
-            let daily_record = DailyRecordDto::new("".into(), recorded_on, habit_daily_records);
-
-            Ok(daily_record)
+            Ok(Some(DailyRecordDto::new(
+                "".into(),
+                recorded_on,
+                habit_daily_records,
+            )))
         }
     }
 }

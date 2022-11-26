@@ -36,7 +36,7 @@ export const archiveHabit = (id: string) => axios.post(`user/habits/${id}/archiv
 export const swapHabit = (input: CreateHabitSwapInput) => axios.post('user/habits/swap', input);
 
 export const getDailyRecord = (recordedOn: string) =>
-  axios.get<DailyRecord>(`user/daily_records/${recordedOn}`).then(({ data }) => data);
+  axios.get<DailyRecord | null>(`user/daily_records/${recordedOn}`).then(({ data }) => data);
 
 export const updateDailyRecord = ({ recordedOn, ...input }: UpdateDailyRecord) =>
   axios.patch(`user/daily_records/${recordedOn}`, input);

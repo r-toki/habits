@@ -64,6 +64,10 @@ export const RecordEdit = () => {
         )}
 
         {dailyRecord.data && <RecordEditForm dailyRecord={dailyRecord.data} />}
+
+        {dailyRecord.isSuccess && !dailyRecord.data && (
+          <Box alignSelf="center">there are/were no active habits.</Box>
+        )}
       </Stack>
     </Stack>
   );
