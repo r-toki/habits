@@ -52,16 +52,15 @@ export const HabitList = () => {
             <Menu placement="bottom-end">
               <MenuButton as={IconButton} icon={<GoKebabVertical />} size="xs" />
               <MenuList>
-                {habitsQuery.archived == 'false' && (
+                {habitsQuery.archived == 'false' && habits.data.length > 1 && (
                   <>
                     {idx != 0 && <MenuItem onClick={() => onUpHabit(idx)}>Up</MenuItem>}
                     {habits.data.length - 1 != idx && (
                       <MenuItem onClick={() => onDownHabit(idx)}>Down</MenuItem>
                     )}
+                    <MenuDivider />
                   </>
                 )}
-
-                <MenuDivider />
 
                 {!habit.archived && (
                   <MenuItem
