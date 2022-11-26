@@ -107,7 +107,7 @@ const RecordEditForm = ({ dailyRecord }: { dailyRecord: DailyRecord }) => {
     <Stack as="form" onSubmit={onSubmit}>
       {dailyRecord.habitDailyRecords.map((v) => (
         <Checkbox key={v.habitId} {...getCheckboxProps({ value: v.habitId })}>
-          {v.habitName}
+          <Box color={v.archived ? 'gray.400' : 'black'}>{v.habitName}</Box>
         </Checkbox>
       ))}
       <Textarea {...commentInput.bind} />

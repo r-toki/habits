@@ -1,6 +1,7 @@
 import { axios } from './axios';
 import {
   CreateHabitInput,
+  CreateHabitSwapInput,
   CreateUserInput,
   DailyRecord,
   Habit,
@@ -31,6 +32,8 @@ export const createHabit = (input: CreateHabitInput) => axios.post('user/habits'
 export const deleteHabit = (id: string) => axios.delete(`user/habits/${id}`);
 
 export const archiveHabit = (id: string) => axios.post(`user/habits/${id}/archive`);
+
+export const swapHabit = (input: CreateHabitSwapInput) => axios.post('user/habits/swap', input);
 
 export const getDailyRecord = (recordedOn: string) =>
   axios.get<DailyRecord>(`user/daily_records/${recordedOn}`).then(({ data }) => data);

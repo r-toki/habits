@@ -43,6 +43,16 @@ impl THabit {
         }
     }
 
+    pub fn update_sort_number(&mut self, sort_number: i64) -> MyResult<()> {
+        if self.sort_number == sort_number {
+            return Err(MyError::UnprocessableEntity(
+                "sort_number is unchanged".into(),
+            ));
+        }
+        self.sort_number = sort_number;
+        Ok(())
+    }
+
     pub fn can_write(&self, user_id: String) -> MyResult<()> {
         if self.user_id != user_id {
             return Err(MyError::Forbidden("can not write habit".into()));
@@ -52,6 +62,26 @@ impl THabit {
 }
 
 impl THabit {
+    pub async fn one_of_user_by_id(
+        executor: impl PgExecutor<'_>,
+        user_id: String,
+        id: String,
+    ) -> MyResult<Option<THabit>> {
+        query_as!(
+            THabit,
+            "
+            select * from habits
+            where user_id = $1
+            and id = $2
+            ",
+            user_id,
+            id,
+        )
+        .fetch_optional(executor)
+        .await
+        .map_err(Into::into)
+    }
+
     pub async fn many_of_user_by_record_on(
         executor: impl PgExecutor<'_>,
         user_id: String,

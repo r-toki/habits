@@ -9,9 +9,8 @@ use sqlx::{query_as, PgPool};
 pub struct HabitDto {
     id: String,
     name: String,
+    archived: bool,
     created_at: DateTime<Utc>,
-    updated_at: DateTime<Utc>,
-    archived_at: Option<DateTime<Utc>>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -26,12 +25,12 @@ pub async fn find_habits(
 ) -> MyResult<Vec<HabitDto>> {
     query_as!(
         HabitDto,
-        "
-        select id, name, created_at, updated_at, archived_at from habits
+        r#"
+        select id, name, archived_at is not null "archived!", created_at from habits
         where user_id = $1
         and ($2::bool is null or (case when $2 then archived_at is not null else archived_at is null end))
         order by sort_number
-        ",
+        "#,
         user_id,
         habit_query.archived
     )

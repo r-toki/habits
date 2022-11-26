@@ -14,6 +14,7 @@ pub fn init(cfg: &mut ServiceConfig) {
     cfg.service(create);
     cfg.service(delete);
     cfg.service(create_archive);
+    cfg.service(create_swap);
 }
 
 #[get("/user/habits")]
@@ -61,9 +62,38 @@ async fn create_archive(
     at: AccessTokenDecoded,
     path: Path<String>,
 ) -> MyResult<Json<()>> {
-    let mut habit = THabit::find(&**pool, path.into_inner()).await?;
-    habit.can_write(at.into_inner().id)?;
+    let mut habit = THabit::one_of_user_by_id(&**pool, at.into_inner().id, path.into_inner())
+        .await?
+        .ok_or(MyError::new_not_found())?;
     habit.archive()?;
     habit.upsert(&**pool).await?;
+    Ok(Json(()))
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct CreateSwap {
+    habit_id_1: String,
+    habit_id_2: String,
+}
+
+#[post("/user/habits/swap")]
+async fn create_swap(
+    pool: Data<PgPool>,
+    at: AccessTokenDecoded,
+    form: Json<CreateSwap>,
+) -> MyResult<Json<()>> {
+    let user_id = at.into_inner().id;
+    let mut habit_1 = THabit::one_of_user_by_id(&**pool, user_id.clone(), form.habit_id_1.clone())
+        .await?
+        .ok_or(MyError::new_not_found())?;
+    let mut habit_2 = THabit::one_of_user_by_id(&**pool, user_id.clone(), form.habit_id_2.clone())
+        .await?
+        .ok_or(MyError::new_not_found())?;
+    let habit_1_sort_number = habit_1.sort_number;
+    habit_1.update_sort_number(habit_2.sort_number)?;
+    habit_2.update_sort_number(habit_1_sort_number)?;
+    habit_1.upsert(&**pool).await?;
+    habit_2.upsert(&**pool).await?;
     Ok(Json(()))
 }
