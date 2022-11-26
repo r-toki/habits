@@ -38,8 +38,7 @@ async fn create(
     form: Json<Create>,
 ) -> MyResult<Json<()>> {
     let user_id = at.into_inner().id;
-    let count = THabit::count_of_user(&**pool, user_id.clone()).await?;
-    let habit = THabit::create(form.name.clone(), count, user_id.clone())?;
+    let habit = THabit::create(form.name.clone(), user_id.clone())?;
     habit.upsert(&**pool).await?;
     Ok(Json(()))
 }
