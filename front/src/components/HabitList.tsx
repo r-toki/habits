@@ -1,6 +1,7 @@
 import {
   Box,
   Center,
+  Flex,
   HStack,
   Icon,
   IconButton,
@@ -93,38 +94,42 @@ export const HabitList = () => {
                     )}
                   </Td>
                   <Td borderColor="transparent">
-                    <Menu placement="bottom-end">
-                      <MenuButton as={IconButton} icon={<GoKebabVertical />} size="xs" />
-                      <MenuList>
-                        {habitsQuery.archived == 'false' && habits.data.length > 1 && (
-                          <>
-                            {idx != 0 && <MenuItem onClick={() => onUpHabit(idx)}>Up</MenuItem>}
-                            {habits.data.length - 1 != idx && (
-                              <MenuItem onClick={() => onDownHabit(idx)}>Down</MenuItem>
+                    <Flex justifyContent="end">
+                      <Box>
+                        <Menu placement="bottom-end">
+                          <MenuButton as={IconButton} icon={<GoKebabVertical />} size="xs" />
+                          <MenuList>
+                            {habitsQuery.archived == 'false' && habits.data.length > 1 && (
+                              <>
+                                {idx != 0 && <MenuItem onClick={() => onUpHabit(idx)}>Up</MenuItem>}
+                                {habits.data.length - 1 != idx && (
+                                  <MenuItem onClick={() => onDownHabit(idx)}>Down</MenuItem>
+                                )}
+                                <MenuDivider />
+                              </>
                             )}
-                            <MenuDivider />
-                          </>
-                        )}
 
-                        {!habit.archived && (
-                          <MenuItem
-                            onClick={() => onArchiveHabit(habit.id)}
-                            disabled={archiveHabit.isLoading}
-                          >
-                            Archive
-                          </MenuItem>
-                        )}
+                            {!habit.archived && (
+                              <MenuItem
+                                onClick={() => onArchiveHabit(habit.id)}
+                                disabled={archiveHabit.isLoading}
+                              >
+                                Archive
+                              </MenuItem>
+                            )}
 
-                        {habit.archived && (
-                          <MenuItem
-                            onClick={() => onDeleteHabit(habit.id)}
-                            disabled={deleteHabit.isLoading}
-                          >
-                            Delete
-                          </MenuItem>
-                        )}
-                      </MenuList>
-                    </Menu>
+                            {habit.archived && (
+                              <MenuItem
+                                onClick={() => onDeleteHabit(habit.id)}
+                                disabled={deleteHabit.isLoading}
+                              >
+                                Delete
+                              </MenuItem>
+                            )}
+                          </MenuList>
+                        </Menu>
+                      </Box>
+                    </Flex>
                   </Td>
                 </Tr>
               ))}

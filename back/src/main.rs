@@ -5,7 +5,7 @@ mod model;
 use crate::lib::{config::CONFIG, cors::cors};
 
 use actix_web::{get, middleware::Logger, web::Data, App, HttpServer, Responder};
-use sqlx::PgPool;
+use sqlx::postgres::PgPoolOptions;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -15,7 +15,11 @@ async fn main() -> std::io::Result<()> {
 
     env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
 
-    let pool = PgPool::connect(&CONFIG.database_url).await.unwrap();
+    let pool = PgPoolOptions::new()
+        .max_connections(4)
+        .connect(&CONFIG.database_url)
+        .await
+        .unwrap();
 
     HttpServer::new(move || {
         App::new()
