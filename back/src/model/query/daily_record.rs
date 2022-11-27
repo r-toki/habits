@@ -48,8 +48,8 @@ pub async fn find_daily_record(
                 on h.id = h_d_r.habit_id
                 and h_d_r.recorded_on = $2
                 where h.user_id = $1
-                and (h.archived_at is null or h.archived_at > ($2::date)::timestamp at time zone 'Asia/Tokyo')
-                and h.created_at < ($2::date)::timestamp at time zone 'Asia/Tokyo' + interval '1 day'
+                and (h.archived_at is null or h.archived_at > ($2::date at time zone 'Asia/Tokyo')::timestamp)
+                and h.created_at < ($2::date at time zone 'Asia/Tokyo')::timestamp + interval '1 day'
                 order by h.sort_number
                 "#,
                 user_id.clone(),
