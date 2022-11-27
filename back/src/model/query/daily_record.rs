@@ -46,10 +46,10 @@ pub async fn find_daily_record(
                 select h_d_r.done "done?", h.archived_at is not null "archived!", h.id habit_id, h.name habit_name from habits h
                 left outer join habit_daily_records h_d_r
                 on h.id = h_d_r.habit_id
+                and h_d_r.recorded_on = $2
                 where h.user_id = $1
                 and (h.archived_at is null or h.archived_at > ($2::date)::timestamp at time zone 'Asia/Tokyo')
                 and h.created_at < ($2::date)::timestamp at time zone 'Asia/Tokyo' + interval '1 day'
-                and h_d_r.recorded_on = $2
                 order by h.sort_number
                 "#,
                 user_id.clone(),

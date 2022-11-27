@@ -38,7 +38,7 @@ pub async fn find_habits(
             (
                 select
                 generate_series(
-                    current_date::timestamp at time zone 'Asia/Tokyo' - interval '3 days',
+                    current_date::timestamp at time zone 'Asia/Tokyo' - interval '5 days',
                     current_date::timestamp at time zone 'Asia/Tokyo' + interval '1 days',
                     '1 day'
                 ) _timestamp

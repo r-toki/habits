@@ -7,7 +7,12 @@ import {
   IconButton,
   Spinner,
   Stack,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
   Textarea,
+  Tr,
   useCheckboxGroup,
 } from '@chakra-ui/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -109,13 +114,33 @@ const RecordEditForm = ({ dailyRecord }: { dailyRecord: DailyRecord }) => {
 
   return (
     <Stack as="form" onSubmit={onSubmit}>
-      {dailyRecord.habitDailyRecords.map((v) => (
-        <Checkbox key={v.habitId} {...getCheckboxProps({ value: v.habitId })}>
-          <Box color={v.archived ? 'gray.400' : 'black'}>{v.habitName}</Box>
-        </Checkbox>
-      ))}
-      <Textarea {...commentInput.bind} />
-      <Button type="submit">Save</Button>
+      <TableContainer>
+        <Table>
+          <Tbody>
+            {dailyRecord.habitDailyRecords.map((v) => (
+              <Tr key={v.habitId}>
+                <Td borderColor="transparent">
+                  <Checkbox
+                    key={v.habitId}
+                    {...getCheckboxProps({ value: v.habitId })}
+                    colorScheme="green"
+                  >
+                    <Box color={v.archived ? 'gray.400' : 'black'}>{v.habitName}</Box>
+                  </Checkbox>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
+      <Box px="2">
+        <Textarea {...commentInput.bind} />
+      </Box>
+      <Box px="2">
+        <Button w="full" type="submit">
+          Save
+        </Button>
+      </Box>
     </Stack>
   );
 };

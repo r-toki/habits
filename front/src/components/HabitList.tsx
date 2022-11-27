@@ -1,7 +1,6 @@
 import {
   Box,
   Center,
-  Flex,
   HStack,
   Icon,
   IconButton,
@@ -13,6 +12,13 @@ import {
   MenuList,
   Spinner,
   Stack,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
 } from '@chakra-ui/react';
 import { GoKebabVertical } from 'react-icons/go';
 import { TbCheck, TbQuestionMark, TbX } from 'react-icons/tb';
@@ -47,72 +53,92 @@ export const HabitList = () => {
           <Spinner />
         </Center>
       )}
-      {habits.data?.map((habit, idx) => (
-        <Flex key={habit.id} justifyContent="space-between" alignItems="center">
-          <HStack>
-            <Box color={habit.archived ? 'gray.400' : 'black'}>{habit.name}</Box>
-            {habitsQuery.archived == 'false' && (
-              <HStack spacing="1">
-                {habit.last5DaysDone.map((b, idx) => {
-                  const last = habit.last5DaysDone.length == idx + 1;
-                  const question = last && !b;
-                  const check = b;
-                  return (
-                    <Box
-                      key={idx}
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      w="5"
-                      h="5"
-                      rounded="full"
-                      color={question ? 'black' : 'white'}
-                      bgColor={question ? 'gray.200' : check ? 'green.400' : 'red.400'}
-                    >
-                      <Icon as={question ? TbQuestionMark : check ? TbCheck : TbX} fontSize="sm" />
-                    </Box>
-                  );
-                })}
-              </HStack>
-            )}
-          </HStack>
 
-          <Box>
-            <Menu placement="bottom-end">
-              <MenuButton as={IconButton} icon={<GoKebabVertical />} size="xs" />
-              <MenuList>
-                {habitsQuery.archived == 'false' && habits.data.length > 1 && (
-                  <>
-                    {idx != 0 && <MenuItem onClick={() => onUpHabit(idx)}>Up</MenuItem>}
-                    {habits.data.length - 1 != idx && (
-                      <MenuItem onClick={() => onDownHabit(idx)}>Down</MenuItem>
+      {habits.data?.length ? (
+        <TableContainer>
+          <Table>
+            <Thead>
+              <Th borderColor="transparent"></Th>
+              <Th borderColor="transparent"></Th>
+              <Th borderColor="transparent" width="24px"></Th>
+            </Thead>
+            <Tbody>
+              {habits.data.map((habit, idx) => (
+                <Tr key={habit.id}>
+                  <Td borderColor="transparent" color={habit.archived ? 'gray.400' : 'black'}>
+                    {habit.name}
+                  </Td>
+                  <Td borderColor="transparent">
+                    {habitsQuery.archived == 'false' && (
+                      <HStack spacing="1" justifyContent="end">
+                        {habit.last5DaysDone.map((b, idx) => {
+                          const last = habit.last5DaysDone.length == idx + 1;
+                          const question = last && !b;
+                          const check = b;
+                          return (
+                            <Box
+                              key={idx}
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="center"
+                              w="5"
+                              h="5"
+                              rounded="full"
+                              color={question ? 'black' : 'white'}
+                              bgColor={question ? 'gray.200' : check ? 'green.400' : 'red.400'}
+                            >
+                              <Icon
+                                as={question ? TbQuestionMark : check ? TbCheck : TbX}
+                                fontSize="sm"
+                              />
+                            </Box>
+                          );
+                        })}
+                      </HStack>
                     )}
-                    <MenuDivider />
-                  </>
-                )}
+                  </Td>
+                  <Td borderColor="transparent">
+                    <Menu placement="bottom-end">
+                      <MenuButton as={IconButton} icon={<GoKebabVertical />} size="xs" />
+                      <MenuList>
+                        {habitsQuery.archived == 'false' && habits.data.length > 1 && (
+                          <>
+                            {idx != 0 && <MenuItem onClick={() => onUpHabit(idx)}>Up</MenuItem>}
+                            {habits.data.length - 1 != idx && (
+                              <MenuItem onClick={() => onDownHabit(idx)}>Down</MenuItem>
+                            )}
+                            <MenuDivider />
+                          </>
+                        )}
 
-                {!habit.archived && (
-                  <MenuItem
-                    onClick={() => onArchiveHabit(habit.id)}
-                    disabled={archiveHabit.isLoading}
-                  >
-                    Archive
-                  </MenuItem>
-                )}
+                        {!habit.archived && (
+                          <MenuItem
+                            onClick={() => onArchiveHabit(habit.id)}
+                            disabled={archiveHabit.isLoading}
+                          >
+                            Archive
+                          </MenuItem>
+                        )}
 
-                {habit.archived && (
-                  <MenuItem
-                    onClick={() => onDeleteHabit(habit.id)}
-                    disabled={deleteHabit.isLoading}
-                  >
-                    Delete
-                  </MenuItem>
-                )}
-              </MenuList>
-            </Menu>
-          </Box>
-        </Flex>
-      ))}
+                        {habit.archived && (
+                          <MenuItem
+                            onClick={() => onDeleteHabit(habit.id)}
+                            disabled={deleteHabit.isLoading}
+                          >
+                            Delete
+                          </MenuItem>
+                        )}
+                      </MenuList>
+                    </Menu>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      ) : (
+        <Box alignSelf="center">there are no habits.</Box>
+      )}
 
       <HStack alignSelf="end">
         <Link
