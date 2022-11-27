@@ -38,18 +38,18 @@ pub async fn find_habits(
             (
                 select
                 generate_series(
-                    (current_date::date at time zone 'Asia/Tokyo')::timestamp - interval '5 days',
-                    (current_date::date at time zone 'Asia/Tokyo')::timestamp + interval '1 days',
+                    (current_timestamp at time zone 'Asia/Tokyo')::date - interval '5 days',
+                    (current_timestamp at time zone 'Asia/Tokyo')::date + interval '1 days',
                     '1 day'
-                ) _timestamp
+                ) _date
             ) last_days
-            where habits.created_at < last_days._timestamp
+            where habits.created_at < last_days._date::timestamp
             and user_id = $1
             and ($2::bool is null or (case when $2 then archived_at is not null else archived_at is null end))
         ) habits
         left outer join habit_daily_records
         on habits.id = habit_daily_records.habit_id
-        and habits._timestamp::date = habit_daily_records.recorded_on
+        and habits._date = habit_daily_records.recorded_on
         group by habits.id, habits.name, habits.archived_at, habits.created_at, habits.sort_number
         order by habits.sort_number
         "#,
