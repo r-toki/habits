@@ -57,39 +57,6 @@
     },
     "query": "\n            select * from habits\n            where user_id = $1\n            and id = $2\n            "
   },
-  "1ba006cb5a51a99e86be9e6ed6b69f7e9e543f327cc1b26aa12f0331117ca059": {
-    "describe": {
-      "columns": [
-        {
-          "name": "archived!",
-          "ordinal": 0,
-          "type_info": "Bool"
-        },
-        {
-          "name": "id",
-          "ordinal": 1,
-          "type_info": "Text"
-        },
-        {
-          "name": "name",
-          "ordinal": 2,
-          "type_info": "Text"
-        }
-      ],
-      "nullable": [
-        null,
-        false,
-        false
-      ],
-      "parameters": {
-        "Left": [
-          "Text",
-          "Date"
-        ]
-      }
-    },
-    "query": "\n                select archived_at is not null \"archived!\", id, name from habits\n                where user_id = $1\n                and (archived_at is null or archived_at > ($2::date)::timestamp at time zone 'Asia/Tokyo')\n                and created_at < ($2::date)::timestamp at time zone 'Asia/Tokyo' + interval '1 day'\n                order by sort_number\n                "
-  },
   "37dcfa3633f727c0f4037cf17ab03e93496958aed7a5776cba20514909f50089": {
     "describe": {
       "columns": [
@@ -370,5 +337,38 @@
       }
     },
     "query": "\n            select * from habits\n            where user_id = $1\n            and (archived_at is null or archived_at > ($2::date)::timestamp at time zone 'Asia/Tokyo')\n            and created_at < ($2::date)::timestamp at time zone 'Asia/Tokyo' + interval '1 day'\n            order by sort_number\n            "
+  },
+  "fb473ff79f344717c03e3bd12c3369760087ad11f1425fae7a4efa85a686bbbf": {
+    "describe": {
+      "columns": [
+        {
+          "name": "archived!",
+          "ordinal": 0,
+          "type_info": "Bool"
+        },
+        {
+          "name": "id",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "name",
+          "ordinal": 2,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        null,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Date"
+        ]
+      }
+    },
+    "query": "\n                select archived_at is not null \"archived!\", id, name from habits\n                where user_id = $1\n                and (archived_at is null or archived_at > ($2::date at time zone 'Asia/Tokyo')::timestamp)\n                and created_at < ($2::date at time zone 'Asia/Tokyo')::timestamp + interval '1 day'\n                order by sort_number\n                "
   }
 }
