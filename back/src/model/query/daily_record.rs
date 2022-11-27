@@ -1,5 +1,4 @@
 use crate::lib::my_error::*;
-use crate::model::lib::*;
 
 use chrono::NaiveDate;
 use derive_new::new;
@@ -35,7 +34,7 @@ pub async fn find_daily_record(
         and recorded_on = $2
         ",
         user_id.clone(),
-        recorded_on.clone()
+        recorded_on
     )
     .fetch_optional(pool)
     .await?;
@@ -48,13 +47,13 @@ pub async fn find_daily_record(
                 left outer join habit_daily_records h_d_r
                 on h.id = h_d_r.habit_id
                 where h.user_id = $1
-                and (h.archived_at is null or h.archived_at > $2)
-                and h.created_at < $3
+                and (h.archived_at is null or h.archived_at > ($2::date)::timestamp at time zone 'Asia/Tokyo')
+                and h.created_at < ($2::date)::timestamp at time zone 'Asia/Tokyo' + interval '1 day'
+                and h_d_r.recorded_on = $2
                 order by h.sort_number
                 "#,
                 user_id.clone(),
-                start_of_date(recorded_on),
-                end_of_date(recorded_on)
+                recorded_on
             )
             .fetch_all(pool)
             .await?;
@@ -81,18 +80,18 @@ pub async fn find_daily_record(
                 habit_daily_records,
             )))
         }
+
         None => {
             let habits = query!(
                 r#"
                 select archived_at is not null "archived!", id, name from habits
                 where user_id = $1
-                and (archived_at is null or archived_at > $2)
-                and created_at < $3
+                and (archived_at is null or archived_at > ($2::date)::timestamp at time zone 'Asia/Tokyo')
+                and created_at < ($2::date)::timestamp at time zone 'Asia/Tokyo' + interval '1 day'
                 order by sort_number
                 "#,
                 user_id.clone(),
-                start_of_date(recorded_on),
-                end_of_date(recorded_on)
+                recorded_on,
             )
             .fetch_all(pool)
             .await?;

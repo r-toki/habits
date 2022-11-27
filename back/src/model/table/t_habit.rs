@@ -92,13 +92,12 @@ impl THabit {
             "
             select * from habits
             where user_id = $1
-            and (archived_at is null or archived_at > $2)
-            and created_at < $3
+            and (archived_at is null or archived_at > ($2::date)::timestamp at time zone 'Asia/Tokyo')
+            and created_at < ($2::date)::timestamp at time zone 'Asia/Tokyo' + interval '1 day'
             order by sort_number
             ",
             user_id,
-            start_of_date(recorded_on),
-            end_of_date(recorded_on)
+            recorded_on
         )
         .fetch_all(executor)
         .await
