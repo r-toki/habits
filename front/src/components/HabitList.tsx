@@ -57,11 +57,6 @@ export const HabitList = () => {
       {habits.data?.length ? (
         <TableContainer>
           <Table>
-            <Thead>
-              <Th borderColor="transparent"></Th>
-              <Th borderColor="transparent"></Th>
-              <Th borderColor="transparent" width="24px"></Th>
-            </Thead>
             <Tbody>
               {habits.data.map((habit, idx) => (
                 <Tr key={habit.id}>
@@ -71,8 +66,8 @@ export const HabitList = () => {
                   <Td borderColor="transparent">
                     {habitsQuery.archived == 'false' && (
                       <HStack spacing="1" justifyContent="end">
-                        {habit.last5DaysDone.map((b, idx) => {
-                          const last = habit.last5DaysDone.length == idx + 1;
+                        {habit.recentDoneList.map((b, idx) => {
+                          const last = habit.recentDoneList.length == idx + 1;
                           const question = last && !b;
                           const check = b;
                           return (

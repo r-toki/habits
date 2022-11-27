@@ -11,7 +11,7 @@ pub struct HabitDto {
     name: String,
     archived: bool,
     created_at: DateTime<Utc>,
-    last_5_days_done: Vec<bool>,
+    recent_done_list: Vec<bool>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -28,7 +28,7 @@ pub async fn find_habits(
         HabitDto,
         r#"
         select
-        habits.id, habits.name, habits.archived_at is not null "archived!", habits.created_at, array_agg(coalesce(habit_daily_records.done, false)) "last_5_days_done!"
+        habits.id, habits.name, habits.archived_at is not null "archived!", habits.created_at, array_agg(coalesce(habit_daily_records.done, false)) "recent_done_list!"
         from
         (
             select
@@ -42,8 +42,8 @@ pub async fn find_habits(
                     current_date::timestamp at time zone 'Asia/Tokyo' + interval '1 days',
                     '1 day'
                 ) _timestamp
-            ) last_5_days
-            where habits.created_at < last_5_days._timestamp
+            ) last_days
+            where habits.created_at < last_days._timestamp
             and user_id = $1
             and ($2::bool is null or (case when $2 then archived_at is not null else archived_at is null end))
         ) habits
