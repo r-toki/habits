@@ -11,6 +11,7 @@ pub struct HabitDto {
     name: String,
     archived: bool,
     created_at: DateTime<Utc>,
+    last_5_days_done: Vec<bool>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -26,10 +27,31 @@ pub async fn find_habits(
     query_as!(
         HabitDto,
         r#"
-        select id, name, archived_at is not null "archived!", created_at from habits
-        where user_id = $1
-        and ($2::bool is null or (case when $2 then archived_at is not null else archived_at is null end))
-        order by sort_number
+        select
+        habits.id, habits.name, habits.archived_at is not null "archived!", habits.created_at, array_agg(coalesce(habit_daily_records.done, false)) "last_5_days_done!"
+        from
+        (
+            select
+            *
+            from
+            habits,
+            (
+                select
+                generate_series(
+                    current_date::timestamp at time zone 'Asia/Tokyo' - interval '3 days',
+                    current_date::timestamp at time zone 'Asia/Tokyo' + interval '1 days',
+                    '1 day'
+                ) _timestamp
+            ) last_5_days
+            where habits.created_at < last_5_days._timestamp
+            and user_id = $1
+            and ($2::bool is null or (case when $2 then archived_at is not null else archived_at is null end))
+        ) habits
+        left outer join habit_daily_records
+        on habits.id = habit_daily_records.habit_id
+        and habits._timestamp::date = habit_daily_records.recorded_on
+        group by habits.id, habits.name, habits.archived_at, habits.created_at, habits.sort_number
+        order by habits.sort_number
         "#,
         user_id,
         habit_query.archived

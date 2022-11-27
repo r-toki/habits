@@ -3,6 +3,7 @@ import {
   Center,
   Flex,
   HStack,
+  Icon,
   IconButton,
   Link,
   Menu,
@@ -14,6 +15,7 @@ import {
   Stack,
 } from '@chakra-ui/react';
 import { GoKebabVertical } from 'react-icons/go';
+import { TbCheck, TbQuestionMark, TbX } from 'react-icons/tb';
 
 import { useHabits } from '@/hooks/useHabits';
 
@@ -47,7 +49,34 @@ export const HabitList = () => {
       )}
       {habits.data?.map((habit, idx) => (
         <Flex key={habit.id} justifyContent="space-between" alignItems="center">
-          <Box color={habit.archived ? 'gray.400' : 'black'}>{habit.name}</Box>
+          <HStack>
+            <Box color={habit.archived ? 'gray.400' : 'black'}>{habit.name}</Box>
+            {habitsQuery.archived == 'false' && (
+              <HStack spacing="1">
+                {habit.last5DaysDone.map((b, idx) => {
+                  const last = habit.last5DaysDone.length == idx + 1;
+                  const question = last && !b;
+                  const check = b;
+                  return (
+                    <Box
+                      key={idx}
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      w="5"
+                      h="5"
+                      rounded="full"
+                      color={question ? 'black' : 'white'}
+                      bgColor={question ? 'gray.200' : check ? 'green.400' : 'red.400'}
+                    >
+                      <Icon as={question ? TbQuestionMark : check ? TbCheck : TbX} fontSize="sm" />
+                    </Box>
+                  );
+                })}
+              </HStack>
+            )}
+          </HStack>
+
           <Box>
             <Menu placement="bottom-end">
               <MenuButton as={IconButton} icon={<GoKebabVertical />} size="xs" />

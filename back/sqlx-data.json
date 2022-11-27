@@ -174,64 +174,6 @@
     },
     "query": "\n            select * from daily_records\n            where user_id = $1\n            and recorded_on = $2\n            "
   },
-  "78be735406b257d174a960694d63b2bb15e8fd4b0fec6e9bfb1f94f2d5a031d8": {
-    "describe": {
-      "columns": [
-        {
-          "name": "id",
-          "ordinal": 0,
-          "type_info": "Text"
-        },
-        {
-          "name": "name",
-          "ordinal": 1,
-          "type_info": "Text"
-        },
-        {
-          "name": "created_at",
-          "ordinal": 2,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "updated_at",
-          "ordinal": 3,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "archived_at",
-          "ordinal": 4,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "user_id",
-          "ordinal": 5,
-          "type_info": "Text"
-        },
-        {
-          "name": "sort_number",
-          "ordinal": 6,
-          "type_info": "Int8"
-        }
-      ],
-      "nullable": [
-        false,
-        false,
-        false,
-        false,
-        true,
-        false,
-        false
-      ],
-      "parameters": {
-        "Left": [
-          "Text",
-          "Timestamptz",
-          "Timestamptz"
-        ]
-      }
-    },
-    "query": "\n            select * from habits\n            where user_id = $1\n            and (archived_at is null or archived_at > $2)\n            and created_at < $3\n            order by sort_number\n            "
-  },
   "83e41cb0bd7f1cb7db074b17750d7ffe8fd2388cce26d42b19d767d3adf946ff": {
     "describe": {
       "columns": [
@@ -326,6 +268,93 @@
       }
     },
     "query": "\n        select id, name, archived_at is not null \"archived!\", created_at from habits\n        where user_id = $1\n        and ($2::bool is null or (case when $2 then archived_at is not null else archived_at is null end))\n        order by sort_number\n        "
+  },
+  "a09c1ef0c1047498fc0c908cb33f2fd473a0b3b2c82c419504435f183aa41162": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 2,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "archived_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "user_id",
+          "ordinal": 5,
+          "type_info": "Text"
+        },
+        {
+          "name": "sort_number",
+          "ordinal": 6,
+          "type_info": "Int8"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Date"
+        ]
+      }
+    },
+    "query": "\n            select * from habits\n            where user_id = $1\n            and (archived_at is null or archived_at > ($2::date)::timestamp at time zone 'Asia/Tokyo')\n            and created_at < ($2::date)::timestamp at time zone 'Asia/Tokyo' + interval '1 day'\n            order by sort_number\n            "
+  },
+  "b0929354ada2f8641ec478b7d1b8af193875549a85f72606e65ad6bf6d4f627f": {
+    "describe": {
+      "columns": [
+        {
+          "name": "name",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 1,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "array_agg",
+          "ordinal": 2,
+          "type_info": "BoolArray"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        null
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "\n        select\n        habits.name, habits.created_at, array_agg(habit_daily_records.done)\n        from\n        (\n            select\n            *\n            from\n            habits,\n            (\n                select\n                generate_series(\n                    current_date::timestamp at time zone 'Asia/Tokyo' - interval '4 days',\n                    current_date::timestamp at time zone 'Asia/Tokyo',\n                    '1 day'\n                ) _timestamp\n            ) last_5_days\n            where habits.created_at < last_5_days._timestamp + interval '1 days'\n        ) habits\n        left outer join habit_daily_records\n        on habits.id = habit_daily_records.habit_id\n        and habits._timestamp::date = habit_daily_records.recorded_on\n        group by habits.id, habits.name, habits.created_at\n        order by habits.id\n        "
   },
   "d40433acd7768f84970bc913206afae2b8721362c72266cafc527181d7a3dccd": {
     "describe": {

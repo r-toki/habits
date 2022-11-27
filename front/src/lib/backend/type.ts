@@ -8,6 +8,7 @@ export type Habit = {
   name: string;
   archived: boolean;
   createdAt: string;
+  last5DaysDone: boolean[];
 };
 
 export type DailyRecord = {
