@@ -6,6 +6,7 @@ import {
   DailyRecord,
   Habit,
   UpdateDailyRecord,
+  UpdateHabitInput,
   User,
 } from './type';
 
@@ -28,6 +29,9 @@ export const getHabits = (habitsQuery: HabitsQuery) =>
     .then(({ data }) => data);
 
 export const createHabit = (input: CreateHabitInput) => axios.post('user/habits', input);
+
+export const updateHabit = ({ habitId, ...input }: UpdateHabitInput) =>
+  axios.patch(`user/habits/${habitId}`, input);
 
 export const deleteHabit = (id: string) => axios.delete(`user/habits/${id}`);
 

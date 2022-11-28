@@ -16,7 +16,7 @@ import {
   useCheckboxGroup,
 } from '@chakra-ui/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { addDays, format, startOfTomorrow, subDays } from 'date-fns';
+import { addDays, format, isToday, subDays } from 'date-fns';
 import { FormEventHandler, useEffect, useMemo, useState } from 'react';
 import { GoChevronLeft, GoChevronRight } from 'react-icons/go';
 
@@ -34,7 +34,6 @@ export const RecordEdit = () => {
   const [recordedAt, setRecordedAt] = useState(new Date());
   const toPreviousDay = () => setRecordedAt((prev) => subDays(prev, 1));
   const toNextDay = () => setRecordedAt((prev) => addDays(prev, 1));
-  const canToNextDay = addDays(recordedAt, 1) < startOfTomorrow();
 
   const recordedOn = useMemo(() => toDate(recordedAt), [recordedAt]);
   const dailyRecord = useQuery({
@@ -57,7 +56,7 @@ export const RecordEdit = () => {
           icon={<GoChevronRight />}
           size="xs"
           onClick={toNextDay}
-          disabled={!canToNextDay}
+          disabled={isToday(recordedAt)}
         />
       </HStack>
 

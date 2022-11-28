@@ -20,15 +20,17 @@ table! {
 
 impl THabit {
     pub fn create(name: String, user_id: String) -> MyResult<THabit> {
-        if name.len() == 0 {
-            return Err(MyError::UnprocessableEntity(
-                "habit name must be at leas 1 character".into(),
-            ));
-        }
         let id = get_new_id();
         let now = get_current_date_time();
         let habit = THabit::new(id, name, now.timestamp(), now, now, None, user_id);
+        habit.validate()?;
         Ok(habit)
+    }
+
+    pub fn update(&mut self, name: String) -> MyResult<()> {
+        self.name = name;
+        self.validate()?;
+        Ok(())
     }
 
     pub fn archive(&mut self) -> MyResult<()> {
@@ -50,6 +52,15 @@ impl THabit {
             ));
         }
         self.sort_number = sort_number;
+        Ok(())
+    }
+
+    pub fn validate(&self) -> MyResult<()> {
+        if self.name.len() == 0 {
+            return Err(MyError::UnprocessableEntity(
+                "habit name must be at leas 1 character".into(),
+            ));
+        }
         Ok(())
     }
 

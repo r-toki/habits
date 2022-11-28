@@ -32,6 +32,11 @@ export type CreateHabitInput = {
   name: string;
 };
 
+export type UpdateHabitInput = {
+  habitId: string;
+  name: string;
+};
+
 export type UpdateDailyRecord = {
   recordedOn: string;
   comment: string;

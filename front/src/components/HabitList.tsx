@@ -17,16 +17,17 @@ import {
   TableContainer,
   Tbody,
   Td,
-  Th,
-  Thead,
   Tr,
 } from '@chakra-ui/react';
 import { GoKebabVertical } from 'react-icons/go';
 import { TbCheck, TbQuestionMark, TbX } from 'react-icons/tb';
+import { useNavigate } from 'react-router-dom';
 
 import { useHabits } from '@/hooks/useHabits';
 
 export const HabitList = () => {
+  const navigate = useNavigate();
+
   const { habitsQuery, setHabitsQuery, habits, deleteHabit, archiveHabit, swapHabit } = useHabits();
 
   const onDeleteHabit = async (id: string) => {
@@ -99,6 +100,10 @@ export const HabitList = () => {
                         <Menu placement="bottom-end">
                           <MenuButton as={IconButton} icon={<GoKebabVertical />} size="xs" />
                           <MenuList>
+                            <MenuItem onClick={() => navigate(`/habits/${habit.id}/edit`)}>
+                              Edit
+                            </MenuItem>
+
                             {habitsQuery.archived == 'false' && habits.data.length > 1 && (
                               <>
                                 {idx != 0 && <MenuItem onClick={() => onUpHabit(idx)}>Up</MenuItem>}
