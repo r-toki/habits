@@ -1,16 +1,22 @@
 import { Button, FormControl, FormLabel, Input, Stack } from '@chakra-ui/react';
-import { useMutation } from '@tanstack/react-query';
-import { FormEventHandler } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { FormEventHandler, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { AppLayout } from '@/components/AppLayout';
 import { useAppToast } from '@/hooks/useAppToast';
 import { useTextInput } from '@/hooks/useTextInput';
-import { updateHabit as updateHabitFn } from '@/lib/backend';
+import { getHabit, updateHabit as updateHabitFn } from '@/lib/backend';
 
 export const HabitsEdit = () => {
+  const { habitId } = useParams();
   const navigate = useNavigate();
   const toast = useAppToast();
+
+  const habit = useQuery({
+    queryKey: ['habits', habitId],
+    queryFn: () => getHabit(habitId!),
+  });
 
   const updateHabit = useMutation({
     mutationFn: updateHabitFn,
@@ -22,11 +28,16 @@ export const HabitsEdit = () => {
   });
 
   const nameInput = useTextInput();
+  useEffect(() => {
+    if (habit.data) {
+      nameInput.set(habit.data.name);
+    }
+  }, [habit.data]);
 
   const onSubmit: FormEventHandler = async (e) => {
     e.preventDefault();
 
-    await updateHabit.mutate({ habitId: '', name: nameInput.value });
+    await updateHabit.mutate({ habitId: habitId!, name: nameInput.value });
   };
 
   return (

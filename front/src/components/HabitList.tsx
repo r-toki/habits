@@ -81,8 +81,8 @@ export const HabitList = () => {
                               w="5"
                               h="5"
                               rounded="full"
-                              color={question ? 'black' : 'white'}
-                              bgColor={question ? 'gray.200' : check ? 'green.400' : 'red.400'}
+                              color={question ? 'black' : check ? 'white' : 'black'}
+                              bgColor={question ? 'gray.200' : check ? 'green.400' : 'gray.200'}
                             >
                               <Icon
                                 as={question ? TbQuestionMark : check ? TbCheck : TbX}

@@ -2,6 +2,7 @@ use crate::controller::lib::*;
 use crate::lib::my_error::*;
 use crate::model::{query::*, table::*};
 
+use actix_web::patch;
 use actix_web::{
     delete, get, post,
     web::{Data, Json, Path, Query, ServiceConfig},
@@ -12,6 +13,8 @@ use sqlx::PgPool;
 pub fn init(cfg: &mut ServiceConfig) {
     cfg.service(index);
     cfg.service(create);
+    cfg.service(show);
+    cfg.service(update);
     cfg.service(delete);
     cfg.service(create_archive);
     cfg.service(create_swap);
@@ -23,7 +26,7 @@ async fn index(
     at: AccessTokenDecoded,
     query: Query<FindHabitsQuery>,
 ) -> MyResult<Json<Vec<HabitDto>>> {
-    let habits = find_habits(&**pool, at.into_inner().id, query.into_inner()).await?;
+    let habits = find_habits(&**pool, at.into_inner().id, None, Some(query.into_inner())).await?;
     Ok(Json(habits))
 }
 
@@ -40,6 +43,42 @@ async fn create(
 ) -> MyResult<Json<()>> {
     let user_id = at.into_inner().id;
     let habit = THabit::create(form.name.clone(), user_id.clone())?;
+    habit.upsert(&**pool).await?;
+    Ok(Json(()))
+}
+
+#[get("/user/habits/{habit_id}")]
+async fn show(
+    pool: Data<PgPool>,
+    at: AccessTokenDecoded,
+    path: Path<String>,
+) -> MyResult<Json<HabitDto>> {
+    let habit = find_habits(&**pool, at.into_inner().id, Some(path.into_inner()), None)
+        .await?
+        .into_iter()
+        .nth(0);
+
+    match habit {
+        Some(habit) => Ok(Json(habit)),
+        None => Err(MyError::new_not_found()),
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Update {
+    name: String,
+}
+
+#[patch("/user/habits/{habit_id}")]
+async fn update(
+    pool: Data<PgPool>,
+    at: AccessTokenDecoded,
+    path: Path<String>,
+    form: Json<Update>,
+) -> MyResult<Json<()>> {
+    let mut habit = THabit::find(&**pool, path.into_inner()).await?;
+    habit.can_write(at.into_inner().id)?;
+    habit.update(form.name.clone())?;
     habit.upsert(&**pool).await?;
     Ok(Json(()))
 }

@@ -30,6 +30,9 @@ export const getHabits = (habitsQuery: HabitsQuery) =>
 
 export const createHabit = (input: CreateHabitInput) => axios.post('user/habits', input);
 
+export const getHabit = (id: string) =>
+  axios.get<Habit>(`user/habits/${id}`).then(({ data }) => data);
+
 export const updateHabit = ({ habitId, ...input }: UpdateHabitInput) =>
   axios.patch(`user/habits/${habitId}`, input);
 
