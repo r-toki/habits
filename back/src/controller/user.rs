@@ -16,7 +16,7 @@ pub fn init(cfg: &mut ServiceConfig) {
 
 #[get("/user")]
 async fn index(pool: Data<PgPool>, at: AccessTokenDecoded) -> MyResult<Json<UserDto>> {
-    let user = find_user(&**pool, at.into_inner().id).await?;
+    let user = find_user(&**pool, at.into_inner().uid).await?;
     Ok(Json(user))
 }
 
@@ -32,7 +32,7 @@ async fn create(
     at: AccessTokenDecoded,
     form: Json<Create>,
 ) -> MyResult<Json<()>> {
-    let user = TUser::create(at.into_inner().id, form.display_name.clone())?;
+    let user = TUser::create(at.into_inner().uid, form.display_name.clone())?;
     user.upsert(&**pool).await?;
     Ok(Json(()))
 }

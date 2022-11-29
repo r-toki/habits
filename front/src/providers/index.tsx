@@ -4,7 +4,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ReactNode, useMemo } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
-import { getIndex as checkAuth } from '@/lib/auth';
 import { getIndex as checkBackend } from '@/lib/backend';
 
 import { AuthProvider } from './auth';
@@ -38,7 +37,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 const HealthCheck = ({ children }: { children: ReactNode }) => {
   const { status } = useQuery({
     queryKey: ['healthCheck'],
-    queryFn: () => Promise.all([checkAuth(), checkBackend()]),
+    queryFn: () => Promise.all([checkBackend()]),
   });
 
   switch (status) {

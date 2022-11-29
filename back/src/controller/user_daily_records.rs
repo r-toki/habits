@@ -21,7 +21,7 @@ async fn show(
     recorded_on: Path<NaiveDate>,
 ) -> MyResult<Json<Option<DailyRecordDto>>> {
     let daily_record =
-        find_daily_record(&**pool, at.into_inner().id, recorded_on.into_inner()).await?;
+        find_daily_record(&**pool, at.into_inner().uid, recorded_on.into_inner()).await?;
     Ok(Json(daily_record))
 }
 
@@ -32,7 +32,7 @@ async fn update(
     recorded_on: Path<NaiveDate>,
     form: Json<UpdateDailyRecord>,
 ) -> MyResult<Json<()>> {
-    let user_id = at.into_inner().id;
+    let user_id = at.into_inner().uid;
     let recorded_on = recorded_on.into_inner();
     let form = form.into_inner();
 

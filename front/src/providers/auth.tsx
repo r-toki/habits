@@ -1,8 +1,8 @@
 import { Center, Spinner } from '@chakra-ui/react';
-import { useQuery } from '@tanstack/react-query';
-import { createContext, ReactNode, useContext } from 'react';
+import { getAuth, getIdToken, onAuthStateChanged, User as AuthUser } from 'firebase/auth';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
-import { AuthUser, getAuthUser } from '@/lib/auth';
+import { tokenStorage } from '@/lib/token-storage';
 
 type State = {
   initialized: boolean;
@@ -10,12 +10,21 @@ type State = {
 };
 
 const useAuthProvider = (): State => {
-  const { data: authUser, isInitialLoading } = useQuery({
-    queryKey: ['authUser'],
-    queryFn: getAuthUser,
-    retry: false,
-  });
-  return { initialized: !isInitialLoading, authUser };
+  const [initialized, setInitialized] = useState(false);
+  const [authUser, setAuthUser] = useState<AuthUser>();
+  useEffect(() => {
+    onAuthStateChanged(getAuth(), async (v) => {
+      if (v) {
+        setAuthUser(v);
+        const token = await getIdToken(v);
+        tokenStorage.set('access_token', token);
+      } else {
+        setAuthUser(undefined);
+      }
+      if (!initialized) setInitialized(true);
+    });
+  }, []);
+  return { initialized, authUser };
 };
 
 const AuthContext = createContext<State | undefined>(undefined);

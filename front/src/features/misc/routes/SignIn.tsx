@@ -1,19 +1,20 @@
 import { Box, Button, FormControl, FormLabel, Input, Stack } from '@chakra-ui/react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { FormEventHandler } from 'react';
 
 import { AppLink } from '@/components/AppLink';
 import { AuthLayout } from '@/components/AuthLayout';
 import { useAppToast } from '@/hooks/useAppToast';
 import { useTextInput } from '@/hooks/useTextInput';
-import { createAuthUserSession } from '@/lib/auth';
 
 export const SignIn = () => {
   const toast = useAppToast();
 
   const client = useQueryClient();
   const signIn = useMutation({
-    mutationFn: createAuthUserSession,
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      signInWithEmailAndPassword(getAuth(), email, password),
     onSuccess: () => {
       client.invalidateQueries(['authUser']);
       client.invalidateQueries(['me']);
@@ -22,14 +23,14 @@ export const SignIn = () => {
     onError: () => toast({ status: 'error', title: 'Failed.' }),
   });
 
-  const nameInput = useTextInput();
+  const emailInput = useTextInput();
   const passwordInput = useTextInput();
 
   const onSubmit: FormEventHandler = async (e) => {
     e.preventDefault();
 
     await signIn.mutate({
-      name: nameInput.value,
+      email: emailInput.value,
       password: passwordInput.value,
     });
   };
@@ -43,13 +44,13 @@ export const SignIn = () => {
       <form onSubmit={onSubmit}>
         <Stack>
           <FormControl>
-            <FormLabel>Name</FormLabel>
-            <Input required {...nameInput.bind} />
+            <FormLabel>Email</FormLabel>
+            <Input type="email" required {...emailInput.bind} />
           </FormControl>
 
           <FormControl>
             <FormLabel>Password</FormLabel>
-            <Input type="password" required autoComplete="off" {...passwordInput.bind} />
+            <Input type="password" required {...passwordInput.bind} />
           </FormControl>
 
           <Button type="submit" disabled={signIn.isLoading}>

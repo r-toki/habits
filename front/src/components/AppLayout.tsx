@@ -11,12 +11,12 @@ import {
   Stack,
 } from '@chakra-ui/react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { getAuth, signOut as signOutFn } from 'firebase/auth';
 import { ReactNode, useMemo } from 'react';
 import { GoThreeBars } from 'react-icons/go';
 import { useNavigate } from 'react-router-dom';
 
 import { useAppToast } from '@/hooks/useAppToast';
-import { destroyAuthUserSession } from '@/lib/auth';
 import { QUOTES } from '@/lib/quotes';
 
 export const AppLayout = ({
@@ -31,9 +31,8 @@ export const AppLayout = ({
 
   const client = useQueryClient();
   const signOut = useMutation({
-    mutationFn: destroyAuthUserSession,
+    mutationFn: () => signOutFn(getAuth()),
     onSuccess: () => {
-      client.setQueryData(['authUser'], null);
       client.setQueryData(['me'], null);
       toast({ status: 'success', title: 'Signed out.' });
     },

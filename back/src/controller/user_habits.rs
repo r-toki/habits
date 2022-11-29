@@ -26,7 +26,7 @@ async fn index(
     at: AccessTokenDecoded,
     query: Query<FindHabitsQuery>,
 ) -> MyResult<Json<Vec<HabitDto>>> {
-    let habits = find_habits(&**pool, at.into_inner().id, None, Some(query.into_inner())).await?;
+    let habits = find_habits(&**pool, at.into_inner().uid, None, Some(query.into_inner())).await?;
     Ok(Json(habits))
 }
 
@@ -41,7 +41,7 @@ async fn create(
     at: AccessTokenDecoded,
     form: Json<Create>,
 ) -> MyResult<Json<()>> {
-    let user_id = at.into_inner().id;
+    let user_id = at.into_inner().uid;
     let habit = THabit::create(form.name.clone(), user_id.clone())?;
     habit.upsert(&**pool).await?;
     Ok(Json(()))
@@ -53,7 +53,7 @@ async fn show(
     at: AccessTokenDecoded,
     path: Path<String>,
 ) -> MyResult<Json<HabitDto>> {
-    let habit = find_habits(&**pool, at.into_inner().id, Some(path.into_inner()), None)
+    let habit = find_habits(&**pool, at.into_inner().uid, Some(path.into_inner()), None)
         .await?
         .into_iter()
         .nth(0);
@@ -77,7 +77,7 @@ async fn update(
     form: Json<Update>,
 ) -> MyResult<Json<()>> {
     let mut habit = THabit::find(&**pool, path.into_inner()).await?;
-    habit.can_write(at.into_inner().id)?;
+    habit.can_write(at.into_inner().uid)?;
     habit.update(form.name.clone())?;
     habit.upsert(&**pool).await?;
     Ok(Json(()))
@@ -90,7 +90,7 @@ async fn delete(
     path: Path<String>,
 ) -> MyResult<Json<()>> {
     let habit = THabit::find(&**pool, path.into_inner()).await?;
-    habit.can_write(at.into_inner().id)?;
+    habit.can_write(at.into_inner().uid)?;
     habit.delete(&**pool).await?;
     Ok(Json(()))
 }
@@ -101,7 +101,7 @@ async fn create_archive(
     at: AccessTokenDecoded,
     path: Path<String>,
 ) -> MyResult<Json<()>> {
-    let mut habit = THabit::one_of_user_by_id(&**pool, at.into_inner().id, path.into_inner())
+    let mut habit = THabit::one_of_user_by_id(&**pool, at.into_inner().uid, path.into_inner())
         .await?
         .ok_or(MyError::new_not_found())?;
     habit.archive()?;
@@ -122,7 +122,7 @@ async fn create_swap(
     at: AccessTokenDecoded,
     form: Json<CreateSwap>,
 ) -> MyResult<Json<()>> {
-    let user_id = at.into_inner().id;
+    let user_id = at.into_inner().uid;
     let mut habit_1 = THabit::one_of_user_by_id(&**pool, user_id.clone(), form.habit_id_1.clone())
         .await?
         .ok_or(MyError::new_not_found())?;

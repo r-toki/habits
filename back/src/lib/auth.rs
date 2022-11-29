@@ -11,13 +11,12 @@ fn client() -> reqwest::Client {
 
 #[derive(Debug, Deserialize)]
 pub struct AuthUser {
-    pub id: String,
-    pub name: String,
+    pub uid: String,
 }
 
 pub async fn get_auth_user(access_token: String) -> MyResult<AuthUser> {
     let res = client()
-        .get(format!("{}/user", CONFIG.auth_origin))
+        .get(format!("{}/me", CONFIG.auth_origin))
         .header("Authorization", format!("Bearer {}", access_token))
         .send()
         .await

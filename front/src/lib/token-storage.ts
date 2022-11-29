@@ -1,15 +1,13 @@
-const PREFIX = '';
-
-type Key = 'access_token' | 'refresh_token';
+type Key = 'access_token';
 
 export const tokenStorage = {
   get: (key: Key): string | null => {
-    return window.localStorage.getItem(PREFIX + key);
+    return window.localStorage.getItem(key);
   },
   set: (key: Key, value: string) => {
-    window.localStorage.setItem(PREFIX + key, value);
+    window.localStorage.setItem(key, value);
   },
   clear: (key: Key) => {
-    window.localStorage.removeItem(PREFIX + key);
+    window.localStorage.removeItem(key);
   },
 };
