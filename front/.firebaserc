@@ -1,5 +1,15 @@
 {
   "projects": {
-    "default": "my-habit-75f8b"
-  }
+    "default": "fir-auth-3e082"
+  },
+  "targets": {
+    "fir-auth-3e082": {
+      "hosting": {
+        "my-habit-site": [
+          "my-habit"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
