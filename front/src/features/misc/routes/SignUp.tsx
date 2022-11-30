@@ -1,6 +1,6 @@
 import { Box, Button, FormControl, FormLabel, Input, Stack } from '@chakra-ui/react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { FormEventHandler } from 'react';
 
 import { AppLink } from '@/components/AppLink';
@@ -8,17 +8,19 @@ import { AuthLayout } from '@/components/AuthLayout';
 import { useAppToast } from '@/hooks/useAppToast';
 import { useTextInput } from '@/hooks/useTextInput';
 import { createUser } from '@/lib/backend';
-import { useAuth } from '@/providers/auth';
 
 export const SignUp = () => {
   const toast = useAppToast();
   const client = useQueryClient();
-  const { authUser } = useAuth();
 
   const signUp = useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
-      if (!authUser) await createUserWithEmailAndPassword(getAuth(), email, password);
-      await createUser({ displayName: email.split('@')[0] });
+      try {
+        await createUserWithEmailAndPassword(getAuth(), email, password);
+      } catch {
+        await signInWithEmailAndPassword(getAuth(), email, password);
+        await createUser({ displayName: email.split('@')[0] });
+      }
     },
     onSuccess: () => {
       client.invalidateQueries(['me']);

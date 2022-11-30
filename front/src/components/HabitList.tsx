@@ -62,8 +62,47 @@ export const HabitList = () => {
             <Tbody>
               {habits.data.map((habit, idx) => (
                 <Tr key={habit.id}>
-                  <Td borderColor="transparent" color={habit.archived ? 'gray.400' : 'black'}>
-                    {habit.name}
+                  <Td borderColor="transparent">
+                    <Box>
+                      <Menu placement="right-start">
+                        <MenuButton color={habit.archived ? 'gray.400' : 'black'}>
+                          {habit.name}
+                        </MenuButton>
+                        <MenuList>
+                          <MenuItem onClick={() => navigate(`/habits/${habit.id}/edit`)}>
+                            Edit
+                          </MenuItem>
+
+                          {habitsQuery.archived == 'false' && habits.data.length > 1 && (
+                            <>
+                              {idx != 0 && <MenuItem onClick={() => onUpHabit(idx)}>Up</MenuItem>}
+                              {habits.data.length - 1 != idx && (
+                                <MenuItem onClick={() => onDownHabit(idx)}>Down</MenuItem>
+                              )}
+                              <MenuDivider />
+                            </>
+                          )}
+
+                          {!habit.archived && (
+                            <MenuItem
+                              onClick={() => onArchiveHabit(habit.id)}
+                              disabled={archiveHabit.isLoading}
+                            >
+                              Archive
+                            </MenuItem>
+                          )}
+
+                          {habit.archived && (
+                            <MenuItem
+                              onClick={() => onDeleteHabit(habit.id)}
+                              disabled={deleteHabit.isLoading}
+                            >
+                              Delete
+                            </MenuItem>
+                          )}
+                        </MenuList>
+                      </Menu>
+                    </Box>
                   </Td>
                   <Td borderColor="transparent">
                     {habitsQuery.archived == 'false' && (
@@ -93,48 +132,6 @@ export const HabitList = () => {
                         })}
                       </HStack>
                     )}
-                  </Td>
-                  <Td borderColor="transparent">
-                    <Flex justifyContent="end">
-                      <Box>
-                        <Menu placement="bottom-end">
-                          <MenuButton as={IconButton} icon={<GoKebabVertical />} size="xs" />
-                          <MenuList>
-                            <MenuItem onClick={() => navigate(`/habits/${habit.id}/edit`)}>
-                              Edit
-                            </MenuItem>
-
-                            {habitsQuery.archived == 'false' && habits.data.length > 1 && (
-                              <>
-                                {idx != 0 && <MenuItem onClick={() => onUpHabit(idx)}>Up</MenuItem>}
-                                {habits.data.length - 1 != idx && (
-                                  <MenuItem onClick={() => onDownHabit(idx)}>Down</MenuItem>
-                                )}
-                                <MenuDivider />
-                              </>
-                            )}
-
-                            {!habit.archived && (
-                              <MenuItem
-                                onClick={() => onArchiveHabit(habit.id)}
-                                disabled={archiveHabit.isLoading}
-                              >
-                                Archive
-                              </MenuItem>
-                            )}
-
-                            {habit.archived && (
-                              <MenuItem
-                                onClick={() => onDeleteHabit(habit.id)}
-                                disabled={deleteHabit.isLoading}
-                              >
-                                Delete
-                              </MenuItem>
-                            )}
-                          </MenuList>
-                        </Menu>
-                      </Box>
-                    </Flex>
                   </Td>
                 </Tr>
               ))}
