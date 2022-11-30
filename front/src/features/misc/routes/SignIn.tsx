@@ -7,16 +7,22 @@ import { AppLink } from '@/components/AppLink';
 import { AuthLayout } from '@/components/AuthLayout';
 import { useAppToast } from '@/hooks/useAppToast';
 import { useTextInput } from '@/hooks/useTextInput';
+import { useAuth } from '@/providers/auth';
 
 export const SignIn = () => {
   const toast = useAppToast();
-
   const client = useQueryClient();
+  const { authUser } = useAuth();
+
   const signIn = useMutation({
-    mutationFn: ({ email, password }: { email: string; password: string }) =>
-      signInWithEmailAndPassword(getAuth(), email, password),
+    mutationFn: async ({ email, password }: { email: string; password: string }) => {
+      if (authUser) {
+        throw new Error('user does not exists');
+      } else {
+        await signInWithEmailAndPassword(getAuth(), email, password);
+      }
+    },
     onSuccess: () => {
-      client.invalidateQueries(['authUser']);
       client.invalidateQueries(['me']);
       toast({ status: 'success', title: 'Signed in.' });
     },

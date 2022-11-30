@@ -8,14 +8,16 @@ import { AuthLayout } from '@/components/AuthLayout';
 import { useAppToast } from '@/hooks/useAppToast';
 import { useTextInput } from '@/hooks/useTextInput';
 import { createUser } from '@/lib/backend';
+import { useAuth } from '@/providers/auth';
 
 export const SignUp = () => {
   const toast = useAppToast();
-
   const client = useQueryClient();
+  const { authUser } = useAuth();
+
   const signUp = useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
-      await createUserWithEmailAndPassword(getAuth(), email, password);
+      if (!authUser) await createUserWithEmailAndPassword(getAuth(), email, password);
       await createUser({ displayName: email.split('@')[0] });
     },
     onSuccess: () => {
