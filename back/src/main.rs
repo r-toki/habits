@@ -36,5 +36,5 @@ async fn main() -> std::io::Result<()> {
 
 #[get("/")]
 async fn index() -> impl Responder {
-    format!("HELLO FROM MY HABIT BACK!")
+    format!("HELLO FROM MY HABIT!")
 }
