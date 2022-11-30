@@ -132,9 +132,9 @@ const RecordEditForm = ({ dailyRecord }: { dailyRecord: DailyRecord }) => {
           </Tbody>
         </Table>
       </TableContainer>
-      <Box px="2">
+      {/* <Box px="2">
         <Textarea {...commentInput.bind} />
-      </Box>
+      </Box> */}
       <Box px="2">
         <Button w="full" type="submit">
           Save

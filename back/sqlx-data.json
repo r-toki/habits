@@ -1,51 +1,5 @@
 {
   "db": "PostgreSQL",
-  "0a61f53e3d46a98aa0cd3e849d582baa9efd226e4a95b096e60e23c8902ade68": {
-    "describe": {
-      "columns": [
-        {
-          "name": "id",
-          "ordinal": 0,
-          "type_info": "Text"
-        },
-        {
-          "name": "name",
-          "ordinal": 1,
-          "type_info": "Text"
-        },
-        {
-          "name": "archived!",
-          "ordinal": 2,
-          "type_info": "Bool"
-        },
-        {
-          "name": "created_at",
-          "ordinal": 3,
-          "type_info": "Timestamptz"
-        },
-        {
-          "name": "recent_done_list!",
-          "ordinal": 4,
-          "type_info": "BoolArray"
-        }
-      ],
-      "nullable": [
-        false,
-        false,
-        null,
-        false,
-        null
-      ],
-      "parameters": {
-        "Left": [
-          "Text",
-          "Text",
-          "Bool"
-        ]
-      }
-    },
-    "query": "\n        select\n            habits.id,\n            habits.name,\n            habits.archived_at is not null \"archived!\",\n            habits.created_at,\n            array_agg(coalesce(habit_daily_records.done, false)) \"recent_done_list!\"\n        from\n        (\n            select\n            *\n            from\n            habits,\n            (\n                select\n                generate_series(\n                    (current_timestamp at time zone 'Asia/Tokyo')::date - interval '6 days',\n                    (current_timestamp at time zone 'Asia/Tokyo')::date,\n                    '1 day'\n                )::date _date\n            ) last_days\n            where habits.created_at < (last_days._date::timestamp at time zone 'Asia/Tokyo') + interval '1 day'\n            and user_id = $1\n            and $2::text is null or habits.id = $2\n            and ($3::bool is null or (case when $3 then archived_at is not null else archived_at is null end))\n        ) habits\n        left outer join habit_daily_records\n        on habits.id = habit_daily_records.habit_id\n        and habits._date = habit_daily_records.recorded_on\n        group by habits.id, habits.name, habits.archived_at, habits.created_at, habits.sort_number\n        order by habits.sort_number\n        "
-  },
   "16ca7142a2eb5be1e7aa5ce65eb7d473d1f7745c4673be17d3cce42bfbb23d8d": {
     "describe": {
       "columns": [
@@ -135,6 +89,52 @@
       }
     },
     "query": "\n        select id, comment, recorded_on from daily_records\n        where user_id = $1\n        and recorded_on = $2\n        "
+  },
+  "572d2b67de74b8ff75cb732be3fba34751f3b24371c823081dfc5d863e40a842": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "archived!",
+          "ordinal": 2,
+          "type_info": "Bool"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "recent_done_list!",
+          "ordinal": 4,
+          "type_info": "BoolArray"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        null,
+        false,
+        null
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text",
+          "Bool"
+        ]
+      }
+    },
+    "query": "\n        select\n            habits.id,\n            habits.name,\n            habits.archived_at is not null \"archived!\",\n            habits.created_at,\n            array_agg(coalesce(habit_daily_records.done, false)) \"recent_done_list!\"\n        from\n        (\n            select\n            *\n            from\n            habits,\n            (\n                select\n                generate_series(\n                    (current_timestamp at time zone 'Asia/Tokyo')::date - interval '6 days',\n                    (current_timestamp at time zone 'Asia/Tokyo')::date,\n                    '1 day'\n                )::date _date\n            ) last_days\n            where habits.created_at < (last_days._date::timestamp at time zone 'Asia/Tokyo') + interval '1 day'\n            and user_id = $1\n            and ($2::text is null or habits.id = $2)\n            and ($3::bool is null or (case when $3 then archived_at is not null else archived_at is null end))\n        ) habits\n        left outer join habit_daily_records\n        on habits.id = habit_daily_records.habit_id\n        and habits._date = habit_daily_records.recorded_on\n        group by habits.id, habits.name, habits.archived_at, habits.created_at, habits.sort_number\n        order by habits.sort_number\n        "
   },
   "773f17279b2eb9bd1268e2d5222a78441adaa145ea7ea932f584abbf625e1298": {
     "describe": {

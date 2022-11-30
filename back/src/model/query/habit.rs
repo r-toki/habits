@@ -50,7 +50,7 @@ pub async fn find_habits(
             ) last_days
             where habits.created_at < (last_days._date::timestamp at time zone 'Asia/Tokyo') + interval '1 day'
             and user_id = $1
-            and $2::text is null or habits.id = $2
+            and ($2::text is null or habits.id = $2)
             and ($3::bool is null or (case when $3 then archived_at is not null else archived_at is null end))
         ) habits
         left outer join habit_daily_records
@@ -63,7 +63,7 @@ pub async fn find_habits(
         habit_id,
         match habit_query {
             Some(habit_query) => habit_query.archived,
-            None => None
+            None => None,
         }
     )
     .fetch_all(pool)

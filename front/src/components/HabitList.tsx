@@ -1,10 +1,8 @@
 import {
   Box,
   Center,
-  Flex,
   HStack,
   Icon,
-  IconButton,
   Link,
   Menu,
   MenuButton,
@@ -79,9 +77,10 @@ export const HabitList = () => {
                               {habits.data.length - 1 != idx && (
                                 <MenuItem onClick={() => onDownHabit(idx)}>Down</MenuItem>
                               )}
-                              <MenuDivider />
                             </>
                           )}
+
+                          <MenuDivider />
 
                           {!habit.archived && (
                             <MenuItem
