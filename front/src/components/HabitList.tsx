@@ -17,8 +17,7 @@ import {
   Td,
   Tr,
 } from '@chakra-ui/react';
-import { GoKebabVertical } from 'react-icons/go';
-import { TbCheck, TbQuestionMark, TbX } from 'react-icons/tb';
+import { TbCheck, TbQuestionMark } from 'react-icons/tb';
 import { useNavigate } from 'react-router-dom';
 
 import { useHabits } from '@/hooks/useHabits';
@@ -49,7 +48,7 @@ export const HabitList = () => {
   return (
     <Stack px="2">
       {habits.isLoading && (
-        <Center>
+        <Center py="2">
           <Spinner />
         </Center>
       )}
@@ -106,29 +105,21 @@ export const HabitList = () => {
                   <Td borderColor="transparent">
                     {habitsQuery.archived == 'false' && (
                       <HStack spacing="1" justifyContent="end">
-                        {habit.recentDoneList.map((b, idx) => {
-                          const last = habit.recentDoneList.length == idx + 1;
-                          const question = last && !b;
-                          const check = b;
-                          return (
-                            <Box
-                              key={idx}
-                              display="flex"
-                              alignItems="center"
-                              justifyContent="center"
-                              w="5"
-                              h="5"
-                              rounded="full"
-                              color={question ? 'black' : check ? 'white' : 'black'}
-                              bgColor={question ? 'gray.200' : check ? 'green.400' : 'gray.200'}
-                            >
-                              <Icon
-                                as={question ? TbQuestionMark : check ? TbCheck : TbX}
-                                fontSize="sm"
-                              />
-                            </Box>
-                          );
-                        })}
+                        {habit.recentDoneList.map((b, idx) => (
+                          <Box
+                            key={idx}
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            w="5"
+                            h="5"
+                            rounded="full"
+                            color={b ? 'white' : 'black'}
+                            bgColor={b ? 'yellow.400' : 'gray.200'}
+                          >
+                            <Icon as={b ? TbCheck : TbQuestionMark} fontSize="sm" />
+                          </Box>
+                        ))}
                       </HStack>
                     )}
                   </Td>

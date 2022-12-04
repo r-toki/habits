@@ -11,7 +11,6 @@ import {
   TableContainer,
   Tbody,
   Td,
-  Textarea,
   Tr,
   useCheckboxGroup,
 } from '@chakra-ui/react';
@@ -62,7 +61,7 @@ export const RecordEdit = () => {
 
       <Stack px="2">
         {dailyRecord.isLoading && (
-          <Center>
+          <Center py="2">
             <Spinner />
           </Center>
         )}
@@ -122,7 +121,7 @@ const RecordEditForm = ({ dailyRecord }: { dailyRecord: DailyRecord }) => {
                   <Checkbox
                     key={v.habitId}
                     {...getCheckboxProps({ value: v.habitId })}
-                    colorScheme="green"
+                    colorScheme="joy"
                   >
                     <Box color={v.archived ? 'gray.400' : 'black'}>{v.habitName}</Box>
                   </Checkbox>
@@ -132,9 +131,7 @@ const RecordEditForm = ({ dailyRecord }: { dailyRecord: DailyRecord }) => {
           </Tbody>
         </Table>
       </TableContainer>
-      {/* <Box px="2">
-        <Textarea {...commentInput.bind} />
-      </Box> */}
+
       <Box px="2">
         <Button w="full" type="submit">
           Save
