@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useAppToast } from '@/hooks/useAppToast';
 import { QUOTES } from '@/lib/quotes';
+import { useMe } from '@/providers/me';
 
 export const AppLayout = ({
   title = 'My Habit',
@@ -28,6 +29,7 @@ export const AppLayout = ({
 }) => {
   const navigate = useNavigate();
   const toast = useAppToast();
+  const { me } = useMe();
 
   const client = useQueryClient();
   const signOut = useMutation({
@@ -62,7 +64,7 @@ export const AppLayout = ({
             <Menu placement="bottom-end">
               <MenuButton as={IconButton} icon={<GoThreeBars />} />
               <MenuList>
-                <MenuItem onClick={() => navigate('/home')}>Home</MenuItem>
+                <MenuItem onClick={() => navigate('/home')}>{me?.displayName}</MenuItem>
                 <MenuItem onClick={() => navigate('/habits/new')}>Add a Habit</MenuItem>
                 <MenuDivider />
                 <MenuItem onClick={onSignOut} disabled={signOut.isLoading}>

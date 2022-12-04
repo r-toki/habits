@@ -17,9 +17,15 @@ export const SignUp = () => {
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
       try {
         await createUserWithEmailAndPassword(getAuth(), email, password);
-      } catch {
-        await signInWithEmailAndPassword(getAuth(), email, password);
         await createUser({ displayName: email.split('@')[0] });
+      } catch {
+        console.warn('could not sign_up or create_user');
+        try {
+          await signInWithEmailAndPassword(getAuth(), email, password);
+          await createUser({ displayName: email.split('@')[0] });
+        } catch {
+          console.warn('could not sign_in or create_user');
+        }
       }
     },
     onSuccess: () => {
