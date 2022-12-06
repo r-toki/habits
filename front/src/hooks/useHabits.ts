@@ -15,7 +15,7 @@ export const useHabits = () => {
   const toast = useAppToast();
   const client = useQueryClient();
 
-  const [habitsQuery, setHabitsQuery] = useState<HabitsQuery>({ archived: 'false' });
+  const [habitsQuery, setHabitsQuery] = useState<HabitsQuery>({ archived: false });
   const habits = useQuery({
     queryKey: ['habits', habitsQuery],
     queryFn: () => getHabits(habitsQuery),

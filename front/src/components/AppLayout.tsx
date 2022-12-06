@@ -2,6 +2,7 @@ import {
   Box,
   Container,
   Flex,
+  Icon,
   IconButton,
   Menu,
   MenuButton,
@@ -13,6 +14,7 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAuth, signOut as signOutFn } from 'firebase/auth';
 import { ReactNode, useMemo } from 'react';
+import { FaArrowLeft } from 'react-icons/fa';
 import { GoThreeBars } from 'react-icons/go';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,16 +24,19 @@ import { useMe } from '@/providers/me';
 
 export const AppLayout = ({
   title = 'My Habit',
+  back,
   children,
 }: {
   title?: string;
+  back?: string;
   children: ReactNode;
 }) => {
+  const client = useQueryClient();
   const navigate = useNavigate();
   const toast = useAppToast();
+
   const { me } = useMe();
 
-  const client = useQueryClient();
   const signOut = useMutation({
     mutationFn: () => signOutFn(getAuth()),
     onSuccess: () => {
@@ -40,16 +45,27 @@ export const AppLayout = ({
     },
   });
 
-  const onSignOut = async () => {
-    await signOut.mutate();
-  };
-
   const quote = useMemo(() => QUOTES[new Date().getTime() % QUOTES.length].split('\n'), []);
 
   return (
     <Container maxW="md" py="2">
       <Stack spacing="4">
-        <Flex justifyContent="end" alignItems="center" position="relative" h="40px">
+        <Flex justify="end" align="center" position="relative" h="40px">
+          {back && (
+            <Flex
+              justify="center"
+              align="center"
+              position="absolute"
+              left="0"
+              w="10"
+              h="10"
+              cursor="pointer"
+              onClick={() => navigate(back)}
+            >
+              <Icon as={FaArrowLeft} />
+            </Flex>
+          )}
+
           <Box
             position="absolute"
             left="50%"
@@ -64,10 +80,10 @@ export const AppLayout = ({
             <Menu placement="bottom-end">
               <MenuButton as={IconButton} icon={<GoThreeBars />} />
               <MenuList>
-                <MenuItem onClick={() => navigate('/home')}>{me?.displayName}</MenuItem>
+                <MenuItem>{me!.displayName}</MenuItem>
                 <MenuItem onClick={() => navigate('/habits/new')}>Add a Habit</MenuItem>
                 <MenuDivider />
-                <MenuItem onClick={onSignOut} disabled={signOut.isLoading}>
+                <MenuItem onClick={() => signOut.mutate()} disabled={signOut.isLoading}>
                   Sign Out
                 </MenuItem>
               </MenuList>

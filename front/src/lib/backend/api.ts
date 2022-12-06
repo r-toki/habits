@@ -15,21 +15,12 @@ export const getUser = () => axios.get<User>('user').then(({ data }) => data);
 export const createUser = (input: CreateUserInput) => axios.post('user', input);
 
 export type HabitsQuery = {
-  archived: 'true' | 'false' | 'null';
+  archived?: boolean;
 };
 export const getHabits = (habitsQuery: HabitsQuery) =>
-  axios
-    .get<Habit[]>(
-      `user/habits${Object.entries(habitsQuery)
-        .filter((v) => v[1] != 'null')
-        .reduce((acc, curr, idx) => acc + (idx == 0 ? '?' : '&') + `${curr[0]}=${curr[1]}`, '')}`,
-    )
-    .then(({ data }) => data);
+  axios.get<Habit[]>('user/habits' + toQueryString(habitsQuery)).then(({ data }) => data);
 
 export const createHabit = (input: CreateHabitInput) => axios.post('user/habits', input);
-
-export const getHabit = (id: string) =>
-  axios.get<Habit>(`user/habits/${id}`).then(({ data }) => data);
 
 export const updateHabit = ({ habitId, ...input }: UpdateHabitInput) =>
   axios.patch(`user/habits/${habitId}`, input);
@@ -45,3 +36,8 @@ export const getDailyRecord = (recordedOn: string) =>
 
 export const updateDailyRecord = ({ recordedOn, ...input }: UpdateDailyRecord) =>
   axios.patch(`user/daily_records/${recordedOn}`, input);
+
+const toQueryString = (query: Record<string, unknown>) =>
+  Object.entries(query)
+    .filter((v) => v[1] != undefined)
+    .reduce((acc, curr, idx) => acc + (idx == 0 ? '?' : '&') + `${curr[0]}=${curr[1]}`, '');

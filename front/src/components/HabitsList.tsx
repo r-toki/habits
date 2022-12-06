@@ -22,7 +22,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useHabits } from '@/hooks/useHabits';
 
-export const HabitList = () => {
+export const HabitsList = () => {
   const navigate = useNavigate();
 
   const { habitsQuery, setHabitsQuery, habits, deleteHabit, archiveHabit, swapHabit } = useHabits();
@@ -70,7 +70,7 @@ export const HabitList = () => {
                             Edit
                           </MenuItem>
 
-                          {habitsQuery.archived == 'false' && habits.data.length > 1 && (
+                          {habitsQuery.archived == false && habits.data.length > 1 && (
                             <>
                               {idx != 0 && <MenuItem onClick={() => onUpHabit(idx)}>Up</MenuItem>}
                               {habits.data.length - 1 != idx && (
@@ -103,7 +103,7 @@ export const HabitList = () => {
                     </Box>
                   </Td>
                   <Td borderColor="transparent">
-                    {habitsQuery.archived == 'false' && (
+                    {habitsQuery.archived == false && (
                       <HStack spacing="1" justifyContent="end">
                         {habit.recentDoneList.map((b, idx) => (
                           <Box
@@ -134,20 +134,20 @@ export const HabitList = () => {
 
       <HStack alignSelf="end">
         <Link
-          onClick={() => setHabitsQuery({ archived: 'false' })}
-          color={habitsQuery.archived != 'false' ? 'gray.400' : undefined}
+          onClick={() => setHabitsQuery({ archived: false })}
+          color={habitsQuery.archived != false ? 'gray.400' : undefined}
         >
           unarchived
         </Link>
         <Link
-          onClick={() => setHabitsQuery({ archived: 'true' })}
-          color={habitsQuery.archived != 'true' ? 'gray.400' : undefined}
+          onClick={() => setHabitsQuery({ archived: true })}
+          color={habitsQuery.archived != true ? 'gray.400' : undefined}
         >
           archived
         </Link>
         <Link
-          onClick={() => setHabitsQuery({ archived: 'null' })}
-          color={habitsQuery.archived != 'null' ? 'gray.400' : undefined}
+          onClick={() => setHabitsQuery({ archived: undefined })}
+          color={habitsQuery.archived != undefined ? 'gray.400' : undefined}
         >
           all
         </Link>

@@ -11,4 +11,5 @@ initializeApp({
   measurementId: 'G-1C7DJPNCW7',
 });
 
-if (import.meta.env.DEV) connectAuthEmulator(getAuth(), 'http://localhost:9099');
+if (import.meta.env.DEV)
+  connectAuthEmulator(getAuth(), 'http://localhost:9099', { disableWarnings: true });

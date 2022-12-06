@@ -29,7 +29,7 @@ import {
 
 const toDate = (dateTime: Date) => format(dateTime, 'yyyy-MM-dd');
 
-export const RecordEdit = () => {
+export const RecordsEdit = () => {
   const [recordedAt, setRecordedAt] = useState(new Date());
   const toPreviousDay = () => setRecordedAt((prev) => subDays(prev, 1));
   const toNextDay = () => setRecordedAt((prev) => addDays(prev, 1));

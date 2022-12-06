@@ -1,47 +1,36 @@
 import { Button, FormControl, FormLabel, Input, Stack } from '@chakra-ui/react';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { FormEventHandler, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
+import { FormEventHandler } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { AppLayout } from '@/components/AppLayout';
 import { useAppToast } from '@/hooks/useAppToast';
 import { useTextInput } from '@/hooks/useTextInput';
-import { getHabit, updateHabit as updateHabitFn } from '@/lib/backend';
+import { createHabit as createHabitFn } from '@/lib/backend';
 
-export const HabitsEdit = () => {
-  const { habitId } = useParams();
+export const HabitsNew = () => {
   const navigate = useNavigate();
   const toast = useAppToast();
 
-  const habit = useQuery({
-    queryKey: ['habits', habitId],
-    queryFn: () => getHabit(habitId!),
-  });
-
-  const updateHabit = useMutation({
-    mutationFn: updateHabitFn,
+  const createHabit = useMutation({
+    mutationFn: createHabitFn,
     onSuccess: () => {
-      toast({ status: 'success', title: 'Updated.' });
+      toast({ status: 'success', title: 'Created.' });
       navigate('/home');
     },
     onError: () => toast({ status: 'error', title: 'Failed.' }),
   });
 
   const nameInput = useTextInput();
-  useEffect(() => {
-    if (habit.data) {
-      nameInput.set(habit.data.name);
-    }
-  }, [habit.data]);
 
   const onSubmit: FormEventHandler = async (e) => {
     e.preventDefault();
 
-    await updateHabit.mutate({ habitId: habitId!, name: nameInput.value });
+    await createHabit.mutate({ name: nameInput.value });
   };
 
   return (
-    <AppLayout title="Edit Habit">
+    <AppLayout title="New Habit" back="/home">
       <Stack spacing="4">
         <form onSubmit={onSubmit}>
           <Stack>
@@ -50,7 +39,7 @@ export const HabitsEdit = () => {
               <Input required {...nameInput.bind} />
             </FormControl>
 
-            <Button type="submit" disabled={updateHabit.isLoading}>
+            <Button type="submit" disabled={createHabit.isLoading}>
               Save
             </Button>
           </Stack>

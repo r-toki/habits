@@ -2,8 +2,8 @@ import { HStack, Link, Stack } from '@chakra-ui/react';
 import { useLocalStorage } from 'react-use';
 
 import { AppLayout } from '@/components/AppLayout';
-import { HabitList } from '@/components/HabitList';
-import { RecordEdit } from '@/components/RecordEdit';
+import { HabitsList } from '@/components/HabitsList';
+import { RecordsEdit } from '@/components/RecordsEdit';
 
 export const Home = () => {
   const [tab, setTab] = useLocalStorage<'habits' | 'record'>('home_tab', 'habits');
@@ -20,8 +20,8 @@ export const Home = () => {
           </Link>
         </HStack>
 
-        {tab == 'habits' && <HabitList />}
-        {tab == 'record' && <RecordEdit />}
+        {tab == 'habits' && <HabitsList />}
+        {tab == 'record' && <RecordsEdit />}
       </Stack>
     </AppLayout>
   );

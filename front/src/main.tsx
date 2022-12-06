@@ -1,5 +1,5 @@
 import '@/index.css';
-import '@/lib/firebase';
+import '@/lib/firebase-app';
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';

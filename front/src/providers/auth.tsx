@@ -15,7 +15,7 @@ const useAuthProvider = (): State => {
       if (v) {
         setAuthUser(v);
         const token = await getIdToken(v);
-        window.localStorage.setItem('access_key', token);
+        window.localStorage.setItem('access_token', token);
       } else {
         setAuthUser(undefined);
       }
