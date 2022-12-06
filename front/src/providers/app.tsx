@@ -47,19 +47,16 @@ const extendedTheme = extendTheme({
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const client = useMemo(() => new QueryClient(), []);
   return (
-    <BrowserRouter>
-      <ChakraProvider theme={extendedTheme}>
-        <QueryClientProvider client={client}>
+    <QueryClientProvider client={client}>
+      <BrowserRouter>
+        <ChakraProvider theme={extendedTheme}>
           <AuthProvider>
-            <MeProvider>
-              <>
-                {children}
-                <ReactQueryDevtools initialIsOpen={false} />
-              </>
-            </MeProvider>
+            <MeProvider>{children}</MeProvider>
           </AuthProvider>
-        </QueryClientProvider>
-      </ChakraProvider>
-    </BrowserRouter>
+        </ChakraProvider>
+      </BrowserRouter>
+
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 };

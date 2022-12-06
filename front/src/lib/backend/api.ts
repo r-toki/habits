@@ -10,8 +10,6 @@ import {
   User,
 } from './type';
 
-export const getIndex = () => axios.get<string>('').then(({ data }) => data);
-
 export const getUser = () => axios.get<User>('user').then(({ data }) => data);
 
 export const createUser = (input: CreateUserInput) => axios.post('user', input);

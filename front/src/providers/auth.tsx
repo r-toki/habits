@@ -2,8 +2,6 @@ import { Center, Spinner } from '@chakra-ui/react';
 import { getAuth, getIdToken, onAuthStateChanged, User as AuthUser } from 'firebase/auth';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
-import { tokenStorage } from '@/lib/token-storage';
-
 type State = {
   initialized: boolean;
   authUser: AuthUser | undefined;
@@ -17,7 +15,7 @@ const useAuthProvider = (): State => {
       if (v) {
         setAuthUser(v);
         const token = await getIdToken(v);
-        tokenStorage.set('access_token', token);
+        window.localStorage.setItem('access_key', token);
       } else {
         setAuthUser(undefined);
       }
