@@ -1,4 +1,4 @@
-use crate::lib::config::CONFIG;
+use super::CONFIG;
 
 use actix_cors::Cors;
 use actix_web::http;

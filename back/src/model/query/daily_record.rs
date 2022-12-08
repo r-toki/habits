@@ -1,4 +1,4 @@
-use crate::lib::my_error::*;
+use crate::lib::error::*;
 
 use chrono::NaiveDate;
 use derive_new::new;

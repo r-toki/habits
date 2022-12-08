@@ -1,4 +1,4 @@
-use crate::lib::my_error::*;
+use crate::lib::error::*;
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};

@@ -1,4 +1,4 @@
-use crate::lib::my_error::*;
+use crate::lib::error::*;
 use crate::model::lib::*;
 use crate::model::table::*;
 

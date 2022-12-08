@@ -1,8 +1,4 @@
-use crate::lib::auth::get_auth_user;
-use crate::lib::{
-    auth::AuthUser,
-    my_error::{MyError, MyResult},
-};
+use crate::lib::{Error as CustomError, *};
 
 use actix_web::{http::header, FromRequest};
 use lazy_static::lazy_static;
@@ -23,7 +19,7 @@ impl AccessTokenDecoded {
 }
 
 impl FromRequest for AccessTokenDecoded {
-    type Error = MyError;
+    type Error = CustomError;
     type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
 
     fn from_request(req: &actix_web::HttpRequest, _: &mut actix_web::dev::Payload) -> Self::Future {
@@ -36,7 +32,7 @@ impl FromRequest for AccessTokenDecoded {
     }
 }
 
-fn extract_bearer_token(req: &actix_web::HttpRequest) -> MyResult<String> {
+fn extract_bearer_token(req: &actix_web::HttpRequest) -> Result<String, CustomError> {
     req.headers()
         .get(header::AUTHORIZATION)
         .and_then(|v| v.to_str().ok())
@@ -46,5 +42,5 @@ fn extract_bearer_token(req: &actix_web::HttpRequest) -> MyResult<String> {
                 .and_then(|captures| captures.get(1))
         })
         .map(|v| v.as_str().to_owned())
-        .ok_or_else(|| MyError::new_unauthorized())
+        .ok_or_else(|| CustomError::new_unauthorized())
 }

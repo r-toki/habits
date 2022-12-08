@@ -1,5 +1,5 @@
 use super::table;
-use crate::lib::my_error::*;
+use crate::lib::error::*;
 use crate::model::lib::*;
 
 use chrono::{DateTime, Utc};

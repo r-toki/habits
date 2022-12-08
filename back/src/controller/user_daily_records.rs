@@ -1,5 +1,5 @@
 use crate::controller::lib::*;
-use crate::lib::my_error::*;
+use crate::lib::error::*;
 use crate::model::{command::*, query::*};
 
 use actix_web::{

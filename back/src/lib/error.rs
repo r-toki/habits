@@ -4,10 +4,8 @@ use serde_json::{json, Map as JsonMap, Value as JsonValue};
 use sqlx::Error as SqlxError;
 use validator::ValidationErrors;
 
-pub type MyResult<T> = Result<T, MyError>;
-
 #[derive(new, Debug, thiserror::Error)]
-pub enum MyError {
+pub enum Error {
     #[error("400 Bad Request: {0}")]
     BadRequest(#[new(default)] JsonValue),
     #[error("401 Unauthorized: {0}")]
@@ -20,26 +18,26 @@ pub enum MyError {
     Conflict(#[new(default)] JsonValue),
     #[error("422 Unprocessable Entity: {0}")]
     UnprocessableEntity(#[new(default)] JsonValue),
-    #[error("500 Internal Server Error: {0}")]
+    #[error("500 Internal Server Error")]
     InternalServerError(#[new(default)] JsonValue),
 }
 
-impl ResponseError for MyError {
+impl ResponseError for Error {
     fn error_response(&self) -> Response {
         let to = |v: &JsonValue| json!({ "error": v });
         match self {
-            MyError::BadRequest(v) => Response::BadRequest().json(to(v)),
-            MyError::Unauthorized(v) => Response::Unauthorized().json(to(v)),
-            MyError::Forbidden(v) => Response::Forbidden().json(to(v)),
-            MyError::NotFound(v) => Response::NotFound().json(to(v)),
-            MyError::Conflict(v) => Response::Conflict().json(to(v)),
-            MyError::UnprocessableEntity(v) => Response::UnprocessableEntity().json(to(v)),
-            MyError::InternalServerError(v) => Response::InternalServerError().json(to(v)),
+            Error::BadRequest(v) => Response::BadRequest().json(to(v)),
+            Error::Unauthorized(v) => Response::Unauthorized().json(to(v)),
+            Error::Forbidden(v) => Response::Forbidden().json(to(v)),
+            Error::NotFound(v) => Response::NotFound().json(to(v)),
+            Error::Conflict(v) => Response::Conflict().json(to(v)),
+            Error::UnprocessableEntity(v) => Response::UnprocessableEntity().json(to(v)),
+            Error::InternalServerError(v) => Response::InternalServerError().json(to(v)),
         }
     }
 }
 
-impl From<ValidationErrors> for MyError {
+impl From<ValidationErrors> for Error {
     fn from(errors: ValidationErrors) -> Self {
         let mut err_map = JsonMap::new();
         for (field, field_errors) in errors.field_errors().iter() {
@@ -49,14 +47,14 @@ impl From<ValidationErrors> for MyError {
                 .collect();
             err_map.insert(field.to_string(), json!(errors));
         }
-        MyError::UnprocessableEntity(err_map.into())
+        Error::UnprocessableEntity(err_map.into())
     }
 }
 
-impl From<SqlxError> for MyError {
+impl From<SqlxError> for Error {
     fn from(error: SqlxError) -> Self {
         match error {
-            _ => MyError::InternalServerError(error.to_string().into()),
+            _ => Error::new_internal_server_error(),
         }
     }
 }

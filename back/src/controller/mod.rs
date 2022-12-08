@@ -1,12 +1,12 @@
+mod daily_records;
+mod habits;
 mod lib;
-mod user;
-mod user_daily_records;
-mod user_habits;
+mod me;
 
 use actix_web::web::ServiceConfig;
 
 pub fn init(cfg: &mut ServiceConfig) {
-    user::init(cfg);
-    user_habits::init(cfg);
-    user_daily_records::init(cfg);
+    me::init(cfg);
+    habits::init(cfg);
+    daily_records::init(cfg);
 }

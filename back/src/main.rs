@@ -1,9 +1,8 @@
 mod controller;
 mod lib;
-mod model;
+mod service;
 
 use crate::lib::{config::CONFIG, cors::cors};
-
 use actix_web::{get, middleware::Logger, web::Data, App, HttpServer, Responder};
 use sqlx::postgres::PgPoolOptions;
 
