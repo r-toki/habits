@@ -29,14 +29,14 @@ pub async fn get_me(pool: &PgPool, user_id: String) -> Result<Me, Error> {
     .map_err(Into::into)
 }
 
-pub async fn create_me(pool: &PgPool, user_id: String, input: CreateMe) -> Result<(), Error> {
+pub async fn create_me(pool: &PgPool, user_id: String, f: CreateMe) -> Result<(), Error> {
     query!(
         "
         insert into users (id, display_name, created_at, updated_at)
         values ($1, $2, current_timestamp, current_timestamp)
         ",
         user_id,
-        input.display_name
+        f.display_name
     )
     .execute(pool)
     .await

@@ -3,9 +3,9 @@ use crate::lib::Error;
 use crate::service::daily_records::*;
 use actix_web::{
     get, patch,
-    web::{Data, Json, Path, ServiceConfig},
+    web::{Data, Json, Path, Query, ServiceConfig},
 };
-use chrono::{DateTime, Utc};
+use chrono::NaiveDate;
 use sqlx::PgPool;
 
 pub fn init(cfg: &mut ServiceConfig) {
@@ -13,21 +13,36 @@ pub fn init(cfg: &mut ServiceConfig) {
     cfg.service(update);
 }
 
-#[get("/daily_records/{start_of_recorded_at}")]
+#[get("/daily_records/{recorded_on}")]
 async fn show(
     pool: Data<PgPool>,
     at: AccessTokenDecoded,
-    path: Path<DateTime<Utc>>,
-) -> Result<Json<Vec<DailyRecord>>, Error> {
-    todo!();
+    path: Path<NaiveDate>,
+    query: Query<GetDailyRecord>,
+) -> Result<Json<Option<DailyRecord>>, Error> {
+    get_daily_record(
+        &**pool,
+        at.into_inner().uid,
+        path.into_inner(),
+        query.into_inner(),
+    )
+    .await
+    .map(Json)
 }
 
-#[patch("/daily_records/{start_of_recorded_at}")]
+#[patch("/daily_records/{recorded_on}")]
 async fn update(
     pool: Data<PgPool>,
     at: AccessTokenDecoded,
-    path: Path<DateTime<Utc>>,
-    form: Json<UpdateHabitDailyRecord>,
+    path: Path<NaiveDate>,
+    form: Json<UpdateDailyRecord>,
 ) -> Result<Json<()>, Error> {
-    todo!();
+    update_daily_record(
+        &**pool,
+        at.into_inner().uid,
+        path.into_inner(),
+        form.into_inner(),
+    )
+    .await
+    .map(Json)
 }

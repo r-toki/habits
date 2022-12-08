@@ -18,6 +18,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { addDays, format, isToday, subDays } from 'date-fns';
 import { FormEventHandler, useEffect, useMemo, useState } from 'react';
 import { GoChevronLeft, GoChevronRight } from 'react-icons/go';
+import { useNavigate } from 'react-router-dom';
 
 import { useAppToast } from '@/hooks/useAppToast';
 import { useTextInput } from '@/hooks/useTextInput';
@@ -37,7 +38,7 @@ export const RecordsEdit = () => {
   const recordedOn = useMemo(() => toDate(recordedAt), [recordedAt]);
   const dailyRecord = useQuery({
     queryKey: ['dailyRecord', recordedOn],
-    queryFn: () => getDailyRecord(recordedOn),
+    queryFn: () => getDailyRecord({ recordedOn, tz: 'Asia/Tokyo' }),
   });
 
   return (
@@ -77,14 +78,16 @@ export const RecordsEdit = () => {
 };
 
 const RecordEditForm = ({ dailyRecord }: { dailyRecord: DailyRecord }) => {
+  const client = useQueryClient();
+  const navigate = useNavigate();
   const toast = useAppToast();
 
-  const client = useQueryClient();
   const updateDailyRecord = useMutation({
     mutationFn: updateDailyRecordFn,
     onSuccess: () => {
       client.invalidateQueries(['dailyRecord']);
       toast({ status: 'success', title: 'Updated.' });
+      navigate('/');
     },
     onError: () => toast({ status: 'error', title: 'Failed.' }),
   });

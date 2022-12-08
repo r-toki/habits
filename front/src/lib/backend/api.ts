@@ -4,39 +4,43 @@ import {
   CreateHabitSwap,
   CreateMe,
   DailyRecord,
+  GetDailyRecord,
+  GetHabits,
   Habit,
   Me,
   UpdateDailyRecord,
   UpdateHabit,
 } from './type';
 
+/* ----------------------------------- Me ----------------------------------- */
 export const getMe = () => axios.get<Me>('me').then(({ data }) => data);
 
-export const createMe = (input: CreateMe) => axios.post('me', input);
+export const createMe = (f: CreateMe) => axios.post('me', f);
 
-export type HabitsQuery = {
-  archived?: boolean;
-};
-export const getHabits = (habitsQuery: HabitsQuery) =>
-  axios.get<Habit[]>('habits' + toQueryString(habitsQuery)).then(({ data }) => data);
+/* --------------------------------- Habits --------------------------------- */
+export const getHabits = (q: GetHabits) =>
+  axios.get<Habit[]>('habits' + toQueryString(q)).then(({ data }) => data);
 
-export const createHabit = (input: CreateHabit) => axios.post('habits', input);
+export const createHabit = (f: CreateHabit) => axios.post('habits', f);
 
-export const updateHabit = ({ habitId, ...input }: UpdateHabit) =>
-  axios.patch(`habits/${habitId}`, input);
+export const updateHabit = ({ habitId, ...f }: UpdateHabit) => axios.patch(`habits/${habitId}`, f);
 
 export const deleteHabit = (id: string) => axios.delete(`habits/${id}`);
 
 export const archiveHabit = (id: string) => axios.post(`habits/${id}/archive`);
 
-export const swapHabits = (input: CreateHabitSwap) => axios.post('habits/swap', input);
+export const swapHabits = (f: CreateHabitSwap) => axios.post('habits/swap', f);
 
-export const getDailyRecord = (recordedOn: string) =>
-  axios.get<DailyRecord | null>(`daily_records/${recordedOn}`).then(({ data }) => data);
+/* ------------------------------ DailyRecords ------------------------------ */
+export const getDailyRecord = ({ recordedOn, ...q }: GetDailyRecord) =>
+  axios
+    .get<DailyRecord | null>(`daily_records/${recordedOn}` + toQueryString(q))
+    .then(({ data }) => data);
 
-export const updateDailyRecord = ({ recordedOn, ...input }: UpdateDailyRecord) =>
-  axios.patch(`daily_records/${recordedOn}`, input);
+export const updateDailyRecord = ({ recordedOn, ...f }: UpdateDailyRecord) =>
+  axios.patch(`daily_records/${recordedOn}`, f);
 
+/* ---------------------------------- Utils --------------------------------- */
 const toQueryString = (query: Record<string, unknown>) =>
   Object.entries(query)
     .filter((v) => v[1] != undefined)

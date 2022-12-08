@@ -40,11 +40,7 @@ pub struct SwapHabits {
     habit_id_2: String,
 }
 
-pub async fn get_habits(
-    pool: &PgPool,
-    user_id: String,
-    query: GetHabits,
-) -> Result<Vec<Habit>, Error> {
+pub async fn get_habits(pool: &PgPool, user_id: String, q: GetHabits) -> Result<Vec<Habit>, Error> {
     query_as!(
         Habit,
         r#"
@@ -78,26 +74,26 @@ pub async fn get_habits(
         group by habits.id, habits.name, habits.archived_at, habits.created_at, habits.sort_number
         order by habits.sort_number
         "#,
-        match query.tz {
+        match q.tz {
             Some(tz) => tz,
             None => "UTC".into(),
         },
         user_id,
-        query.archived
+        q.archived
     )
     .fetch_all(pool)
     .await
     .map_err(Into::into)
 }
 
-pub async fn create_habit(pool: &PgPool, user_id: String, input: CreateHabit) -> Result<(), Error> {
+pub async fn create_habit(pool: &PgPool, user_id: String, f: CreateHabit) -> Result<(), Error> {
     query!(
         "
         insert into habits (id, name, created_at, updated_at, archived_at, user_id, sort_number)
         values ($1, $2, current_timestamp, current_timestamp, null, $3, extract(epoch from current_timestamp)::int)
         ",
         get_new_id(),
-        input.name,
+        f.name,
         user_id
     )
     .execute(pool)
@@ -110,7 +106,7 @@ pub async fn update_habit(
     pool: &PgPool,
     user_id: String,
     habit_id: String,
-    input: UpdateHabit,
+    f: UpdateHabit,
 ) -> Result<(), Error> {
     query!(
         "
@@ -121,7 +117,7 @@ pub async fn update_habit(
         where id = $2
         and user_id = $3
         ",
-        input.name,
+        f.name,
         habit_id,
         user_id
     )
@@ -165,7 +161,7 @@ pub async fn archive_habit(pool: &PgPool, user_id: String, habit_id: String) -> 
     .map_err(Into::into)
 }
 
-pub async fn swap_habits(pool: &PgPool, user_id: String, input: SwapHabits) -> Result<(), Error> {
+pub async fn swap_habits(pool: &PgPool, user_id: String, f: SwapHabits) -> Result<(), Error> {
     query!(
         "
         update habits
@@ -177,8 +173,8 @@ pub async fn swap_habits(pool: &PgPool, user_id: String, input: SwapHabits) -> R
         where id in ($1, $2)
         and user_id = $3
         ",
-        input.habit_id_1,
-        input.habit_id_2,
+        f.habit_id_1,
+        f.habit_id_2,
         user_id
     )
     .execute(pool)

@@ -4,6 +4,7 @@ use serde_json::{json, Map as JsonMap, Value as JsonValue};
 use sqlx::Error as SqlxError;
 use validator::ValidationErrors;
 
+#[allow(dead_code)]
 #[derive(new, Debug, thiserror::Error)]
 pub enum Error {
     #[error("400 Bad Request: {0}")]

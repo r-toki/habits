@@ -1,12 +1,12 @@
 import { HStack, Link, Stack } from '@chakra-ui/react';
-import { useLocalStorage } from 'react-use';
+import { useState } from 'react';
 
 import { AppLayout } from '@/components/AppLayout';
 import { HabitsList } from '@/components/HabitsList';
 import { RecordsEdit } from '@/components/RecordsEdit';
 
 export const Home = () => {
-  const [tab, setTab] = useLocalStorage<'habits' | 'record'>('home_tab', 'habits');
+  const [tab, setTab] = useState<'habits' | 'record'>('habits');
 
   return (
     <AppLayout>

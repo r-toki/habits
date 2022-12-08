@@ -4,8 +4,8 @@ import { useState } from 'react';
 import {
   archiveHabit as archiveHabitFn,
   deleteHabit as deleteHabitFn,
+  GetHabits,
   getHabits,
-  HabitsQuery,
   swapHabits as swapHabitsFn,
 } from '@/lib/backend';
 
@@ -15,7 +15,7 @@ export const useHabits = () => {
   const toast = useAppToast();
   const client = useQueryClient();
 
-  const [habitsQuery, setHabitsQuery] = useState<HabitsQuery>({ archived: false });
+  const [habitsQuery, setHabitsQuery] = useState<GetHabits>({ archived: false });
   const habits = useQuery({
     queryKey: ['habits', habitsQuery],
     queryFn: () => getHabits(habitsQuery),

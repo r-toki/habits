@@ -72,6 +72,86 @@
     },
     "query": "\n        delete from habits\n        where id = $1\n        and user_id = $2\n        "
   },
+  "541473126b92d4c6456b6e6847a002d883b747d69442e2202c5f5fb9f641cb92": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "comment",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "recorded_on",
+          "ordinal": 2,
+          "type_info": "Date"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "updated_at",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "user_id",
+          "ordinal": 5,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text",
+          "Date",
+          "Text"
+        ]
+      }
+    },
+    "query": "\n        insert into daily_records (id, comment, recorded_on, created_at, updated_at, user_id)\n        values ($1, $2, $3, current_timestamp, current_timestamp, $4)\n        on conflict (recorded_on, user_id)\n        do update\n        set comment = $2, updated_at = current_timestamp\n        returning *\n        "
+  },
+  "7cb7e355aa419911dd7557eb2e3afe3df8cfac19c8f14cbca337d683f979c8cd": {
+    "describe": {
+      "columns": [
+        {
+          "name": "comment",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "recorded_on",
+          "ordinal": 1,
+          "type_info": "Date"
+        }
+      ],
+      "nullable": [
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Date"
+        ]
+      }
+    },
+    "query": "\n        select comment, recorded_on from daily_records\n        where user_id = $1\n        and recorded_on = $2\n        "
+  },
   "8195d64cbdecbba0703edfc932b5578adf8e70dc327dd84a4cd4825e3a275ec0": {
     "describe": {
       "columns": [],
@@ -85,6 +165,22 @@
       }
     },
     "query": "\n        update habits\n        set\n            name = $1,\n            updated_at = current_timestamp\n        where id = $2\n        and user_id = $3\n        "
+  },
+  "95478fd664d913630fa33187ccc899eda4d0a0800aea17ba512f1b8947e48de3": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Bool",
+          "Date",
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "\n            insert into habit_daily_records (id, done, recorded_on, created_at, updated_at, habit_id, daily_record_id)\n            values ($1, $2, $3, current_timestamp, current_timestamp, $4, $5)\n            on conflict (recorded_on, habit_id, daily_record_id)\n            do update\n            set done = $2, updated_at = current_timestamp\n            "
   },
   "b1acea4ae7b006c0749c6ae6397f031ca282064e9d0826736cbac1bf5525eeaa": {
     "describe": {
@@ -112,6 +208,46 @@
       }
     },
     "query": "\n        insert into habits (id, name, created_at, updated_at, archived_at, user_id, sort_number)\n        values ($1, $2, current_timestamp, current_timestamp, null, $3, extract(epoch from current_timestamp)::int)\n        "
+  },
+  "c2cfd804049bb7e9b1f489dfbbab1a00ed3cea0e32723e17e82c275291a4e270": {
+    "describe": {
+      "columns": [
+        {
+          "name": "done?",
+          "ordinal": 0,
+          "type_info": "Bool"
+        },
+        {
+          "name": "archived!",
+          "ordinal": 1,
+          "type_info": "Bool"
+        },
+        {
+          "name": "habit_id",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "habit_name",
+          "ordinal": 3,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        true,
+        null,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Date",
+          "Text"
+        ]
+      }
+    },
+    "query": "\n        select\n            hdr.done \"done?\", h.archived_at is not null \"archived!\", h.id habit_id, h.name habit_name\n        from\n            (\n                select * from habits\n                where user_id = $1\n                and (archived_at is null or archived_at > $2::date::timestamp at time zone $3)\n                and created_at < $2::date::timestamp at time zone $3 + interval '1 day'\n                order by sort_number\n            ) h\n        left outer join\n            (\n                select * from habit_daily_records\n                where recorded_on = $2\n            ) hdr\n        on h.id = hdr.habit_id\n        "
   },
   "e3b69826b59cd2346a6aa98b96d306f027a78e6ecca4a08a0cbb43d36f276628": {
     "describe": {
