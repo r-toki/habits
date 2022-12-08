@@ -59,8 +59,8 @@ pub async fn get_habits(pool: &PgPool, user_id: String, q: GetHabits) -> Result<
                     (
                         select
                             generate_series(
-                                (current_date at time zone $1)::date - interval '6 days',
-                                (current_date at time zone $1)::date,
+                                (current_timestamp at time zone $1)::date - interval '6 days',
+                                (current_timestamp at time zone $1)::date,
                                 '1 day'
                             )::date d
                     ) last_days
