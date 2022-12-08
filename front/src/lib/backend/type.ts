@@ -17,6 +17,7 @@ export type Habit = {
 };
 export type GetHabits = {
   archived?: boolean;
+  tz: string;
 };
 export type CreateHabit = {
   name: string;

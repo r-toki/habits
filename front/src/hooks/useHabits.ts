@@ -15,10 +15,10 @@ export const useHabits = () => {
   const toast = useAppToast();
   const client = useQueryClient();
 
-  const [habitsQuery, setHabitsQuery] = useState<GetHabits>({ archived: false });
+  const [habitsQuery, setHabitsQuery] = useState<Pick<GetHabits, 'archived'>>({ archived: false });
   const habits = useQuery({
     queryKey: ['habits', habitsQuery],
-    queryFn: () => getHabits(habitsQuery),
+    queryFn: () => getHabits({ tz: 'Asia/Tokyo', ...habitsQuery }),
   });
 
   const deleteHabit = useMutation({
