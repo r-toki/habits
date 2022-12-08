@@ -19,8 +19,8 @@ serde_json = "1.0"
 sqlx = { version = "0.6", features = [
   "runtime-actix-native-tls",
   "postgres",
-  "offline",
   "chrono",
+  "offline",
 ] }
 thiserror = "1.0"
 ulid = { version = "1.0", features = ["serde"] }

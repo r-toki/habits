@@ -14,7 +14,7 @@ pub fn init(cfg: &mut ServiceConfig) {
 
 #[get("/me")]
 async fn index(pool: Data<PgPool>, at: AccessTokenDecoded) -> Result<Json<Me>, Error> {
-    todo!();
+    get_me(&**pool, at.into_inner().uid).await.map(Json)
 }
 
 #[post("/me")]
@@ -23,5 +23,7 @@ async fn create(
     at: AccessTokenDecoded,
     form: Json<CreateMe>,
 ) -> Result<Json<()>, Error> {
-    todo!();
+    create_me(&**pool, at.into_inner().uid, form.into_inner())
+        .await
+        .map(Json)
 }
