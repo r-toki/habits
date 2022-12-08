@@ -166,40 +166,23 @@ pub async fn archive_habit(pool: &PgPool, user_id: String, habit_id: String) -> 
 }
 
 pub async fn swap_habits(pool: &PgPool, user_id: String, input: SwapHabits) -> Result<(), Error> {
-    let mut tx = pool.begin().await?;
-
     query!(
         "
-        update habits h1
-        set sort_number = h2.sort_number
-        from habits h2
-        where h1.id = $1
-        and h2.id = $2
-        and h1.user_id = $3
+        update habits
+        set sort_number =
+            case id
+                when $1 then (select sort_number from habits where id = $2)
+                when $2 then (select sort_number from habits where id = $1)
+            end
+        where id in ($1, $2)
+        and user_id = $3
         ",
         input.habit_id_1,
         input.habit_id_2,
         user_id
     )
-    .execute(&mut tx)
-    .await?;
-
-    query!(
-        "
-        update habits h1
-        set sort_number = h2.sort_number
-        from habits h2
-        where h1.id = $1
-        and h2.id = $2
-        and h1.user_id = $3
-        ",
-        input.habit_id_2,
-        input.habit_id_1,
-        user_id
-    )
-    .execute(&mut tx)
-    .await?;
-
-    tx.commit().await?;
-    Ok(())
+    .execute(pool)
+    .await
+    .map(|_| ())
+    .map_err(Into::into)
 }
