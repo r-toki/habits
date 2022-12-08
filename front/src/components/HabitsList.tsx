@@ -25,7 +25,8 @@ import { useHabits } from '@/hooks/useHabits';
 export const HabitsList = () => {
   const navigate = useNavigate();
 
-  const { habitsQuery, setHabitsQuery, habits, deleteHabit, archiveHabit, swapHabit } = useHabits();
+  const { habitsQuery, setHabitsQuery, habits, deleteHabit, archiveHabit, swapHabits } =
+    useHabits();
 
   const onDeleteHabit = async (id: string) => {
     if (window.confirm('Delete?')) await deleteHabit.mutate(id);
@@ -37,12 +38,12 @@ export const HabitsList = () => {
   const onUpHabit = async (idx: number) => {
     const upper_id = habits.data![idx - 1].id;
     const lower_id = habits.data![idx].id;
-    await swapHabit.mutate({ habitId1: upper_id, habitId2: lower_id });
+    await swapHabits.mutate({ habitId1: upper_id, habitId2: lower_id });
   };
   const onDownHabit = async (idx: number) => {
     const upper_id = habits.data![idx].id;
     const lower_id = habits.data![idx + 1].id;
-    await swapHabit.mutate({ habitId1: lower_id, habitId2: upper_id });
+    await swapHabits.mutate({ habitId1: lower_id, habitId2: upper_id });
   };
 
   return (

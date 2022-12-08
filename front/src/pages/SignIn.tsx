@@ -7,7 +7,7 @@ import { AppLink } from '@/components/AppLink';
 import { AuthLayout } from '@/components/AuthLayout';
 import { useAppToast } from '@/hooks/useAppToast';
 import { useTextInput } from '@/hooks/useTextInput';
-import { getUser } from '@/lib/backend';
+import { getMe } from '@/lib/backend';
 
 export const SignIn = () => {
   const toast = useAppToast();
@@ -16,7 +16,7 @@ export const SignIn = () => {
   const signIn = useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
       await signInWithEmailAndPassword(getAuth(), email, password);
-      await getUser();
+      await getMe();
     },
     onSuccess: () => {
       client.invalidateQueries(['me']);

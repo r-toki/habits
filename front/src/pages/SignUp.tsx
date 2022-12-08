@@ -7,7 +7,7 @@ import { AppLink } from '@/components/AppLink';
 import { AuthLayout } from '@/components/AuthLayout';
 import { useAppToast } from '@/hooks/useAppToast';
 import { useTextInput } from '@/hooks/useTextInput';
-import { createUser } from '@/lib/backend';
+import { createMe } from '@/lib/backend';
 
 export const SignUp = () => {
   const toast = useAppToast();
@@ -17,12 +17,12 @@ export const SignUp = () => {
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
       try {
         await createUserWithEmailAndPassword(getAuth(), email, password);
-        await createUser({ displayName: email.split('@')[0] });
+        await createMe({ displayName: email.split('@')[0] });
       } catch {
         console.warn('could not sign_up or create_user');
         try {
           await signInWithEmailAndPassword(getAuth(), email, password);
-          await createUser({ displayName: email.split('@')[0] });
+          await createMe({ displayName: email.split('@')[0] });
         } catch {
           console.warn('could not sign_in or create_user');
         }

@@ -1,8 +1,8 @@
-export type User = {
+export type Me = {
   id: string;
   displayName: string;
 };
-export type CreateUserInput = {
+export type CreateMe = {
   displayName: string;
 };
 
@@ -13,14 +13,14 @@ export type Habit = {
   createdAt: string;
   recentDoneList: boolean[];
 };
-export type CreateHabitInput = {
+export type CreateHabit = {
   name: string;
 };
-export type UpdateHabitInput = {
+export type UpdateHabit = {
   habitId: string;
   name: string;
 };
-export type CreateHabitSwapInput = {
+export type CreateHabitSwap = {
   habitId1: string;
   habitId2: string;
 };

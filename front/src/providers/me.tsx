@@ -2,17 +2,17 @@ import { Center, Spinner } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { createContext, ReactNode, useContext } from 'react';
 
-import { getUser, User } from '@/lib/backend';
+import { getMe, Me } from '@/lib/backend';
 
 type State = {
   initialized: boolean;
-  me: User | undefined;
+  me: Me | undefined;
 };
 
 const useMeProvider = (): State => {
   const { data: me, isInitialLoading } = useQuery({
     queryKey: ['me'],
-    queryFn: getUser,
+    queryFn: getMe,
     retry: false,
   });
   return { initialized: !isInitialLoading, me };

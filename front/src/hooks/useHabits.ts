@@ -6,7 +6,7 @@ import {
   deleteHabit as deleteHabitFn,
   getHabits,
   HabitsQuery,
-  swapHabit as swapHabitFn,
+  swapHabits as swapHabitsFn,
 } from '@/lib/backend';
 
 import { useAppToast } from './useAppToast';
@@ -39,8 +39,8 @@ export const useHabits = () => {
     onError: () => toast({ status: 'error', title: 'Failed.' }),
   });
 
-  const swapHabit = useMutation({
-    mutationFn: swapHabitFn,
+  const swapHabits = useMutation({
+    mutationFn: swapHabitsFn,
     onSuccess: () => {
       client.invalidateQueries(['habits']);
       toast({ status: 'success', title: 'Swapped.' });
@@ -48,5 +48,5 @@ export const useHabits = () => {
     onError: () => toast({ status: 'error', title: 'Failed.' }),
   });
 
-  return { habitsQuery, setHabitsQuery, habits, deleteHabit, archiveHabit, swapHabit };
+  return { habitsQuery, setHabitsQuery, habits, deleteHabit, archiveHabit, swapHabits };
 };

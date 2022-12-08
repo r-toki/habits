@@ -1,5 +1,105 @@
 {
   "db": "PostgreSQL",
+  "3900a2bf164c74431065005f2902e8745cf4f5e66bbe83f9462ab41f6aca266c": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Text"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "archived!",
+          "ordinal": 2,
+          "type_info": "Bool"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "recent_done_list!",
+          "ordinal": 4,
+          "type_info": "BoolArray"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        null,
+        false,
+        null
+      ],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text",
+          "Bool"
+        ]
+      }
+    },
+    "query": "\n        select\n            habits.id,\n            habits.name,\n            habits.archived_at is not null \"archived!\",\n            habits.created_at,\n            array_agg(coalesce(habit_daily_records.done, false)) \"recent_done_list!\"\n        from\n            (\n                select\n                    *\n                from\n                    habits,\n                    (\n                        select\n                            generate_series(\n                                (current_date at time zone $1)::date - interval '6 days',\n                                (current_date at time zone $1)::date,\n                                '1 day'\n                            )::date d\n                    ) last_days\n                where habits.created_at < (last_days.d::timestamp at time zone $1) + interval '1 day'\n                    and user_id = $2\n                    and ($3::bool is null or (case when $3 then archived_at is not null else archived_at is null end))\n            ) habits\n        left outer join habit_daily_records\n        on habits.id = habit_daily_records.habit_id\n        and habits.d = habit_daily_records.recorded_on\n        group by habits.id, habits.name, habits.archived_at, habits.created_at, habits.sort_number\n        order by habits.sort_number\n        "
+  },
+  "3ecb4e52bd021dd471cae150613c2a0b6c1af91e91901eb2aedec42bf7a862a4": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "\n        update habits\n        set archived_at = current_timestamp\n        where id = $1\n        and user_id = $2\n        and archived_at is null\n        "
+  },
+  "40c40d898e09ef3498e2de558c2eaaa1781c03de56f3f9d07b6368cfe7a2a7de": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "\n        delete from habits\n        where id = $1\n        and user_id = $2\n        "
+  },
+  "64c43514b489da9a07f1814ca3babef7e81728ca3d638d8104bc3ffc40ca249d": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "\n        update habits h1\n        set sort_number = h2.sort_number\n        from habits h2\n        where h1.id = $1\n        and h2.id = $2\n        and h1.user_id = $3\n        "
+  },
+  "8195d64cbdecbba0703edfc932b5578adf8e70dc327dd84a4cd4825e3a275ec0": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "\n        update habits\n        set\n            name = $1,\n            updated_at = current_timestamp\n        where id = $2\n        and user_id = $3\n        "
+  },
   "b1acea4ae7b006c0749c6ae6397f031ca282064e9d0826736cbac1bf5525eeaa": {
     "describe": {
       "columns": [],
@@ -12,6 +112,20 @@
       }
     },
     "query": "\n        insert into users (id, display_name, created_at, updated_at)\n        values ($1, $2, current_timestamp, current_timestamp)\n        "
+  },
+  "b69a2808ba4d25243a35ced6a080b9d18d2fbb90f785699b7d364dad8dbc0e40": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "\n        insert into habits (id, name, created_at, updated_at, archived_at, user_id, sort_number)\n        values ($1, $2, current_timestamp, current_timestamp, null, $3, extract(epoch from current_timestamp)::int)\n        "
   },
   "e3b69826b59cd2346a6aa98b96d306f027a78e6ecca4a08a0cbb43d36f276628": {
     "describe": {

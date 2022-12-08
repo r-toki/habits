@@ -1,12 +1,12 @@
 use crate::lib::Error;
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
 #[derive(Serialize)]
 pub struct DailyRecord {
     comment: String,
-    start_of_recorded_at: DateTime<Utc>,
+    recorded_on: NaiveDate,
     habit_daily_records: Vec<HabitDailyRecord>,
 }
 
@@ -17,6 +17,12 @@ pub struct HabitDailyRecord {
     archived: bool,
     habit_id: String,
     habit_name: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GetHabits {
+    tz: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -36,7 +42,8 @@ pub struct UpdateHabitDailyRecord {
 pub async fn get_daily_record(
     pool: &PgPool,
     user_id: String,
-    start_of_recorded_at: DateTime<Utc>,
+    recorded_on: String,
+    query: GetHabits,
 ) -> Result<DailyRecord, Error> {
     todo!();
 }
